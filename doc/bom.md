@@ -1,6 +1,6 @@
 # Composants achetés
 - boutons "missiles" : 9.66€ le lot de 5 [ici](http://www.priceminister.com/offer/buy/1740523176/5pcs-dc-12v-20a-cover-led-light-rocker-toggle-switch-spst-on-off-car-truck-bi582.html)
-
+- deux cartes avec 8 afficheurs 7 segments (avec driver TM1638, des leds et des boutons) : 2.95€ pièce chez [GearBest](http://www.gearbest.com/lcd-led-display-module/pp_354750.html)
 
 # Composants prévus
 ## led RGB
