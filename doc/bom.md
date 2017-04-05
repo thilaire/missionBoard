@@ -8,7 +8,8 @@
 - [joystick numérique](https://fr.aliexpress.com/item/DIY-Game-Arcade-Joystick-Red-Ball-4-8-Way-Replacement-Parts-For-Fighting-Stick-Parts-Game/32741227545.html) de borne arcade : 6.62€ (dont 1.30€ de frais de port)
 - des petits [supports](https://fr.aliexpress.com/item/CNIM-Hot-20-Pcs-Copper-5mm-Light-Emitting-Diode-LED-Holder-Mount-Panel-Display/32715039086.html) pour encastrer les led : 1.31€
 - un [potentiomètre à glissière](https://fr.aliexpress.com/item/Free-shipping-1pcs-Slide-Potentiometer-10K-Linear-Module-Dual-Output-for-Arduino-AVR-Electronic-Block/32742799309.html) (que je ne brancherai peut-être pas, juste pour jouer) : 1.46€
-total : 41,92€
+- deux [bargraph](https://fr.aliexpress.com/item/2PCS-New-10-Segment-Led-Bargraph-Light-Display-Red-Yellow-Green-Blue/32767236126.html) à 0.85€ pièce
+total : 43,57€
 
 # Composants prévus
 ## led RGB
