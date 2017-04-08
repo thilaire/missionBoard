@@ -3,13 +3,14 @@
 - deux cartes avec 8 afficheurs 7 segments (avec driver TM1638, des leds et des boutons) : 2.95€ pièce chez [GearBest](http://www.gearbest.com/lcd-led-display-module/pp_354750.html)
 - bouton poussoir rouge géant (enfin, 60mm) [aliExpress](https://fr.aliexpress.com/item/5-Colors-LED-Light-Lamp-60MM-Big-Round-Arcade-Video-Game-Player-Push-Button-Switch/32794775928.html) : 1.59€ (+0.6€ de frais de port, pour pas que ça arrive dans 2 mois !)
 - interrupteurs à bascule [aliExpress](https://fr.aliexpress.com/item/10Pcs-Blue-Mini-MTS-203-6-Pin-SPDT-ON-OFF-ON-6A-125VAC-Toggle-Switches/32792308755.html) : 2.59€ les 10 (+0.6€ de frais de port)
-- bouttons poussoirs transparents avec LED, chez les chinois [aliExpress](https://fr.aliexpress.com/item/2pcs-lot-33-33mm-square-LED-lighted-Illuminated-push-button-MANE-Jamma-arcade-game-machine-accessories/32710197272.html) : 9.08€ les 8 (pas de frais de port, mais délai de 22 à 40 jours !)
+- bouttons poussoirs transparents avec LED, chez les chinois [aliExpress](https://fr.aliexpress.com/item/10pcs-32mm-LED-Illuminated-Arcade-Button-12V-Square-Push-Button-with-Micro-Switch-for-Coin-Operated/32792126188.html) : 1.07€ pièce (où ceux-là
+[aliExpress](https://fr.aliexpress.com/item/2pcs-lot-33-33mm-square-LED-lighted-Illuminated-push-button-MANE-Jamma-arcade-game-machine-accessories/32710197272.html), mais ils ont été trop long à lancer ma commande)
 - jeu de [200 leds](https://fr.aliexpress.com/item/200PC-Lot-3MM-5MM-Led-Kit-With-Box-Mixed-Color-Red-Green-Yellow-Blue-White-Light/32626322055.html) rouges, vertes, jaunes, bleues et blanches, en 3 et 5mm : 2.51€
 - [joystick numérique](https://fr.aliexpress.com/item/DIY-Game-Arcade-Joystick-Red-Ball-4-8-Way-Replacement-Parts-For-Fighting-Stick-Parts-Game/32741227545.html) de borne arcade : 6.62€ (dont 1.30€ de frais de port)
 - des petits [supports](https://fr.aliexpress.com/item/CNIM-Hot-20-Pcs-Copper-5mm-Light-Emitting-Diode-LED-Holder-Mount-Panel-Display/32715039086.html) pour encastrer les led : 1.31€
 - un [potentiomètre à glissière](https://fr.aliexpress.com/item/Free-shipping-1pcs-Slide-Potentiometer-10K-Linear-Module-Dual-Output-for-Arduino-AVR-Electronic-Block/32742799309.html) (que je ne brancherai peut-être pas, juste pour jouer) : 1.46€
 - deux [bargraph](https://fr.aliexpress.com/item/2PCS-New-10-Segment-Led-Bargraph-Light-Display-Red-Yellow-Green-Blue/32767236126.html) à 0.85€ pièce
-total : 43,57€
+total : 44,50€
 
 # Composants prévus
 ## led RGB
