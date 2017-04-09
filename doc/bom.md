@@ -10,7 +10,9 @@
 - des petits [supports](https://fr.aliexpress.com/item/CNIM-Hot-20-Pcs-Copper-5mm-Light-Emitting-Diode-LED-Holder-Mount-Panel-Display/32715039086.html) pour encastrer les led : 1.31€
 - un [potentiomètre à glissière](https://fr.aliexpress.com/item/Free-shipping-1pcs-Slide-Potentiometer-10K-Linear-Module-Dual-Output-for-Arduino-AVR-Electronic-Block/32742799309.html) (que je ne brancherai peut-être pas, juste pour jouer) : 1.46€
 - deux [bargraph](https://fr.aliexpress.com/item/2PCS-New-10-Segment-Led-Bargraph-Light-Display-Red-Yellow-Green-Blue/32767236126.html) à 0.85€ pièce
-total : 44,50€
+- carte "hat" pour raspberry (mais pas une vrai hat, parce que je ne mettrai pas l'eeprom) : [aliExpress](https://fr.aliexpress.com/item/Free-Shipping-DIY-Prototyping-Hat-Shield-Hole-Plate-Kit-Prototype-Expansion-Board-3V-5V-for-Raspberry/32788948092.html) : 2.86€
+- petits borniers à vis : [aliExpress](https://fr.aliexpress.com/item/20PCS-KF301-2P-5-08mm-2-Pin-Connect-Terminal-Screw-Terminal-Connector/32438229697.html) 1.80€ les 20 (0.09€ pièce)
+total : 50€
 
 # Composants prévus
 ## led RGB
