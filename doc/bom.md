@@ -12,6 +12,9 @@
 - deux [bargraph](https://fr.aliexpress.com/item/2PCS-New-10-Segment-Led-Bargraph-Light-Display-Red-Yellow-Green-Blue/32767236126.html) à 0.85€ pièce
 - carte "hat" pour raspberry (mais pas une vrai hat, parce que je ne mettrai pas l'eeprom) : [aliExpress](https://fr.aliexpress.com/item/Free-Shipping-DIY-Prototyping-Hat-Shield-Hole-Plate-Kit-Prototype-Expansion-Board-3V-5V-for-Raspberry/32788948092.html) : 2.86€
 - petits borniers à vis : [aliExpress](https://fr.aliexpress.com/item/20PCS-KF301-2P-5-08mm-2-Pin-Connect-Terminal-Screw-Terminal-Connector/32438229697.html) 1.80€ les 20 (0.09€ pièce)
+- casque avec micro : 2.36€ [aliExpress](https://www.aliexpress.com/item/Over-ear-Wired-earphone-headphones-gaming-headset-for-pc-video-game-gamer-For-Playstation-for-PS4/32579786730.html)
+
+
 total : 50€
 
 # Composants prévus
@@ -21,6 +24,7 @@ total : 50€
 - quasiment les mêmes chez [adafruit](https://www.adafruit.com/products/1612) pour 4.95$ les 5 (->16$ de frais de port !!)
 - ou alors en format led 4 broches [adafruit](https://www.adafruit.com/products/1938) pour 4.95$ les 5 (6€ chez Gotronic, Lextronic et semageek, env. 5€ de fdp)
 - ou encore chez [amazon](https://www.amazon.fr/ws2811-IC-5050-RGB-Raspberry-similaire-NeoPixel/dp/B01N6X5BPW/ref=sr_1_18?ie=UTF8&qid=1491062730&sr=8-18&keywords=ws2812b) (y'a même un paquet de 100 pour 20€)
+- ou des APA106 au format LED 5mm chez [aliExpress](https://www.aliexpress.com/item/50pcs-APA106-F5-5mm-RGB-LED-Chips-Integrated-RGB-LEDs-like-WS2812B-APA106-round-hat-Full/32713156834.html)
 ## 1 ou 2 prises USB femelle (type A)
 ## prise jack
 ## haut-parleur ?
