@@ -15,7 +15,7 @@
 - casque avec micro : 2.36€ [aliExpress](https://www.aliexpress.com/item/Over-ear-Wired-earphone-headphones-gaming-headset-for-pc-video-game-gamer-For-Playstation-for-PS4/32579786730.html)
 
 
-total : 50€
+total : 52.5€
 
 # Composants prévus
 ## led RGB
