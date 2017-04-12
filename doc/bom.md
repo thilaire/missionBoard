@@ -13,9 +13,10 @@
 - carte "hat" pour raspberry (mais pas une vrai hat, parce que je ne mettrai pas l'eeprom) : [aliExpress](https://fr.aliexpress.com/item/Free-Shipping-DIY-Prototyping-Hat-Shield-Hole-Plate-Kit-Prototype-Expansion-Board-3V-5V-for-Raspberry/32788948092.html) : 2.86€
 - petits borniers à vis : [aliExpress](https://fr.aliexpress.com/item/20PCS-KF301-2P-5-08mm-2-Pin-Connect-Terminal-Screw-Terminal-Connector/32438229697.html) 1.80€ les 20 (0.09€ pièce)
 - casque avec micro : 2.36€ [aliExpress](https://www.aliexpress.com/item/Over-ear-Wired-earphone-headphones-gaming-headset-for-pc-video-game-gamer-For-Playstation-for-PS4/32579786730.html)
+- interrupteur à clé : 0.85€ [aliExpress](https://www.aliexpress.com/item/KS02-Key-Switch-ON-OFF-Lock-Switch-KS-02/32606053670.html)
 
 
-total : 52.5€
+total : 53€
 
 # Composants prévus
 ## led RGB
@@ -28,7 +29,7 @@ total : 52.5€
 ## 1 ou 2 prises USB femelle (type A)
 ## prise jack
 ## haut-parleur ?
-## bouton on-off
+
 
 # infos
 ## driver de led
