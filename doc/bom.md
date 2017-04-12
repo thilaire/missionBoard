@@ -14,18 +14,11 @@
 - petits borniers à vis : [aliExpress](https://fr.aliexpress.com/item/20PCS-KF301-2P-5-08mm-2-Pin-Connect-Terminal-Screw-Terminal-Connector/32438229697.html) 1.80€ les 20 (0.09€ pièce)
 - casque avec micro : 2.36€ [aliExpress](https://www.aliexpress.com/item/Over-ear-Wired-earphone-headphones-gaming-headset-for-pc-video-game-gamer-For-Playstation-for-PS4/32579786730.html)
 - interrupteur à clé : 0.85€ [aliExpress](https://www.aliexpress.com/item/KS02-Key-Switch-ON-OFF-Lock-Switch-KS-02/32606053670.html)
+- lot de 50 led RGB APA106 (un clone des NeoPixel WS2812b), format LED 5mm  : [aliExpress](https://fr.aliexpress.com/item/10pcs-1000pcs-DC5V-APA106-F5-5mm-F8-8mm-Round-RGB-LED-APA106-chipset-inside-RGB-Full/32792759587.html) : 11.47€
 
-
-total : 53€
+total : 64.50€
 
 # Composants prévus
-## led RGB
-- 10 WS2812 (mais pas B) sur PCB pour 5€ chez [GearBest](http://www.gearbest.com/lcd-led-display-module/pp_340724.html?wid=21)
-- 5 WS2812B sur PCB pour 4.21€ chez [GearBest](http://www.gearbest.com/lcd-led-display-module/pp_502002.html?wid=21)
-- quasiment les mêmes chez [adafruit](https://www.adafruit.com/products/1612) pour 4.95$ les 5 (->16$ de frais de port !!)
-- ou alors en format led 4 broches [adafruit](https://www.adafruit.com/products/1938) pour 4.95$ les 5 (6€ chez Gotronic, Lextronic et semageek, env. 5€ de fdp)
-- ou encore chez [amazon](https://www.amazon.fr/ws2811-IC-5050-RGB-Raspberry-similaire-NeoPixel/dp/B01N6X5BPW/ref=sr_1_18?ie=UTF8&qid=1491062730&sr=8-18&keywords=ws2812b) (y'a même un paquet de 100 pour 20€)
-- ou des APA106 au format LED 5mm chez [aliExpress](https://www.aliexpress.com/item/50pcs-APA106-F5-5mm-RGB-LED-Chips-Integrated-RGB-LEDs-like-WS2812B-APA106-round-hat-Full/32713156834.html)
 ## 1 ou 2 prises USB femelle (type A)
 ## prise jack
 ## haut-parleur ?
