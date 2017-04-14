@@ -23,6 +23,9 @@ total : 64.50€
 ## prise jack
 ## haut-parleur ?
 
+# malette
+- [leroy Merlin](https://www.leroymerlin.fr/v3/p/produits/valise-a-outils-l-43-cm-e12203) : 43x30x15
+- pas chez Casto (13cm de haut seulement)
 
 # infos
 ## driver de led
