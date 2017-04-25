@@ -15,8 +15,17 @@
 - casque avec micro : 2.36€ [aliExpress](https://www.aliexpress.com/item/Over-ear-Wired-earphone-headphones-gaming-headset-for-pc-video-game-gamer-For-Playstation-for-PS4/32579786730.html)
 - interrupteur à clé : 0.85€ [aliExpress](https://www.aliexpress.com/item/KS02-Key-Switch-ON-OFF-Lock-Switch-KS-02/32606053670.html)
 - lot de 50 led RGB APA106 (un clone des NeoPixel WS2812b), format LED 5mm  : [aliExpress](https://fr.aliexpress.com/item/10pcs-1000pcs-DC5V-APA106-F5-5mm-F8-8mm-Round-RGB-LED-APA106-chipset-inside-RGB-Full/32792759587.html) : 11.47€
+- lot de 10 interrupteurs à bascule 3 positions [aliExpress](https://fr.aliexpress.com/item/10Pcs-3-Pin-3-Position-ON-OFF-ON-SPDT-Mini-Latching-Toggle-Switch-AC-125V-6A/32712692663.html) : 1.89€ les 10
+- lot de 5 potentiomètres (avec bouton de couleur différente) [aliExpress](https://fr.aliexpress.com/item/5pcs-1K-1M-OHM-3-Terminal-Single-Linear-Taper-Rotary-Volume-B-Type-Potentiometer-Pot-W/32725338190.html) : 2.33€ les 5
 
-total : 64.50€
+- cable HDMI 30cm
+- cable micro USB 20cm avec angle
+- ampli audio 3W
+- borniers à vis 2.54mm
+- lot de résistances
+- deux autres TM1638 (mais moins cher chez AliExpress)
+
+total : 68.70€
 
 # Composants prévus
 ## 1 ou 2 prises USB femelle (type A)
