@@ -1,4 +1,6 @@
-On a tous vu cette création de Jeff Highsmith : la [Mission Control Desk](http://makezine.com/projects/mission-control-desk). Si j'avais entre 5 et 8 ans, je voudrais la même ! Alors, pour mes fils de 6 et 3 ans, je veux leur faire quelque chose comme ça, où il puisse se projeter et imaginer des histoires où ils pilotent une navette spatiale (ou sont au centre de commandement de la navette, ou même en train de jouer à l'agent secret qui désarmoce une bombe....).
-**Bref, il faut que je leur fasse un panneau de contrôle pour une mission spaciale !**
+Have you seen [this](http://makezine.com/projects/mission-control-desk) project ? For his kids, Jeff Highsmith has build a mission control desk. So amazing! If I was between 5 and 8 years old, I would want the same ! So, since my kids are now 6 and 3, I want to do them something like that, something they can play with, they can project themselves and imagine stories where they are piloting spaceships (or being at the Space Command Center, or even pretending being a secret spy that need to defuse a bomb...). **Anyway, I must build them something like that !!**
 
-Mais en plus petit, quand même ! Et pas trop cher (budget max: 100€, ce qui est déjà énorme; mais rien que l'écran tactile LCD et la valise, ça fait les 2/3 du budget).
+Something smaller. And not too expensive (let's say around 80€, including touch screen, a lot of boutons and display, and a joystick to play games).
+And I want this to be easily transportable. And be able to serve as a game console (so with a screen, joystick and some push buttons). And be used as a fun computer if when they want to learn programming...
+
+So this is the plan: I will design something that can fit in a case, and this github will collect all the data for this project. I will try to post pictures, scheme and code, so that anyone can do the same learn from my experience and mistakes, and make a better mission control desk for its kids.
