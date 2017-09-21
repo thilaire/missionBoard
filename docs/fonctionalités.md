@@ -14,16 +14,18 @@ Oxygène dans la navette spatiale
   
 ## Démarrage
 Démarrage du RPi
-- clé  
-- led verte (directement alimentée sur le 5V du RPi), à côté de la clé
-- switch 3 positions : jeux, ordinateur, navette
-- prise jack d'alimentaiton générale (chassis)  
-  
++ clé  
++ led verte (directement alimentée sur le 5V du RPi), à côté de la clé
++ switch rotatif 3 positions : navette, jeux, ordinateur
++ prise jack d'alimentaiton générale (chassis)  
+
+  (le switch rotatif peut avoir une 4ème position bonus)
+
 ## Audio
 Son par le haut-parleur ou le casque
 - haut-parleurs (TODO)
 - prises casque et/ou micro (TODO)
-- swith 2 positions : COM1 (du son enregistré avec la base) / off (pas de communication radio)
+- swith 3 positions : COM1 (du son enregistré avec la base) / off (pas de communication radio) / COM2 (autre son)
 - bouton poussoir pour parler ??
 - potentiomètre pour le volume ? (volume software ou hardware??)
 
@@ -32,7 +34,7 @@ TODO: mono (HP, casque, micro) ? ou bien stéréo ?
 
 ## Portes/sas  
 Ouverture du sas (2 portes) + schéma?
-- switch rotatif 3 positions : porte 1 (pos 1)/ sas fermé (pos 2)/ porte 2 (pos 3)
+- switch 3 positions : porte 1 (pos 1)/ sas fermé (pos 2)/ porte 2 (pos 3)
    - les deux portes ne peuvent être ouvertes en même temps
    - (2) -> (3) pompe oxygène 10s (niveau augmente) puis ouverture porte 2  
    - (3) -> (2) fermeture porte 2 puis pompe à oxygène 10s (niveau oxygène diminue) 
@@ -47,8 +49,9 @@ Tout s'arrête, voyant qui clignotent en rouge (+ message sonore alerte) si on p
 
 ## Lumière
 Allume ou éteind les lumières de la navette (éventuellement peut ne pas être connecté)
-- switch on/off pour la lumière dans la navette
-- led verte associée (s'allume en on, sauf si il n'y aplus d'électricité)
+- switch on/off pour la lumière dans la cabine
+- switch on/off pour la lumière extérieure
+- leds vertes associées (s'allume en on, sauf si il n'y a plus d'électricité)
 
 ## Pompe eau
 déclenche la pompe à eau (toilette)
@@ -68,6 +71,13 @@ Gestion de l'ordinateur de bord et des pannes
 Trois groupes d'afficheur 7-seg
 - deux afficheurs pour la position (position/altitude) (on est bien d'accord que ça n'a pas de sens)
 - un pour la vitesse
+
+## Laser
+- missile swith pour armer le laser
+- switch 2 positions pour la couleur du laser (bleu/rouge)
+- un bouton lumineux pour tirer
+  - passe au rouge ou bleu qd armé
+  - fait du son qd on tire
 
  
 ## Compte à rebours - durée mission
@@ -121,7 +131,25 @@ Les commandes manuelles font bouger les compteurs altitude/position/vitesse plus
   - rouge (clignotant ou non) lorsque problème, avec signal sonore
 le voyant s'allumera lorsque qu'une panne sera détectée (simulée), en complément d'un autre voyant indiquant le pb
 
+
 ## Moteurs
+- voyant lumineux de survitesse (qd vitesse trop grande ou >50 en fin d'atterrissage)
+- bouton moteurs fusée
+- bouton moteurs navette
+- potentiomètre en ligne pour régler la puissance des moteurs
+- 2 switchs pour le turbo (gaz tuyères et boost)
+  -> change la vitesse, c'est tout
+- 2 leds associées
+Lien avec le carburant
+
+
+## train d'atterrissage
+- bouton poussoir train
+  - un appui pour le sortir (10s en oragne le temps qu'il sorte + son, et ensuite en vert pour dire qu'il est sorti)
+  - un appui pour le rentrer (idem, voyant éteind qd il est rentré)
+
+Utilisable uniquement pendant le mode d'atterissage (sinon inactif, ou bien provoque une alarme de quelques secondes: voyant alarme + voyant du bouton en rouge clignotant 5s)
+
 
 ## Pilotage
 - un bouton rotatif 3 pos. permet de choisir le mode
@@ -155,98 +183,114 @@ Mode normal
 - on peut passer en pilote manuel, augmenter la puissance, piloter avec le joystick, etc.
 
 ### Atterrissage
-Séquence à suivre
-
-
+Séquence à suivre:
+- allumage des moteurs navette (bouton moteurs navette)
+- pilote automatique
+- sortie du train d'atterrissage (bouton train aterrissage)
+- maintenir le lacet/roulis autour de zéro (potards) ???? voyant 
+- diminuer la vitesse qd altitude <50 (sinon voyant survitesse en rouge + clignotement afficheur vitesse)
+- qd altitude arrive à zero, il faut sortir le parachute (bouton parachute, passe en vert quand ouvert)
+- freinage (bouton poussoir freinage)
+- extinction des moteurs
 
   
 # I/O (remplis au fur et à mesure des fonctionalités)
 
 #### Bargraphs (max 4, dont 3 panneau haut) :
-- niveau Oxygène
-- niveau carburant fusée
-- niveau carburant navette
++ niveau Oxygène
++ niveau carburant fusée
++ niveau carburant navette
   
 #### Blocs de 4 afficheurs 7-segment (max 3 panneau haut, 4 bas):
 - vitesse
 - position
 - altitude
-- compte à rebours (x2), panneau bas
++ compte à rebours (x2), panneau bas
+- lacet/roulis ???
   
 #### Leds :
-- démarrage (directe sur Alim)
-- lumière
-- panneau solaire (en directe sur switch associé ?)
-- batteries
-- pile à combustible
++ démarrage (directe sur Alim)
++ lumière cabine
++ lumière extérieure
++ panneau solaire (en directe sur switch associé ?)
++ batteries
++ pile à combustible
 - pompe carburant fusée
 - pompe carburant navette
-- commande manuelle
++ commandes manuelles
 
 
 #### Switch 2 positions (max 10) :
-- audio COM1/Off
-- lumière
-- ordinateur de bord/de secours
-- panneau solaire
-- batteries
-- piles à combustible
-- pilote automatique/commandes manuelles
+
++ lumière cabine
++ lumière extérieure
++ ordinateur de bord/de secours
++ panneau solaire
++ batteries
++ piles à combustible
++ pilote automatique/commandes manuelles
++ couleur de laser
+
++ turbo gaz tuyères
++ turbo boost
 
 
 
 #### Switch 3 positions (max 10) :
-- démarrage (jeux/ordinateur/navette)
-- pompe eau (eau/off/toilettes)
-- pompe carburant (réservoir fusée/off/réservoir navette)
-
++ sas (porte 1 / sas fermé / porte 2)
++ pompe eau (eau/off/toilettes)
++ pompe carburant (réservoir fusée/off/réservoir navette)
++ audio COM1/Off/COM2
 
 #### Boutons poussoirs (max 10 normaux + 1 gros) :
-- pompe oxygène
-- micro ?
-- moteur fusée
-- décrochage fusée
-- moteur navette
-- Go! (gros bouton rouge)
-
++ pompe oxygène
++ moteurs fusée
++ décrochage fusée
++ moteurs navette
++ Go! (gros bouton rouge)
++ train d'atterissage
++ ouverture parachute
++ freinage
++ laser
   
 #### Voyants lumineux (12 ?) :
-- oxygène  
-- porte 1
-- porte 2
-- électricité
-- pilote automatique
-- alarme
-- décollage
-- orbite
-- atterrissage
++ oxygène  
++ porte 1
++ porte 2
++ électricité
++ pilote automatique
++ alarme/anomalie
++ décollage
++ orbite
++ atterrissage
++ indicateur de survitesse
   
   
 #### Potentiomètres (1 en ligne, max 5 rotatif) :
-- son ?
-- puissance moteurs (en ligne)
-- lacet
-- roulis
++ son
++ puissance moteurs (en ligne)
++ lacet
++ roulis
 
 #### Clé (1) :
-- démarrage du Rpi
++ démarrage du Rpi
 
-#### Switch rotatif 3 positions (max 2): 
-- sas (porte 1 / sas fermé / porte 2)
+#### Switch rotatif x positions (max 2, x<12): 
++ démarrage (jeux/ordinateur/navette)
 - mode de vol (décollage, orbite, attérrissage)
 
 #### Boutons "rocket" (avec LED)
-- phase 1
-- phase 2
-- phase 3
++ phase 1
++ phase 2
++ phase 3
 
 ##### Autres :
-- Joystick : commande manuelle
++ Joystick : commande manuelle
 - Hauts-parleurs : son
-- Prises USB :
-- Prises audio Jack 3.5mm : son
++ Prises USB :
++ Prises audio Jack 3.5mm : son
 - Prise alimentation (sur chassis) : démarrage
-  
++ Raspberry  
   
   
   
@@ -257,47 +301,14 @@ Séquence à suivre
   
   
 # notes diverses  
-MissionBoard
 
-####8 switchs 3 pos. :
-+ navette/ordinateur/jeux
-+ Com1/off/Com2
-+ Lumières
-+ Pompe Toilettes/eau
-+ Pompe moteurs/carburant 1 et 2
-+ Ordinateur de secours
-
-####8 boutons :
-- Moteur principal 1
-- Moteurs auxiliaires 2
-- Parachute
-- Freinage
-- Pilote automatique
-+ Pompe oxygène 
-+ Ouverture sas/porte
-- Train d'atterrissage 
-
-####3 missile switch + gros bouton :
-trois phases pour le décollage
-
-####2 bargraph :
-+ oxygène 
-+ Carburant
-
-###Fonctionnalités
-+ sas/porte
-+ Oxygene
-+ Carburant (booster, fusée, navette)
-+ Communication
-- Séquence de lancement (missile switch+gros bouton)
-
+à mettre à jour
 
 ###RPi i/o:
-- 5 pour les trois TM1638 (clk+data, et un Enable par TM)
+- 6 pour les quatre TM1638 (clk+data, et un Enable par TM)
 - 4 pour le joystick
 - 6 pour les boutons jeux/commande
 - 1 pour le gros bouton
-- 2 pour le switch jeu/navette/ordinateur
 - 2 (ou plus) pour le µC (leds WQ2812b, potentiomètres analogiques)
 
 ###RPi USB:
@@ -317,3 +328,11 @@ trois phases pour le décollage
 2 bargraph 10seg.
 2 boutons jeux/commande
 3 switchs 3 pos (sans led?) v  
+
+#### µC
+- i2C (2 I/O) + interrupt (1 output) ?
+- APA106 (2 outputs)
+- potentiometer (3 Analog inputs)
+- 9 push buttons + 4-way joystick (3 outputs, 5 inputs)
+
+
