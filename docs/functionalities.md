@@ -10,6 +10,13 @@ Once defined, it allows me to know the buttons, switches, displays, ... I need, 
 - [Lights](#lights)
 - [Water pump](#water-pump)
 - [Onboard computer](#onboard-computer)
+- [Position/Speed](#position-speed)
+- [Laser](#laser)
+- [Countdown, time](#countdown-time)
+- [Electricity](#electricity)
+- [Fuel](#fuel)
+- [Automatic pilot](#automatic-pilot)
+
 
 
 ## Oxygen
@@ -87,46 +94,54 @@ Manage the onboard computer and its potential failure
   - blinking 5s to simulate reboot time when we switch from one to another one
 
 
-## Altitude and speed
-Trois groupes d'afficheur 7-seg
-- deux afficheurs pour la position (position/altitude) (on est bien d'accord que ça n'a pas de sens)
-- un pour la vitesse
+## Position, speed
+Three groups of four seven-segment displays
+- two for the *position* (position and altitude)
+- one for the speed
+Of course, the position will be non-sense values (my kids are too young to understand, and I do not have enough displays to put the 6-axis position)
+
 
 ## Laser
-- missile swith pour armer le laser
-- switch 2 positions pour la couleur du laser (bleu/rouge)
-- un bouton lumineux pour tirer
-  - passe au rouge ou bleu qd armé
-  - fait du son qd on tire
+- a missile switch to arm the laser
+- a 2-position switch to choose the laser color (blue/red)
+- a push-button with led to fire
+  - led goes to blinking red or blue when armed
+  - goes to red/blue and makes sound when fired
+  - cannot be used anymore in the next two seconds (led goes to orange?)
 
  
-## Compte à rebours - durée mission
-Huit afficheurs 7-segments (2 groupes de 4 collés).
-Deux fonctions
-- compte à rebours (décompte 20s qd il est déclenché, avec les centièmes de sec; clignote qd on arrive à zéro si on n'a pas lancé)
-- puis compte la durée de la mission (ne peut être remis à zéro qu'à l'atterrissage)
+## Countdown, time
+Height seven-segment displays (two groups of four side-by-side).
+Two functions:
+- countdown for the takeoff (count down 20s when it starts, with 1/100th of seconds, blink when reach zero if the go-button has not been pressed)
+- then display time from takeoff (minuts, seconds, 1/10th seconds - reset when landing)
+
 
 ## Electricity
-Gestion de l'électricité produite
-- Séries de switchs, avec sa led 
-  - panneaux solaires (on/off), led verte en direct
-  - batteries (on/off), led verte
-  - piles à combustible (on/off), led verte
-- voyant lumineux "électricité" -> vert qd tout est ok, orange si un seul élément de branché, rouge si tout est à off
+Manage the production of electricity
+- three switches, with led
+  - solar panels (on/off), green led
+  - batteries (on/off), green verte
+  - fuel cell (on/off), green led
+- led (display panel) "electricity":
+  - green when everything is ok
+  - orange when only one element is plugged (on)
+  - red if everything is off
 
-Si tout est à off, le panneau s'éteind, saut le voyant lumineux "électricité" qui passe au rouge (+ son alerte). On perd la batterie au bout de 5min, et la piles à combustible au bout de 15min ?
+If the three switches are off, all the displays turn off, except the "electricy" led in the display panel that goes to red (+ warning sound)
+The batteries goes down 5min after takeoff, and fuel cell after 15min ?
 
 
-## Carburant
-Gestion du carburant
-- deux bargraph : moteurs fusée, moteurs navette/vaisseau (ou bien moteur 1 et moteur 2)
-- switch 3 pos. pompe fusée / off / pompe vaisseau (ne sert qu'avant le décollage)
-- deux leds (vertes) allumée qd le remplissage s'effectue (1 led en face de "pompe fusée", l'autre pour "pompe vaisseau"), puis s'éteind qd le remplissage est fini (10s ?)
+## Fuel
+Manage the fuel
+- two bargraphs: fuel in spaceship rocket, fuel in the space rocket (or in rocket #1 and rocket #2)
+- 3-position switch: pump fuel spaceship on / pumps off / pump fuel rocket on (only defore takeoff)
+- when one of the pump is on, play sound and increase the associated bargraph level. Stop when the fuel tank is full
 
-Le carburant fusée se vide rapidement après décollage (1min?), le carburant navette se vide en fct de la puissance moteurs
-Les bargraph carburant moteurs clignotent en rouge qd plus de carburant
+The fuel of the space rocket decrease quickly after takeoff (1min?). The fuel of the spaceship varies with the power of the rocket (slider in [pilot](#pilot). The bargraphs blink when the fuel is too low
 
-## Pilote automatique
+
+## Automatic pilot
 - switch pilote automatique / commandes manuelles
 - voyant lumineux "pilote automatique"
   - en vert quand enclenché
@@ -136,6 +151,7 @@ Les bargraph carburant moteurs clignotent en rouge qd plus de carburant
  
 Le pilote automatique fait bouger doucement les compteurs d'altitude/position et vitesse en mode "stationnaire" (ou bcp en mode "décollage"/"atterissage").
 Les commandes manuelles font bouger les compteurs altitude/position/vitesse plus vite
+
 
 ## Commande manuelles
 - joystick
