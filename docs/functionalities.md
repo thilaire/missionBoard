@@ -1,73 +1,93 @@
-# Fonctionnalités
+# Functionnalities
 
-## Oxygène
-Oxygène dans la navette spatiale
-- bargraph indiquant le niveau
-- bouton "pompe oxygène" :
-  - active la pompe pendant 15s (bruit + led clignotante bleue + augmentation du niveau)
-  - voyant bleu clignotant qd la pompte fonctionne, éteind sinon
-  - voyant rouge clignotant si la pompe ne fonctionne plus (réparable en activant l'ordinateur de secours)
-- voyant "oxygène" (peut être supprimé, redondant avec bargraph):
-    - vert si le niveau est ok
-    - orange clignotant si niveau bas
-    - rouge si niveau dangereux
+This is the list of the functionalities I wanted for the *Mission Board*
+Once defined, it allows me to know the buttons, switches, displays, ... I need, to decide how to pilot them (see TM1638) and to define the software (its behavior):
+
+- [Oxygen](#oxygen)
+- [Start/Mode](#start-power-mode)
+- [Audio](#audio)
+- [Doors](#doors-decompression-airlock)
+- [Lights](#lights)
+- [Water pump](#water-pump)
+- [Onboard computer](#onboard-computer)
+
+
+## Oxygen
+This is about the oxygen gas in the spaceship
+- a bargraph indicating the level of oxygen
+- an "oxygen pump" pushbutton (with led):
+  - activate the pump during 10s (sound + blue led during that time + oxygen level rising in the same time)
+  - led blue blinking when the pump runs (during 10s), off otherwise
+  - led red blinking if the pump is out of order (reparable by activating the backup computer)
+- "oxygen" led (display panel)
+    - green if the oxygen level is ok
+    - orange blinking if the level is low
+    - red if we will run out of oxygen
+
   
-## Démarrage
-Démarrage du RPi
-+ clé  
-+ led verte (directement alimentée sur le 5V du RPi), à côté de la clé
-+ switch rotatif 3 positions : navette, jeux, ordinateur
-+ prise jack d'alimentaiton générale (chassis)  
+## Start, power, mode
+Start the Raspberry Pi
+- a switch with a key
+- a green led (directly powered by the 5V?)
+- rotative switch, with 3 positions : spaceship, game and computer
+  - spaceship: main mode to pilot the ship
+  - game to run RetroPie
+  - computer to switch to the linux desktop (required mouse and keyboard)
++ a plug jack for the power (in the wallet frame)
 
-  (le switch rotatif peut avoir une 4ème position bonus)
+
 
 ## Audio
-Son par le haut-parleur ou le casque
-- haut-parleurs (TODO)
-- prises casque et/ou micro (TODO)
-- swith 3 positions : COM1 (du son enregistré avec la base) / off (pas de communication radio) / COM2 (autre son)
-- bouton poussoir pour parler ??
-- potentiomètre pour le volume ? (volume software ou hardware??)
+Sound through speakers or headphone
+- speakers (todo)
+- headphone plug (w/o microphone?)
+- 3-position switch for the radio-communications:
+  - COM1 (recorded sound from real space missions (see [Nasa audio database](https://archive.org/details/nasaaudiocollection) or [Apollo17](http://apollo17.org/))
+  - OFF (no radio-communication)
+  - COM2 (other sound, to be defined later)
+- potentiometer for the volume
 
-TODO: mono (HP, casque, micro) ? ou bien stéréo ?
-1 possibilité : HP en mono, 1 prise pour le casque micro mono, et 1 prise jack pour l'audio (pas de micro dans ce cas)
 
-## Portes/sas  
-Ouverture du sas (2 portes) + schéma?
-- switch 3 positions : porte 1 (pos 1)/ sas fermé (pos 2)/ porte 2 (pos 3)
-   - les deux portes ne peuvent être ouvertes en même temps
-   - (2) -> (3) pompe oxygène 10s (niveau augmente) puis ouverture porte 2  
-   - (3) -> (2) fermeture porte 2 puis pompe à oxygène 10s (niveau oxygène diminue) 
-   - (1) -> (2) fermeture porte 1
-   - (2) -> (1) ouverture porte 1
-- deux voyant lumineux pour les portes:
-  - porte 1 : vert qd porte fermée, orange clignotante qd fermeture/ouverture, jaune qd porte ouverte
-  - porte 2 : vert qd porte fermée, orange clignotante qd fermeture/ouverture et rouge clignotant qd porte fermée
+## Doors (decompression airlock)
+Open the decompression doors (airlock - 2 doors)
+- 3-position switch: (1) door #1 open / (2) doors locked / (3) door #2 open
+   - the two doors cannot be opened in the same time
+   - (2) -> (3): oxygen pump during 5s (level increases), and then the door #2 opens
+   - (3) -> (2): door #2 closes, and then oxygen pump for 5s (level decreases)
+   - (1) -> (2): door #1 closes
+   - (2) -> (1): door #1 opens
+- two leds (display panel), one per door:
+  - door #1: green when closed, blinking orange during opening/closing, yellow when opened
+  - door #2: green when closed, blinking orange during opening/closing, blinking red when opened
 
-L'ouverture/fermeture de porte dure pendant 5s (+ son)
-Tout s'arrête, voyant qui clignotent en rouge (+ message sonore alerte) si on passe trop vite de (1)<->(2)<->(3), ne s'arrête que si repassé en position (2)
+Opening/Closing during 5s (leds + sound)
+Everything stop + leds in red (+ warning sound?) if we go to fast from (1)<->(2)<->(3), only stop when we go back to position(2)
 
-## Lumière
-Allume ou éteind les lumières de la navette (éventuellement peut ne pas être connecté)
-- switch on/off pour la lumière dans la cabine
-- switch on/off pour la lumière extérieure
-- leds vertes associées (s'allume en on, sauf si il n'y a plus d'électricité)
 
-## Pompe eau
-déclenche la pompe à eau (toilette)
-- switch 3 pos. eau / off / toilettes 
-- bruit associé (chasse d'eau ou pompe)
+## Lights
+Turn on/off the lignts in the spaceship
+- on/off switch for the cabin lights
+- on/off switch for the extern light
+- green leds associated (on when the swith is on, except when there is an eletric problem, see [Electricity](#electricity))
 
-## Ordinateur de bord
-Gestion de l'ordinateur de bord et des pannes
-- switch ordinateur de bord / ordinateur de secours
-- voyant lumineux
-  - vert qd ordinateur de bord et que tout va bien
-  - rouge qd ordinateur de bord en panne (+ message audio?)
-  - orange qd on a basculé sur l'ordintaeur de secours
-  - clignotant quelques secondes pour simuler le temps de reboot
 
-## Altitude/Vitesse
+## Water pump
+Run the water pump (toilets)
+- 3-position switch: water / off / toilets
+- associated sound (flush or water flowing)
+
+
+## Onboard computer
+Manage the onboard computer and its potential failure
+- 2-pos switch: main computer / backup computer
+- one led (display panel)
+  - green when main computer and everything is ok
+  - red when the main computer has failure (+audio message?)
+  - orange when switch to backup computer
+  - blinking 5s to simulate reboot time when we switch from one to another one
+
+
+## Altitude and speed
 Trois groupes d'afficheur 7-seg
 - deux afficheurs pour la position (position/altitude) (on est bien d'accord que ça n'a pas de sens)
 - un pour la vitesse
@@ -86,7 +106,7 @@ Deux fonctions
 - compte à rebours (décompte 20s qd il est déclenché, avec les centièmes de sec; clignote qd on arrive à zéro si on n'a pas lancé)
 - puis compte la durée de la mission (ne peut être remis à zéro qu'à l'atterrissage)
 
-## Électricité
+## Electricity
 Gestion de l'électricité produite
 - Séries de switchs, avec sa led 
   - panneaux solaires (on/off), led verte en direct
