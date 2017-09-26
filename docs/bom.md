@@ -1,3 +1,42 @@
+# Bill of material
+
+
+From the [functionalities](functionalities.md), we can deduce the bill of materials
+
+# What I need
+
+### Electronic devices
+- 4 Bargraphs (for the oxygen, rocket fuel and spaceship levels)
+- 7 blocks of four 7-segment displays  (2 for the countdown, speed, position, altitude, pitch and roll)
+- some leds (start (green), manual command (green), lights (green x2), electricity (green x2), turbo (blue x2))
+- 20 multicolor (RGB) leds (1 per push button + leds in panel display (oxygen, doors x2, electricity, automatic pilot, alarm, takeoff, orbit, landing, overspeed)
+- 4 10k\omega potentiometers (one online for the engine power, and 3 rotary for the audio, pitch and roll)
+
+### (micro) computers
+- 1 raspberry pi (I have Pi3, but Pi2 should be ok. Pi Zero is ok, but cannot be used in game mode IMHO)
+- 1
+
+### switchs/buttons
+- 10 2-position switches (laser, automatic pilot, lights (x2), electricity (x3), turbo (x2), computer)
+- 4 3-position switches (doors, pumps (x2), audio)
+- 8 push buttons with led (brake, parachute, landing gear, laser, engines x2, unhook spaceship)
+- 1 big red push button with led (go button)
+- 1 on/off switch with key (start)
+- 2 3-position switches (start mode, flight mode)
+- 4 rocket-switch (takeoff phases x3, laser)
+- joystick
+
+## misc
+- 2 small speakers
+- 2 USB-a female plug
+- 2 female audio 3.5mm jack
+- 1 jack power plugs (male/female
+
+
+
+# What I bought (and where)
+
+
 # Composants achetés
 - boutons "missiles" : 9.66€ le lot de 5 [ici](http://www.priceminister.com/offer/buy/1740523176/5pcs-dc-12v-20a-cover-led-light-rocker-toggle-switch-spst-on-off-car-truck-bi582.html)
 - deux cartes avec 8 afficheurs 7 segments (avec driver TM1638, des leds et des boutons) : 2.95€ pièce chez [GearBest](http://www.gearbest.com/lcd-led-display-module/pp_354750.html)

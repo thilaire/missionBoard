@@ -18,6 +18,7 @@ So this is the plan: I will design something that can fit in a case, and this gi
 # Projet steps
 
 - [x] [Decide the functionalities](docs/functionalities.md)
+- [x] [Choose the materials](docs/bom.md)
 - [x] Design the panels
 - [x] Realize the panels
 - [ ] Solder and connect everything
@@ -28,5 +29,10 @@ So this is the plan: I will design something that can fit in a case, and this gi
 # Few pictures of project in its current state
 
 
+
+# Few words about the doc
+I try to do my best to make a valuable documentation, specially if someone wants to make it owns (and adapt mine, reuse the code, etc.).
+English is not my mother tongue, and sometimes, the words/sentences/expression I used are not correct.
+If someone wants to contribute, do not hesitate to fork the project, improve my english, and submit a pull request for that. That would be greatly appreciated !!
 
 
