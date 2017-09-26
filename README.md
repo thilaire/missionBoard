@@ -15,24 +15,3 @@ And I want this to be easily transportable. And be able to serve as a game conso
 
 So this is the plan: I will design something that can fit in a case, and this github will collect all the data for this project. I will try to post pictures, scheme and code, so that anyone can do the same, learn from my experience and mistakes, and make a better mission control desk for its kids.
 
-# Projet steps
-
-- [x] [Decide the functionalities](docs/functionalities.md)
-- [x] [Choose the materials](docs/bom.md)
-- [x] Design the panels
-- [x] Realize the panels
-- [ ] Solder and connect everything
-- [ ] Develop the software
-- [ ] Enjoy with the kids !
-
-
-# Few pictures of project in its current state
-
-
-
-# Few words about the doc
-I try to do my best to make a valuable documentation, specially if someone wants to make it owns (and adapt mine, reuse the code, etc.).
-English is not my mother tongue, and sometimes, the words/sentences/expression I used are not correct.
-If someone wants to contribute, do not hesitate to fork the project, improve my english, and submit a pull request for that. That would be greatly appreciated !!
-
-
