@@ -3,20 +3,32 @@
 This is the list of the functionalities I wanted for the *Mission Board*
 Once defined, it allows me to know the buttons, switches, displays, ... I need, to decide how to pilot them (see TM1638) and to define the software (its behavior):
 
-- [Oxygen](#oxygen)
-- [Start/Mode](#start-power-mode)
-- [Audio](#audio)
-- [Doors](#doors-decompression-airlock)
-- [Lights](#lights)
-- [Water pump](#water-pump)
-- [Onboard computer](#onboard-computer)
-- [Position/Speed](#position-speed)
-- [Laser](#laser)
-- [Countdown, time](#countdown-time)
-- [Electricity](#electricity)
-- [Fuel](#fuel)
-- [Automatic pilot](#automatic-pilot)
-
+- Start:
+  - [Start/Mode](#start-power-mode)
+- misc functionalities:
+  - [Oxygen](#oxygen)
+  - [Audio](#audio)
+  - [Doors](#doors-decompression-airlock)
+  - [Water pump](#water-pump)
+  - [Laser](#laser)
+- electricity:
+  - [Electricity](#electricity)
+  - [Lights](#lights)
+- levels to display:
+  - [Position/Speed](#position-speed)
+  - [Countdown, time](#countdown-time)
+  - [Fuel](#fuel)
+- computer:
+  - [Onboard computer](#onboard-computer)
+  - [Alarm](#alarm)
+- flight
+  - [Engine](#engine)
+  - [Automatic pilot](#automatic-pilot)
+  - [Manual command](#manual-command)
+- flight modes:
+  - [Landing gear](#landing-gear)
+  - [Pilot mode](#pilot-mode)
+  - [Take-off](#take-off)
 
 
 ## Oxygen
@@ -142,61 +154,63 @@ The fuel of the space rocket decrease quickly after takeoff (1min?). The fuel of
 
 
 ## Automatic pilot
-- switch pilote automatique / commandes manuelles
-- voyant lumineux "pilote automatique"
-  - en vert quand enclenché
-  - éteind qd mis sur off (ou en bleu)
-  - passe en orange en cas de problème (doit être désactivé, ou bien on passe sur l'ordinateur de secours)
-- active la LED "commandes manuelles" qd on n'est pas en pilote automatique
+- switch automatic pilot / manual commands
+- led (display pannel) "automatic pilot"
+  - green when engaged
+  - turn off (or blue) when manual commands
+  - goes to orange in case of problem (must be desactivated, or maybe go to backup computer)
+- green led "manual commands" activated when manual command
  
-Le pilote automatique fait bouger doucement les compteurs d'altitude/position et vitesse en mode "stationnaire" (ou bcp en mode "décollage"/"atterissage").
-Les commandes manuelles font bouger les compteurs altitude/position/vitesse plus vite
+The automatic pilot make the counters altitude/position/vitesse vary very slowly (except during take off and landing).
+During manual command mode, these counters vary with the corresponding potentiometer (so more quickly)
 
 
-## Commande manuelles
-- joystick
-- potentiomètre linéaire : puissance moteurs
-- 2 potentiomètres : lacet/roulis
-- LED verte allumée qd mode "commande manuelle"
+## manual command
+- a joystick (also used for game)
+- linar potentiometer (rockets' power)
+- two potentiometer: pitch/yaw (roll?)
+- green led switch on when manual command (see [Automatic pilot](#automatic-pilot))
 
--> influent sur les compteurs vitesse/position/altitude en mode "commandes manuelles" (et sur la vitesse de consommation carburant ?)
-
-# Alarme
-- voyant lumineux alarme
-  - éteint lorsqu'un aucun problème
-  - rouge (clignotant ou non) lorsque problème, avec signal sonore
-le voyant s'allumera lorsque qu'une panne sera détectée (simulée), en complément d'un autre voyant indiquant le pb
+-> has influence on the speed/position/altitude in manual command mode (and on the fuel consumption)
 
 
-## Moteurs
-- voyant lumineux de survitesse (qd vitesse trop grande ou >50 en fin d'atterrissage)
-- bouton moteurs fusée
-- bouton moteurs navette
-- potentiomètre en ligne pour régler la puissance des moteurs
-- 2 switchs pour le turbo (gaz tuyères et boost)
-  -> change la vitesse, c'est tout
-- 2 leds associées
-Lien avec le carburant
+## Alarm
+- led (display panel)
+  - off when no problem occurs
+  - red (maybe blinking) when a problem arises, (with sound?)
+The led will turn on when a breakdown is detected (simulated), in addition to the led associated to the problem
 
 
-## train d'atterrissage
-- bouton poussoir train
-  - un appui pour le sortir (10s en oragne le temps qu'il sorte + son, et ensuite en vert pour dire qu'il est sorti)
-  - un appui pour le rentrer (idem, voyant éteind qd il est rentré)
+## Engines
+- led (display panel) for the overspeed (when the speed is too large or >50 during landing)
+- push button to turn on the engines of the rocket
+- push button to turn on the engines of the spaceship
+- inline potentiometer for the engine power
+- 2 switchs for the turbo (gas in the nozzles and boost) -> doesn't mean anything, just for fun
+  -> change the speed, that's all
+- 2 associtaed leds
 
-Utilisable uniquement pendant le mode d'atterissage (sinon inactif, ou bien provoque une alarme de quelques secondes: voyant alarme + voyant du bouton en rouge clignotant 5s)
 
 
-## Pilotage
-- un bouton rotatif 3 pos. permet de choisir le mode
-  - décollage
-  - orbite
-  - atterrissage
-- 3 voyants lumieux (décollage/orbit/atterrissage) pour indiquer dans quel état on est
+## landing gear
+- push button with led
+  - one push to unfold the landing gear (10s in orange, the time its unfolds + sounds, and then green to indicated the gear is unfolded)
+  - one push to fold it (same during 10s, and then led off)
 
-l'alarme retentit (+son?) et le voyant correspondant passe en orange (rouge?) si on change de mode alors qu'une séquence n'est pas terminée (tant qu'on n'est pas revenu dans le bon mode) 
+Only usable during the landing mode (otherwise inactive... or maybe start a few seconds alarm + sound + led in blinking red)
 
-### Décollage
+
+## Pilot mode
+- rotative 3-position button to choose the mode
+  - take-off
+  - flight in orbit
+  - landing
+- 3 leds in the display panel to indicate in which mode we are
+
+Alarm (led+sound) + corresponding led goes to orange (blinking red?) when we switch mode while a sequence is not over (alarm while we did not go back to the right mode)
+
+
+## Take-off
 Séquence à suivre (pour finir le décollage et passer à un autre mode) :
 - enclencher le bouton rocket "Phase 1" (ou "début séquence décollage")
 - mettre tous les niveaux (carburant et oxygène) à max pour passer à la phase suivante
@@ -214,11 +228,11 @@ Séquence à suivre (pour finir le décollage et passer à un autre mode) :
 - il faut allumer les moteurs de la navette (bouton "moteur navette", qui clignote qd c'est près, passe au vert qd ils s'allument, carburant moteur diminue)
 - la séquence est finie (voyant qui clignote ?), on peut passer au mode "orbite"
 
-### Orbite 
+## Orbit
 Mode normal
 - on peut passer en pilote manuel, augmenter la puissance, piloter avec le joystick, etc.
 
-### Atterrissage
+## Atterrissage
 Séquence à suivre:
 - allumage des moteurs navette (bouton moteurs navette)
 - pilote automatique
@@ -229,7 +243,11 @@ Séquence à suivre:
 - freinage (bouton poussoir freinage)
 - extinction des moteurs
 
-  
+
+
+
+
+
 # I/O (remplis au fur et à mesure des fonctionalités)
 
 #### Bargraphs (max 4, dont 3 panneau haut) :
