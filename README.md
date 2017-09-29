@@ -6,5 +6,5 @@ So this is the plan: I will design something that can fit in a case, and this gi
 
 All the information is collected in that github. Please, refer to the [dedicated github page](https://thilaire.github.io/missionBoard/) with all the documation, pictures and howto.
 
-![Current state of the project](docs/photos/IMG_2284.jpg)
+![Current state of the project](docs/photos/IMG_2284.JPG)
 
