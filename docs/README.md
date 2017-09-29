@@ -6,7 +6,7 @@ It's a simple DIY project I made for my kids: it consists in a wallet with a lot
 
 Have you seen [this](http://makezine.com/projects/mission-control-desk) project ?
 
-<IMG alt="Jeff Highsmith's control desk" href="photos/missioncontrol.png" align="right"/>
+<IMG alt="Jeff Highsmith's control desk" src="photos/missioncontrol.png" align="right">
 
 For his kids, Jeff Highsmith has build a mission control desk. So amazing! If I was between 5 and 8 years old, I would want the same ! So, since my kids are now 6 and 3, I want to do for them something like that, something they can play with, they can project themselves into and imagine stories where they are piloting spaceships (or being at the Space Command Center, or even pretending being a secret spy that need to defuse a bomb...). **Anyway, I must build them something like that !!**
 
