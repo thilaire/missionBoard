@@ -19,7 +19,7 @@ So this is the plan: I will design something that can fit in a case, and this gi
 
 - [x] [Decide the functionalities](functionalities.md)
 - [x] [Choose the materials](bom.md)
-- [x] [Design the panels](panels.md)
+- [x] [Design the panels](panels/panels.md)
 - [x] Realize the panels
 - [ ] Solder and connect everything
 - [ ] Develop the software
