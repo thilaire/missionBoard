@@ -10,10 +10,10 @@ The illustrator file (and details) can be found [here](illustrator.md).
 
 # bottom panels
 
-1. [Start/mode](panels/1-start/1.md)
-2. [Displays](panels/2-displays/2.md)
-3. [Laser](panels/3-laser/3.md)
-4. [Pilot](panels/4-pilot/4.md)
+1. [Start/mode](1-start/1.md)
+2. [Displays](2-displays/2.md)
+3. [Laser](3-laser/3.md)
+4. [Pilot](4-pilot/4.md)
 5. [Flight mode]
 6. [Phases]
 7. [Joystick]
