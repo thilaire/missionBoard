@@ -15,10 +15,10 @@ The illustrator file (and details) can be found [here](illustrator.md).
 3. [Laser](3-laser/3.md)
 4. [Pilot](4-pilot/4.md)
 5. [Flight mode](5-flight/5.md)
-6. [Phases]
-7. [Joystick]
-8. [Commands]
-9. [Audio]
+6. [Phases](6-phases/6.md)
+7. [Joystick](7-joystick/7.md)
+8. [Commands](8-commands/8.md)
+9. [Audio](9-audio/9.md)
 
 
 # top panels
