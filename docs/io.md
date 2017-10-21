@@ -40,7 +40,11 @@ The following tables regroup all the IO connectiviy. I have choose to name signa
 
 ## TM1638 boards
 
-The four TM1638s are chained (to save some GPIO), so it means they share the same clock and data I/O. Only the STB (Chip select) is different.
+The four TM1638s are chained (to save some GPIO), so it means they share the same clock and data I/O. Only the STB (Chip select) is different:
+- the TM Board #1 is used for the IOs of the bottom panels (toggle switch buttons, leds and counter)
+- TM Board #2 is used for
+- TM Board #3 is used for
+- TM Board #4 is used for
 
 
 | Pin description   | Name      | Connected to |
@@ -51,3 +55,50 @@ The four TM1638s are chained (to save some GPIO), so it means they share the sam
 | STB (TM board #4) | `TM4-STB` |              |
 | CLK (Clock input) | `TM-CLK`  | `RPi-IO20`   |
 | DIO (Data I/O)    | `TM_DIO`  | `RPi-IO21`   |
+
+
+### Outputs
+
+| TM Board | Output   | Connected to |
+|:--------:|:--------:|:------------:|
+| #1       | `LED_7`  |              |
+| #1       | `LED_8`  |              |
+
+
+
+### Inputs
+
+#### #1 TM Board
+| Input Line | Input   | Connected to |
+|:----------:|:-------:|:------------:|
+| 1          | 1       |              |
+| 1          | 2       |              |
+| 1          | 3       |              |
+| 1          | 4       |              |
+| 1          | 5       |              |
+| 1          | 6       |              |
+| 1          | 7       |              |
+| 1          | 8       |              |
+| 2          | 1       |              |
+| 2          | 2       |              |
+| 2          | 3       |              |
+| 2          | 4       |              |
+| 2          | 5       |              |
+| 2          | 6       |              |
+| 2          | 7       |              |
+| 2          | 8       |              |
+
+
+#### #2 TM Board
+All the inputs use the input line #1 (denoted `K1` in the datasheet)
+
+| Input   | Connected to |
+|:-------:|:------------:|
+| 1       |              |
+| 2       |              |
+| 3       |              |
+| 4       |              |
+| 5       |              |
+| 6       |              |
+| 7       |              |
+| 8       |              |
