@@ -31,7 +31,7 @@ The following tables regroup all the IO connectiviy. I have choose to name signa
 | 29 (**GPIO05**)               | `RPi_IO5`  |               |   |               |            | (GND) 30                             |
 | 31 (**GPIO06**)               | `RPi_IO6`  |               |   |               | `RPi_IO12` | (**GPIO12**) 32                      |
 | 33 (**GPIO13**)               | `RPi_IO13` |               |   |               |            | (GND) 34                             |
-| 35 (**GPIO19**)               | `RPi_IO19` |               |   |               | `RPi_IO16` | (**GPIO16**) 36                      |
+| 35 (**GPIO19**)               | `RPi_IO19` | `TM1_STB`     |   |               | `RPi_IO16` | (**GPIO16**) 36                      |
 | 37 (**GPIO26**)               | `RPi_IO26` |               |   | `TM_CLK`      | `RPi_IO20` | (**GPIO20**) 38                      |
 | 39 (GND)                      |            |               |   | `TM_DIO`      | `RPi_IO21` | (**GPIO21**) 40                      |
 
