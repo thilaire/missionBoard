@@ -12,28 +12,54 @@ The following tables regroup all the IO connectiviy. I have choose to name signa
 
 ## Raspberry Pi
 
+### IOs
+
 | RPi Pin number                | Name       | Connected to  |   | Connected to  | Name       | RPi Pin number                       |
 |:------------------------------|:----------:|:-------------:|:-:|:-------------:|:----------:|-------------------------------------:|
 | 01 (3.3v)                     |            |               |   |               |            | (5v) 02                              |
 | 03 (**GPIO02**, SDA1, I2C)    | `RPi_IO2`  |               |   |               |            | (5v) 04                              |
 | 05 (**GPIO03**, SCL1, I2C)    | `RPi_IO3`  |               |   |               |            | (GND) 06                             |
-| 07 (**GPIO04**, GPIO_GCLK)    | `RPi_IO4`  |               |   |               | `RPi_IO14` | (TXD0, **GPIO14**) 08                |
+| 07 (**GPIO04**, GPIO_GCLK)    | `RPi_IO4`  |  x            |   |               | `RPi_IO14` | (TXD0, **GPIO14**) 08                |
 | 09 (GND)                      |            |               |   |               | `RPi_IO15` | (RXD0, **GPIO15**) 10                |
-| 11 (**GPIO17**, GPIO_GEN0)    | `RPi_IO17` |               |   |               | `RPi_IO18` | (GPIO_GEN1, **GPIO18**) 12           |
-| 13 (**GPIO27**, GPIO_GEN2)    | `RPi_IO27` |               |   |               |            | (GND) 14                             |
-| 15 (**GPIO22**, GPIO_GEN3)    | `RPi_IO22` |               |   |               | `RPi_IO23` | (GPIO_GEN4, **GPIO23**) 16           |
-| 17 (3.3v)                     |            |               |   |               | `RPi_IO24` | (GPIO_GEN5, **GPIO24**) 18           |
-| 19 (**GPIO10**, SPI_MOSI)     | `RPi_IO10` |               |   |               |            | (GND) 20                             |
-| 21 (**GPIO09**, SPI_MISO)     | `RPi_IO9`  |               |   |               | `RPi_IO25` | (GPIO_GEN6, **GPIO25**) 22           |
-| 23 (**GPIO11**, SPI_CLK)      | `RPi_IO11` |               |   |               | `RPi_IO8`  | (SPI_CE0_N, **GPIO08**) 24           |
-| 25 (GND)                      |            |               |   |               | `RPi_IO7`  | (SPI_CE1_N, **GPIO07**) 26           |
+| 11 (**GPIO17**, GPIO_GEN0)    | `RPi_IO17` |  x            |   |   x           | `RPi_IO18` | (GPIO_GEN1, **GPIO18**) 12           |
+| 13 (**GPIO27**, GPIO_GEN2)    | `RPi_IO27` |  x            |   |               |            | (GND) 14                             |
+| 15 (**GPIO22**, GPIO_GEN3)    | `RPi_IO22` |  x            |   |   x           | `RPi_IO23` | (GPIO_GEN4, **GPIO23**) 16           |
+| 17 (3.3v)                     |            |               |   |   x           | `RPi_IO24` | (GPIO_GEN5, **GPIO24**) 18           |
+| 19 (**GPIO10**, SPI_MOSI)     | `RPi_IO10` |  x            |   |               |            | (GND) 20                             |
+| 21 (**GPIO09**, SPI_MISO)     | `RPi_IO9`  |  x            |   |   x           | `RPi_IO25` | (GPIO_GEN6, **GPIO25**) 22           |
+| 23 (**GPIO11**, SPI_CLK)      | `RPi_IO11` |  x            |   |   x           | `RPi_IO8`  | (SPI_CE0_N, **GPIO08**) 24           |
+| 25 (GND)                      |            |               |   |   x           | `RPi_IO7`  | (SPI_CE1_N, **GPIO07**) 26           |
 | 27 (**ID_SD**, I2C ID EEPROM) |            |               |   |               |            | (I2C ID EEPROM, **ID_SC**) 28        |
-| 29 (**GPIO05**)               | `RPi_IO5`  |               |   |               |            | (GND) 30                             |
-| 31 (**GPIO06**)               | `RPi_IO6`  |               |   |               | `RPi_IO12` | (**GPIO12**) 32                      |
-| 33 (**GPIO13**)               | `RPi_IO13` |               |   |               |            | (GND) 34                             |
-| 35 (**GPIO19**)               | `RPi_IO19` | `TM1_STB`     |   |               | `RPi_IO16` | (**GPIO16**) 36                      |
-| 37 (**GPIO26**)               | `RPi_IO26` |               |   | `TM_CLK`      | `RPi_IO20` | (**GPIO20**) 38                      |
+| 29 (**GPIO05**)               | `RPi_IO5`  |  x            |   |               |            | (GND) 30                             |
+| 31 (**GPIO06**)               | `RPi_IO6`  |  x            |   |   x           | `RPi_IO12` | (**GPIO12**) 32                      |
+| 33 (**GPIO13**)               | `RPi_IO13` |  x            |   |               |            | (GND) 34                             |
+| 35 (**GPIO19**)               | `RPi_IO19` | `TM1_STB`     |   |   x           | `RPi_IO16` | (**GPIO16**) 36                      |
+| 37 (**GPIO26**)               | `RPi_IO26` |  x            |   | `TM_CLK`      | `RPi_IO20` | (**GPIO20**) 38                      |
 | 39 (GND)                      |            |               |   | `TM_DIO`      | `RPi_IO21` | (**GPIO21**) 40                      |
+
+To add (in the `x`):
+- 4 Inputs for the Joystick
+- 9 Inputs for the push-buttons
+- 3 Inputs for the TMs
+- 2 I/O for the serial comm with Atmel
+
+
+# other devices
+
+- USB connectivity:
+| RPi USB | Connected to                  |
+|:-------:|:-----------------------------:|
+| #1      | LCD touchscreen `P14_LCD_USB` |
+| #2      |                               |
+| #3      | USB connector `P9_USB_0`      |
+| #4      | USB connector `P9_USB_1`      |
+
+- HDMI: to the LCD touchscreen `P14_LCD_USB`
+- 3.5 Jack sound:  
+
+
+
+
 
 
 *[Here](datasheet/RPi3-GPIO.png) is the official Raspberry GPIO table*
