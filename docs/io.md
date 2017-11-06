@@ -5,10 +5,20 @@ All the switches, LEDs, buttons are connected directly to the Raspberry Pi or th
 ## Signal naming convention
 
 The following tables regroup all the IO connectiviy. I have choose to name signals as following `xxx_yyyzz` where:
-- `xxx` is the board name (or panel name/number), like `RPi`, `TM1` or `P9` (`P` for *panel*)
-- `yyy` is the function/signal/io name (like `GPIO12` or `LED`)
+- `xxx` is the board name or panel number, like `RPi`, `TM1` or `P9` (`P` for *panel*)
+- `yyy` is the button/signal/io name (like `GPIO12` or `LED`)
 - `zz` is the number (may be empty if not necessary)
 
+For buttons and displays, the common valyes for `yyy` are (some are possible):
+- `SW2`: 2-position switch (toggle switch)
+- `SW3`: 3-position switch (toggle)
+- `ROT`: rotary switch
+- `POT`: potentiometer
+- `PB`: push button
+- `LED`: led (classical one-color led)
+- `RGB`: RGB LED
+- `BAR`: bargraph
+- `SSD`: Seven-segment display (block of four)
 
 ## Raspberry Pi
 
@@ -32,8 +42,8 @@ The following tables regroup all the IO connectiviy. I have choose to name signa
 | 27 (**ID_SD**, I2C ID EEPROM) |            |               |   |               |            | (I2C ID EEPROM, **ID_SC**) 28        |
 | 29 (**GPIO05**)               | `RPi_IO5`  |  x            |   |               |            | (GND) 30                             |
 | 31 (**GPIO06**)               | `RPi_IO6`  |  x            |   |   x           | `RPi_IO12` | (**GPIO12**) 32                      |
-| 33 (**GPIO13**)               | `RPi_IO13` |  x            |   |               |            | (GND) 34                             |
-| 35 (**GPIO19**)               | `RPi_IO19` | `TM1_STB`     |   |   x           | `RPi_IO16` | (**GPIO16**) 36                      |
+| 33 (**GPIO13**)               | `RPi_IO13` | `TM3_STB`     |   |               |            | (GND) 34                             |
+| 35 (**GPIO19**)               | `RPi_IO19` | `TM1_STB`     |   | `TM2_STB`     | `RPi_IO16` | (**GPIO16**) 36                      |
 | 37 (**GPIO26**)               | `RPi_IO26` |  x            |   | `TM_CLK`      | `RPi_IO20` | (**GPIO20**) 38                      |
 | 39 (GND)                      |            |               |   | `TM_DIO`      | `RPi_IO21` | (**GPIO21**) 40                      |
 
@@ -85,10 +95,10 @@ The four TM1638s are chained (to save some GPIO), so it means they share the sam
 
 ### Outputs
 
-| TM Board | Output   | Connected to |
-|:--------:|:--------:|:------------:|
-| #1       | `LED_7`  |              |
-| #1       | `LED_8`  |              |
+| TM Board | Output       | Connected to |
+|:--------:|:------------:|:------------:|
+| #1       | `TM1_LED_7`  |              |
+| #1       | 8  | `P4_LED`     |
 
 
 
