@@ -6,7 +6,6 @@ Define the different callbacks
 """
 
 from MissionBoard import MissionBoard
-from MissionBoard import LED, RGB, SSD, BAR, ROT, POT, SW3, SW2, PB
 
 # create the main object
 MB = MissionBoard(TM_clk=20, TM_dio=21, TM_stb=19)
@@ -27,7 +26,7 @@ MB = MissionBoard(TM_clk=20, TM_dio=21, TM_stb=19)
 #MB.addSwitch2(['P3_SW_1', 'LaserColor'], TMindex=1, line=1, pin=2)
 
 # Panel 4: pilot
-MB.add(LED, 'P4_LED', 'manual', TMindex=0, index=7)
+MB.add('P4_LED', 'manual', TMindex=0, index=7)
 #MB.addPotentiometer(['P4_POT_0', 'roll'], AN=1)
 #MB.addPotentiometer(['P4_POT_1', 'yaw'], AN=2)
 #MB.addPotentiometer(['P4_POT_0', 'speed'], AN=0)
@@ -59,14 +58,16 @@ MB.add(LED, 'P4_LED', 'manual', TMindex=0, index=7)
 #MB.addPushButton(['P8_PB_8', 'go'], IO=12)
 #MB.addRGBLED(['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unhook',
 #             'oxygenPump', 'laser', 'landingGear'], start=12)
-MB.add(LED, 'P8_RGB_8', 'go', TMindex=0, index=6)
+MB.add('P8_RGB_8', 'go', TMindex=0, index=6)
 
 # Panel 9: audio
 #MB.addSwitch3(['P9_SW4'])
 
 
 # some test to debug
-"MD.SSDcounter = '0123'"
+MB.counter = '0.1.2.3.'
+MB.go = True
+MB.manual = True
 
 
 

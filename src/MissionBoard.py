@@ -1,13 +1,13 @@
 # coding=utf-8
 
 from rpi_TM1638 import TMBoards
+from re import compile
 
-
-# fake enum (enum only exists in Python 3.x)
-LED, RGB, SSD, BAR, ROT, POT, SW3, SW2, PB = range(9)
 # list of required arguments (used to check)
-argsElement = {LED: ('TMindex', 'index'), SSD: ('TMindex','block')}
+argsElement = {'LED': ('TMindex', 'index'), 'SSD': ('TMindex','block')}
 
+# simple regex for Pxx_YYY_zzz or Pxx_YYY
+regElement = compile("P(\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
 
 class MissionBoard:
 	"""
@@ -25,7 +25,7 @@ class MissionBoard:
 		"""
 		check the system, item per item
 		"""
-		pass
+		# sort the elements
 
 
 	def run(self):
@@ -37,25 +37,31 @@ class MissionBoard:
 
 
 
-	def add(self, elementType, keyname, name, **args):
+	def add(self, keyname, name, **args):
 		"""
 		Declares a new element
 		Parameters:
-			- elementType: should be in (LED, RGB, SSD, BAR, ROT, POT, SW3, SW2, PB)
 			- keyname: name following the IO convention (ie 'Px_yyy_zzz')
+				-> the element type (LED, PB, etc.) is determined from the keyname
 			- name: name of the element
-			- elementClass: class of the element to be created
-			- args: other arguments used to store the element
+			- args: arguments used to determine the elements (TMindex, etc.)
 		"""
 		# check the name
 		if name in self._elements:
 			raise ValueError("An element with the same name (%s) already exists", name)
-		# TODO: use the keyname ??
+		if keyname in self._elements:
+			raise ValueError("An element with the same name (%s) already exists", keyname)
+		# get the element Type
+		m = regElement.search(keyname)
+		if not m:
+			raise ValueError("The keyname %s doesn't follow the pattern `Pxx_YYY_zzz` or `Pxx_YYY`", keyname)
+		elementType = m.group(2)    # panel, elementType, number = m.group(1,2,4)
 		# check for the arguments
 		if set(args.keys()) != set(argsElement[elementType]):
-			raise ValueError("The arguments given for the element %s are not correct (receive %s but requires %s)",elementType, args.keys(), argsElement[elementType])
+			raise ValueError("The arguments given for the element %s are not correct (receive %s but requires %s)", elementType, args.keys(), argsElement[elementType])
 		# store it
 		self._elements[name] = (elementType, args)
+		self._elements[keyname] = (elementType, args)
 
 
 
@@ -64,17 +70,18 @@ class MissionBoard:
 		if instance not in self._elements:
 			raise ValueError("The element %s does not exist", instance)
 		# chek if it can be modified
-		e, args = self._elements[instance][0], self._elements[instance][1:] # there is no extended unpack in python 2.x
-		if e not in (LED, SSD, BAR, RGB):
+		elementType, args = self._elements[instance]
+		if elementType not in ('LED', 'SSD', 'BAR', 'RGB'):
 			raise ValueError("The element %s is not a display, so it cannot be modified", instance)
-		if e == SSD:
+		if elementType == 'SSD':
 			TMindex, block = args['TMindex'], args['block']
 			# TODO: check the size of the value (4 chars + eventually 4 points)
-			self._TMB.Segments[TMindex*8+block] = value
-		elif e == LED:
+			self._TMB.segments[TMindex*8+block] = value
+		elif elementType == 'LED':
 			TMindex, index = args['TMindex'], args['index']
 			self._TMB.leds[TMindex*8+index] = value
-		elif e == BAR:
+		elif elementType == 'BAR':
 			raise NotImplementedError()
-		elif e == RGB:
+		elif elementType == 'RGB':
 			raise NotImplementedError()
+
