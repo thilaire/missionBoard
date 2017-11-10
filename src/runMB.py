@@ -19,7 +19,7 @@ MB = MissionBoard(TM_clk=20, TM_dio=21, TM_stb=19)
 #MB.addRGBLED(['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1',
 #             'automaticPilot', 'orbit', '', 'gate2', 'alarm', 'landing', ''], start=0)
 
-###MB.add('P3_SSD', 'counter', SSD(TMindex=1, block=0))
+MB.add('P3_SSD', 'counter', TMindex=0, block=0)
 
 # Panel 3: laser
 #MB.addSwitch2(['P3_SW_0', 'LaserArmed'], TMindex=1, line=1, pin=1)
@@ -58,7 +58,7 @@ MB.add('P4_LED', 'manual', TMindex=0, index=7)
 #MB.addPushButton(['P8_PB_8', 'go'], IO=12)
 #MB.addRGBLED(['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unhook',
 #             'oxygenPump', 'laser', 'landingGear'], start=12)
-MB.add('P8_RGB_8', 'go', TMindex=0, index=6)
+MB.add('P8_LED_8', 'go', TMindex=0, index=6)
 
 # Panel 9: audio
 #MB.addSwitch3(['P9_SW4'])
@@ -72,5 +72,5 @@ MB.manual = True
 
 
 
-# run !
-MB.run()
+# run tests!
+MB.runCheck()
