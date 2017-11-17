@@ -37,7 +37,7 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 | 17 (3.3v)                     |            |               |   |   x           | `RPi_IO24` |    (GPIO_GEN5, **GPIO24**) 18 |
 | 19 (**GPIO10**, SPI_MOSI)     | `RPi_MOSI` |  `AT_MOSI`    |   |               |            |                      (GND) 20 |
 | 21 (**GPIO09**, SPI_MISO)     | `RPi_MISO` |  `AT_MISO`    |   |   x           | `RPi_IO25` |    (GPIO_GEN6, **GPIO25**) 22 |
-| 23 (**GPIO11**, SPI_CLK)      | `RPi_SCK`  |  `AT_SCK`     |   |   x           | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
+| 23 (**GPIO11**, SPI_CLK)      | `RPi_SCK`  |  `AT_SCK`     |   | `AT_RESET`    | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
 | 25 (GND)                      |            |               |   |   x           | `RPi_IO7`  |    (SPI_CE1_N, **GPIO07**) 26 |
 | 27 (**ID_SD**, I2C ID EEPROM) |            |  x            |   |   x           |            | (I2C ID EEPROM, **ID_SC**) 28 |
 | 29 (**GPIO05**)               | `RPi_IO5`  |  x            |   |               |            |                      (GND) 30 |
@@ -82,7 +82,7 @@ To add (in the `x`):
 | 07 (**PB4**, XTAL1, ...)      |            |               |   |               |            |             (ADC3, ICP0, **PA4**) 14 |
 | 08 (**PB5**, XTAL2, ...)      |            |               |   |  `P4_POT_1`   | `AT_ADC4`  |             (ADC4, AIN2, **PA5**) 13 |
 | 09 (**PB6**  ADC9, T0, ...)   |            |               |   |  `P4_POT_1`   | `AT_ADC5`  |             (ADC5, AIN0, **PA6**) 12 |
-| 10 (**PB7**, RESET, ...)      | `AT_RESET` | `RPi_`        |   |  `P4_POT_1`   | `AT_ADC6`  |             (ADC6, AIN1, **PA7**) 11 |
+| 10 (**PB7**, RESET, ...)      | `AT_RESET` | `RPi_IO8`     |   |  `P4_POT_1`   | `AT_ADC6`  |             (ADC6, AIN1, **PA7**) 11 |
 
 
 For debug purpose only, a simple LED is connected to `AT_PB3`.
