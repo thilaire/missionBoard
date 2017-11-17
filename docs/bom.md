@@ -14,7 +14,7 @@ From the [functionalities](functionalities.md), we can deduce the bill of materi
 
 ### (micro) computers
 - 1 raspberry pi (I have Pi3, but Pi2 should be ok. Pi Zero is ok, but cannot be used in game mode IMHO)
-- 1 micro-controllers for the WS812b-like leds (arduino or maybe a pic... not yet decided)
+- 1 micro-controllers for the WS812b-like leds: I choose an AVR ATtiny861V (because I had it in stock). See [this](ATtiny.md) to understand why this one, and how I program it directly with the Raspberry Pi.
 
 ### switchs/buttons
 - 10 2-position switches (laser, automatic pilot, lights (x2), electricity (x3), turbo (x2), computer)

@@ -29,7 +29,7 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 | 01 (3.3v)                     |            |               |   |               |            |                       (5v) 02 |
 | 03 (**GPIO02**, SDA1, I2C)    | `RPi_IO2`  |  x            |   |               |            |                       (5v) 04 |
 | 05 (**GPIO03**, SCL1, I2C)    | `RPi_IO3`  |  x            |   |               |            |                      (GND) 06 |
-| 07 (**GPIO04**, GPIO_GCLK)    | `RPi_IO4`  |  `AT_RESET`   |   |   x           | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
+| 07 (**GPIO04**, GPIO_GCLK)    | `RPi_IO4`  |               |   |   x           | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
 | 09 (GND)                      |            |               |   |   x           | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
 | 11 (**GPIO17**, GPIO_GEN0)    | `RPi_IO17` |  x            |   |   x           | `RPi_IO18` |    (GPIO_GEN1, **GPIO18**) 12 |
 | 13 (**GPIO27**, GPIO_GEN2)    | `RPi_IO27` |  x            |   |               |            |                      (GND) 14 |
@@ -76,16 +76,16 @@ To add (in the `x`):
 | 01 (**PB0**, MOSI, SDA, ...)  | `AT_MOSI`  | `RPi_MOSI`    |   |               |            |              (ADC0, SDA, **PA0**) 20 |
 | 02 (**PB1**, MISO, DO, ...)   | `AT_MISO`  | `RPi_MISO`    |   |               |            |               (ADC1, DO, **PA1**) 19 |
 | 03 (**PB2**, SCK, SCL, ...)   | `AT_SCK`   | `RPi_SCK`     |   |               |            |              (ADC2, SCL, **PA2**) 18 |
-| 04 (**PB3**, OC1B, ...)       | `AT_PB3`   | `AT_LED`      |   |               |            |                   (AREF, **PA3**) 17 |
+| 04 (**PB3**, OC1B, ...)       |            |               |   |               |            |                   (AREF, **PA3**) 17 |
 | 05 (VCC)                      |            |     +5V       |   |     GND       |            |                            (AGND) 16 |
 | 06 (GND)                      |            |     GND       |   |     +5V       |            |                            (AVCC) 15 |
 | 07 (**PB4**, XTAL1, ...)      |            |               |   |               |            |             (ADC3, ICP0, **PA4**) 14 |
 | 08 (**PB5**, XTAL2, ...)      |            |               |   |  `P4_POT_1`   | `AT_ADC4`  |             (ADC4, AIN2, **PA5**) 13 |
-| 09 (**PB6**  ADC9, T0, ...)   |            |               |   |  `P4_POT_1`   | `AT_ADC5`  |             (ADC5, AIN0, **PA6**) 12 |
+| 09 (**PB6**  ADC9, T0, ...)   | `AT_PB6`   | `AT_LED`      |   |  `P4_POT_1`   | `AT_ADC5`  |             (ADC5, AIN0, **PA6**) 12 |
 | 10 (**PB7**, RESET, ...)      | `AT_RESET` | `RPi_IO8`     |   |  `P4_POT_1`   | `AT_ADC6`  |             (ADC6, AIN1, **PA7**) 11 |
 
 
-For debug purpose only, a simple LED is connected to `AT_PB3`.
+For debug purpose only, a simple LED is connected to `AT_PB6`.
 
 
 ## TM1638 boards
