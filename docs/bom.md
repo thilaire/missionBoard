@@ -22,7 +22,7 @@ From the [functionalities](functionalities.md), we can deduce the bill of materi
 - 8 push buttons with led (brake, parachute, landing gear, laser, engines x2, unhook spaceship)
 - 1 big red push button with led (go button)
 - 1 on/off switch with key (start)
-- 2 3-position switches (start mode, flight mode)
+- 2 rotary switch band selector, 4 Poles 3 Positions (start mode, flight mode)
 - 4 rocket-switch (takeoff phases x3, laser)
 - joystick
 
