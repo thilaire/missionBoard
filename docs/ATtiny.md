@@ -112,4 +112,11 @@ avrdude done.  Thank you.
 ```
 (I had to check with another IO conf to be sure that it was working because I couldn't believe it worked on the 1st attempt !)
 
-4. write the code, compile it and send it with `avrdude` to the ATtiny !!    
+4. Configure the fuses of the ATTiny
+(in my case, I want to use the 8MHz intern oscillator, without scaling, so the fuses are `0xE2DFFF`)
+Go to [http://www.engbedded.com/fusecalc/](http://www.engbedded.com/fusecalc/) (or equivalent) to compute your fuses, and use `avrdude`:
+```Shell
+avrdude -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m 
+```
+
+5. write the code, compile it and send it with `avrdude` to the ATtiny !!    

@@ -27,24 +27,24 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 | RPi Pin number                | Name       | Connected to  |   | Connected to  | Name       | RPi Pin number                |
 |:------------------------------|:----------:|:-------------:|:-:|:-------------:|:----------:|------------------------------:|
 | 01 (3.3v)                     |            |               |   |               |            |                       (5v) 02 |
-| 03 (**GPIO02**, SDA1, I2C)    | `RPi_IO2`  |  x            |   |               |            |                       (5v) 04 |
-| 05 (**GPIO03**, SCL1, I2C)    | `RPi_IO3`  |  x            |   |               |            |                      (GND) 06 |
-| 07 (**GPIO04**, GPIO_GCLK)    | `RPi_IO4`  |               |   |   x           | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
-| 09 (GND)                      |            |               |   |   x           | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
-| 11 (**GPIO17**, GPIO_GEN0)    | `RPi_IO17` |  x            |   |   x           | `RPi_IO18` |    (GPIO_GEN1, **GPIO18**) 12 |
-| 13 (**GPIO27**, GPIO_GEN2)    | `RPi_IO27` |  x            |   |               |            |                      (GND) 14 |
-| 15 (**GPIO22**, GPIO_GEN3)    | `RPi_IO22` |  x            |   |   x           | `RPi_IO23` |    (GPIO_GEN4, **GPIO23**) 16 |
+| 03 (**GPIO02**, SDA1, I2C)    | `RPi_IO2`  | `P8_PB_`      |   |               |            |                       (5v) 04 |
+| 05 (**GPIO03**, SCL1, I2C)    | `RPi_IO3`  | `P8_PB_`      |   |               |            |                      (GND) 06 |
+| 07 (**GPIO04**, GPIO_GCLK)    | `RPi_IO4`  | `P8_PB_`      |   | `P8_PB_`      | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
+| 09 (GND)                      |            |               |   | `P8_PB_`      | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
+| 11 (**GPIO17**, GPIO_GEN0)    | `RPi_IO17` | `P8_PB_`      |   | `P8_PB_`      | `RPi_IO18` |    (GPIO_GEN1, **GPIO18**) 12 |
+| 13 (**GPIO27**, GPIO_GEN2)    | `RPi_IO27` | `P8_PB_`      |   |               |            |                      (GND) 14 |
+| 15 (**GPIO22**, GPIO_GEN3)    | `RPi_IO22` | `P8_PB_`      |   |   x           | `RPi_IO23` |    (GPIO_GEN4, **GPIO23**) 16 |
 | 17 (3.3v)                     |            |               |   |   x           | `RPi_IO24` |    (GPIO_GEN5, **GPIO24**) 18 |
 | 19 (**GPIO10**, SPI_MOSI)     | `RPi_MOSI` |  `AT_MOSI`    |   |               |            |                      (GND) 20 |
 | 21 (**GPIO09**, SPI_MISO)     | `RPi_MISO` |  `AT_MISO`    |   |   x           | `RPi_IO25` |    (GPIO_GEN6, **GPIO25**) 22 |
 | 23 (**GPIO11**, SPI_CLK)      | `RPi_SCK`  |  `AT_SCK`     |   | `AT_RESET`    | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
-| 25 (GND)                      |            |               |   |   x           | `RPi_IO7`  |    (SPI_CE1_N, **GPIO07**) 26 |
-| 27 (**ID_SD**, I2C ID EEPROM) |            |  x            |   |   x           |            | (I2C ID EEPROM, **ID_SC**) 28 |
-| 29 (**GPIO05**)               | `RPi_IO5`  |  x            |   |               |            |                      (GND) 30 |
-| 31 (**GPIO06**)               | `RPi_IO6`  |  x            |   |   x           | `RPi_IO12` |               (**GPIO12**) 32 |
-| 33 (**GPIO13**)               | `RPi_IO13` | `TM3_STB`     |   |               |            |                      (GND) 34 |
-| 35 (**GPIO19**)               | `RPi_IO19` | `TM1_STB`     |   | `TM2_STB`     | `RPi_IO16` |               (**GPIO16**) 36 |
-| 37 (**GPIO26**)               | `RPi_IO26` |  x            |   | `TM_CLK`      | `RPi_IO20` |               (**GPIO20**) 38 |
+| 25 (GND)                      |            |               |   | `P7_JOY_`     | `RPi_IO7`  |    (SPI_CE1_N, **GPIO07**) 26 |
+| 27 (**ID_SD**, I2C ID EEPROM) |            |               |   |               |            | (I2C ID EEPROM, **ID_SC**) 28 |
+| 29 (**GPIO05**)               | `RPi_IO5`  | `P7_JOY_`     |   |               |            |                      (GND) 30 |
+| 31 (**GPIO06**)               | `RPi_IO6`  | `P7_JOY_`     |   | `P7_JOY_`     | `RPi_IO12` |               (**GPIO12**) 32 |
+| 33 (**GPIO13**)               | `RPi_IO13` | `TM3_STB`??   |   |               |            |                      (GND) 34 |
+| 35 (**GPIO19**)               | `RPi_IO19` | `TM1_STB`     |   | `TM2_STB`??   | `RPi_IO16` |               (**GPIO16**) 36 |
+| 37 (**GPIO26**)               | `RPi_IO26` |  ???          |   | `TM_CLK`      | `RPi_IO20` |               (**GPIO20**) 38 |
 | 39 (GND)                      |            |               |   | `TM_DIO`      | `RPi_IO21` |               (**GPIO21**) 40 |
 
 To add (in the `x`):
