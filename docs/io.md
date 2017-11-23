@@ -74,15 +74,15 @@ To add (in the `x`):
 | ATtiny861V Pin number         | Name       | Connected to  |   | Connected to  | Name       | ATtiny861V Pin number                |
 |:------------------------------|:----------:|:-------------:|:-:|:-------------:|:----------:|-------------------------------------:|
 | 01 (**PB0**, MOSI, SDA, ...)  | `AT_MOSI`  | `RPi_MOSI`    |   |               |            |              (ADC0, SDA, **PA0**) 20 |
-| 02 (**PB1**, MISO, DO, ...)   | `AT_MISO`  | `RPi_MISO`    |   |               |            |               (ADC1, DO, **PA1**) 19 |
+| 02 (**PB1**, MISO, DO, ...)   | `AT_MISO`  | `RPi_MISO`    |   | `P2_RGB_DIN`  | `AT_PA1`   |               (ADC1, DO, **PA1**) 19 |
 | 03 (**PB2**, SCK, SCL, ...)   | `AT_SCK`   | `RPi_SCK`     |   |               |            |              (ADC2, SCL, **PA2**) 18 |
 | 04 (**PB3**, OC1B, ...)       |            |               |   |               |            |                   (AREF, **PA3**) 17 |
 | 05 (VCC)                      |            |     +5V       |   |     GND       |            |                            (AGND) 16 |
 | 06 (GND)                      |            |     GND       |   |     +5V       |            |                            (AVCC) 15 |
 | 07 (**PB4**, XTAL1, ...)      |            |               |   |               |            |             (ADC3, ICP0, **PA4**) 14 |
-| 08 (**PB5**, XTAL2, ...)      |            |               |   |  `P4_POT_1`   | `AT_ADC4`  |             (ADC4, AIN2, **PA5**) 13 |
+| 08 (**PB5**, XTAL2, ...)      |            |               |   |  `P4_POT_2`   | `AT_ADC4`  |             (ADC4, AIN2, **PA5**) 13 |
 | 09 (**PB6**  ADC9, T0, ...)   | `AT_PB6`   | `AT_LED`      |   |  `P4_POT_1`   | `AT_ADC5`  |             (ADC5, AIN0, **PA6**) 12 |
-| 10 (**PB7**, RESET, ...)      | `AT_RESET` | `RPi_IO8`     |   |  `P4_POT_1`   | `AT_ADC6`  |             (ADC6, AIN1, **PA7**) 11 |
+| 10 (**PB7**, RESET, ...)      | `AT_RESET` | `RPi_IO8`     |   |  `P4_POT_0`   | `AT_ADC6`  |             (ADC6, AIN1, **PA7**) 11 |
 
 
 For debug purpose only, a simple LED is connected to `AT_PB6`.
@@ -119,28 +119,28 @@ The four TM1638s are chained (to save some GPIO), so it means they share the sam
 
 ### Inputs
 
-#### #1 TM Board
+#### TM Board #1
 | Input Line | Input   | Connected to |
 |:----------:|:-------:|:------------:|
-| 1          | 1       |              |
-| 1          | 2       |              |
-| 1          | 3       |              |
-| 1          | 4       |              |
-| 1          | 5       |              |
-| 1          | 6       |              |
-| 1          | 7       |              |
+| 1          | 1       | `P9_SW3:1`   |
+| 1          | 2       | `P9_SW3:2`   |
+| 1          | 3       | `P5_SW2`     |
+| 1          | 4       | `P5_SW3:1`   |
+| 1          | 5       | `P5_SW3:2`   |
+| 1          | 6       | `P1_SW3:1`   |
+| 1          | 7       | `P1_SW3:2`   |
 | 1          | 8       |              |
-| 2          | 1       |              |
-| 2          | 2       |              |
-| 2          | 3       |              |
-| 2          | 4       |              |
-| 2          | 5       |              |
+| 2          | 1       |  `P3_SW2_0`  |
+| 2          | 2       |  `P3_SW2_1`  |
+| 2          | 3       |  `P6_SW2_0`  |
+| 2          | 4       |  `P6_SW2_1`  |
+| 2          | 5       |  `P6_SW2_2`  |
 | 2          | 6       |              |
 | 2          | 7       |              |
 | 2          | 8       |              |
 
 
-#### #2 TM Board
+#### TM Board #2
 All the inputs use the input line #1 (denoted `K1` in the datasheet)
 
 | Input   | Connected to |

@@ -116,7 +116,26 @@ avrdude done.  Thank you.
 (in my case, I want to use the 8MHz intern oscillator, without scaling, so the fuses are `0xE2DFFF`)
 Go to [http://www.engbedded.com/fusecalc/](http://www.engbedded.com/fusecalc/) (or equivalent) to compute your fuses, and use `avrdude`:
 ```Shell
-avrdude -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m 
+avrdude -c linuxgpio -p attiny861 -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m 
 ```
 
-5. write the code, compile it and send it with `avrdude` to the ATtiny !!    
+Eventually, if you have the error 
+```
+Can't export GPIO 8, already exported/busy?: Device or resource busy
+avrdude done.  Thank you.
+```
+You can add 8 in the file `/sys/class/gpio/unexport` with:
+```shell
+echo 8 > /sys/class/gpio/unexport
+```
+
+
+5. write the code, compile it and send it with `avrdude` to the ATtiny !!
+
+```
+avr-gcc -c -mmcu=attiny861 toto.c -DF_CPU=8000000UL -Os
+avr-gcc -mmcu=attiny861 -o toto.elf toto.o
+avr-objcopy -j .text -j .data -O ihex toto.elf toto.hex
+```
+
+(there is a dedicated Makefile for this)
