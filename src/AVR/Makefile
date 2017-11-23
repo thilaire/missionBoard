@@ -16,24 +16,25 @@ OUT = MB-AVR
 SRC = light_ws2812.c MB-AVR.c
 OBJ = $(SRC:.c=.o)
 
+all: $(OUT).hex
 
 # Compile the C files
 light_ws2812.o: light_ws2812.h ws2812_config.h
 %.o: %.c
-    $(CC) $(CCFLAGS) $(OPTIM) -mmcu=$(DEVICE) -DF_CPU=$(FREQ) -o $@ -c $<
+	$(CC) $(CCFLAGS) $(OPTIM) -mmcu=$(DEVICE) -DF_CPU=$(FREQ) -o $@ -c $<
 
 # Link them
 $(OUT).elf: $(OBJ)
-    $(CC) -mmcu=$(DEVICE) -o $@ $^
+	$(CC) -mmcu=$(DEVICE) -o $@ $^
 
 # Generate the hex
 $(OUT).hex: $(OUT).elf
-    $(OBJCPY) -j .text -j .data -O ihex $@ $<
+	$(OBJCPY) -j .text -j .data -O ihex $< $@
 
 # Flash the AVR (with avrdude)
 program: $(OUT).hex
-    scp $< $(HOST):.
-    ssh -t $(HOST) sudo avrdude -c linuxgpio -p $(DEVICE) -U flash:w:$< -v
+	scp $< $(HOST):.
+	ssh -t $(HOST) sudo avrdude -c linuxgpio -p $(DEVICE) -U flash:w:$< -v
 
 
 # Clen the mess

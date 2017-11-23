@@ -12,7 +12,7 @@
 #include <avr/interrupt.h>
 #include "light_ws2812.h"
 
-struct cRGB leds[12];
+struct cRGB leds[20];
 struct cRGB colors[8];
 int main(void)
 {
@@ -31,7 +31,7 @@ int main(void)
   while(1)
   {
 
-    for(i=0; i<12; i++)
+    for(i=0; i<20; i++)
     {
         /*leds[i].r = 0;
         leds[i].g = 0;
@@ -40,7 +40,7 @@ int main(void)
     }
     delta++;
 
-    ws2812_setleds(leds,12);
+    ws2812_setleds(leds,20);
     _delay_ms(500);                         // wait for 500ms.
 
   }
