@@ -138,4 +138,4 @@ avr-gcc -mmcu=attiny861 -o toto.elf toto.o
 avr-objcopy -j .text -j .data -O ihex toto.elf toto.hex
 ```
 
-(there is a dedicated Makefile for this)
+(there is a dedicated `Makefile` for this in the `src/AVR/` folder)

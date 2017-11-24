@@ -9,7 +9,7 @@ From the [functionalities](functionalities.md), we can deduce the bill of materi
 - 4 Bargraphs (for the oxygen, rocket fuel and spaceship levels)
 - 7 blocks of four 7-segment displays  (2 for the countdown, speed, position, altitude, pitch and roll)
 - some leds (start (green), manual command (green), lights (green x2), electricity (green x2), turbo (blue x2))
-- 20 multicolor (RGB) leds (1 per push button + leds in panel display (oxygen, doors x2, electricity, automatic pilot, alarm, takeoff, orbit, landing, overspeed)
+- 20 multicolor (RGB) leds (1 per push button + leds in panel display (oxygen, doors x2, electricity, automatic pilot, alarm, takeoff, orbit, landing, overspeed). See [this](APA106.md) for details.
 - 4 10k\omega potentiometers (one online for the engine power, and 3 rotary for the audio, pitch and roll)
 
 ### (micro) computers
@@ -36,7 +36,7 @@ From the [functionalities](functionalities.md), we can deduce the bill of materi
 
 # What I bought (and where)
 
-I do not specially recommand these shops, the links are here to give you full description of what I bought.
+I do not specially recommand these shops, the links are just here to give you full description of what I bought.
 
 - a 7-inch touch screen LCD (7-inch 800x480 HDMI LCD (B) from [waveshare](https://www.waveshare.com/wiki/7inch_HDMI_LCD_(B))): 52€ at [amazon](https://www.amazon.fr/gp/product/B01HPV6RUS/ref=oh_aui_detailpage_o07_s00)
 - 5 rocket switches: [9.66€ for 5 of them](http://www.priceminister.com/offer/buy/1740523176/5pcs-dc-12v-20a-cover-led-light-rocker-toggle-switch-spst-on-off-car-truck-bi582.html)
