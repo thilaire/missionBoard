@@ -41,10 +41,10 @@ MB.add('P4_LED', 'manual', TMindex=0, index=0)
 #MB.addSwitch2(['P6_SW2_3', 'phase3'], TMindex=1, line=1, pin=14)
 
 # Panel 7: Joystick
-#MB.addPushButton(['P6_JOY_UP', 'up'], IO=12)
-#MB.addPushButton(['P6_JOY_DOWN', 'down'], IO=13)
-#MB.addPushButton(['P6_JOY_LEFT', 'left'], IO=12)
-#MB.addPushButton(['P6_JOY_RIGHT', 'right'], IO=13)
+MB.add('P6_JOY_UP', 'up', gpio=5)     #TODO: check the gpios!! !!
+MB.add('P6_JOY_DOWN', 'down', gpio=6)
+MB.add('P6_JOY_LEFT', 'left', gpio=7)
+MB.add('P6_JOY_RIGHT', 'right', gpio=12)
 
 # Panel 8: commands
 #MB.addPushButton(['P8_PB_0', 'rocketEngine'], IO=12)

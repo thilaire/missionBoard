@@ -6,10 +6,11 @@ from re import compile
 from Element import Element
 from LED import LED
 from SSD import SSD
+from PushButton import PB
 
 
 # list of required arguments (used to check)
-dictOfElements = {'LED': LED, 'SSD': SSD}   # TODO: no need, use subclass !!{ x.__name__:x for x in Element.__subclasses__()}
+dictOfElements = {'LED': LED, 'SSD': SSD, 'PB': PB}   # TODO: no need, use subclass !!{ x.__name__:x for x in Element.__subclasses__()}
 
 # simple regex for Pxx_YYY_zzz or Pxx_YYY
 regElement = compile("P(\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
