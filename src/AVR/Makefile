@@ -1,7 +1,7 @@
 # Compilation options
 CC = avr-gcc
 OBJCPY = avr-objcopy
-CCFLAGS = -Wall
+CCFLAGS = -Wall -DDEBUG
 OPTIM = -Os
 
 # about the AVR
