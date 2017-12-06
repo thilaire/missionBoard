@@ -6,6 +6,7 @@ Define the different callbacks
 """
 
 from MissionBoard import MissionBoard
+import RPi.GPIO as GPIO
 
 # create the main object
 MB = MissionBoard(TM_clk=20, TM_dio=21, TM_stb=19, brightness=2)
@@ -41,10 +42,10 @@ MB.add('P4_LED', 'manual', TMindex=0, index=0)
 #MB.addSwitch2(['P6_SW2_3', 'phase3'], TMindex=1, line=1, pin=14)
 
 # Panel 7: Joystick
-MB.add('P6_JOY_UP', 'up', gpio=5)     #TODO: check the gpios!! !!
-MB.add('P6_JOY_DOWN', 'down', gpio=6)
-MB.add('P6_JOY_LEFT', 'left', gpio=7)
-MB.add('P6_JOY_RIGHT', 'right', gpio=12)
+#MB.add('P6_PB_UP', 'up', gpio=5)     #TODO: check the gpios!! !!
+#MB.add('P6_PB_DOWN', 'down', gpio=6)
+#MB.add('P6_PB_LEFT', 'left', gpio=7)
+#MB.add('P6_PB_RIGHT', 'right', gpio=12)
 
 # Panel 8: commands
 #MB.addPushButton(['P8_PB_0', 'rocketEngine'], IO=12)
@@ -71,7 +72,5 @@ MB.manual = True
 
 
 
-
 # run tests!
-
-MB.runCheck()
+#MB.runCheck()

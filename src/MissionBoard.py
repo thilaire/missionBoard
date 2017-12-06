@@ -6,11 +6,11 @@ from re import compile
 from Element import Element
 from LED import LED
 from SSD import SSD
-from PushButton import PB
+#from PushButton import PB
 
 
 # list of required arguments (used to check)
-dictOfElements = {'LED': LED, 'SSD': SSD, 'PB': PB}   # TODO: no need, use subclass !!{ x.__name__:x for x in Element.__subclasses__()}
+dictOfElements = {'LED': LED, 'SSD': SSD}   # TODO: no need, use subclass !!{ x.__name__:x for x in Element.__subclasses__()}
 
 # simple regex for Pxx_YYY_zzz or Pxx_YYY
 regElement = compile("P(\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
@@ -21,9 +21,9 @@ class MissionBoard:
 	Main object (contains interfaces to buttons, displays, callbacks, etc.)
 	"""
 
-	def __init__(self, TM_clk, TM_dio, TM_stb):
+	def __init__(self, TM_clk, TM_dio, TM_stb, brightness):
 		# initialize the TMboards
-		self._TMB = TMBoards(TM_dio, TM_clk, TM_stb)    # chained TM Boards
+		self._TMB = TMBoards(dio=TM_dio, clk=TM_clk, stb=TM_stb, brightness=brightness)    # chained TM Boards
 		# initialize the TMB for all the elements
 		Element.setTMB(self._TMB)
 
