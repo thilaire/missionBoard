@@ -1,11 +1,11 @@
 # Compilation options
 CC = avr-gcc
 OBJCPY = avr-objcopy
-CCFLAGS = -Wall -DDEBUG
+CCFLAGS = -Wall
 OPTIM = -Os
 
 # about the AVR
-DEVICE = attiny861
+DEVICE = attiny88
 FREQ = 8000000UL
 
 # and the Raspberry Pi that program the AVR

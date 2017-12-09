@@ -1,11 +1,12 @@
 # Input/Output
 
-All the switches, LEDs, buttons are connected directly to the Raspberry Pi, the AVR micro-controller or through the [TM1638](TM1638.md) boards.
+All the switches, LEDs, buttons are connected directly to the Raspberry Pi, the [AVR](ATtiny.md) micro-controller or through the [TM1638](TM1638.md) and [TM1637](TM1637.md)boards.
+More precisely, the push-buttons are connected to the Raspberry Pi, the switches and the potentiometer to the the AVR. All the displays (TM1638 and TM1637) are driven by the AVR. 
 
 ## Signal naming convention
 
 The following tables regroup all the IO connectiviy. I have choose to name signals as following `xxx_yyyzz` where:
-- `xxx` is the board name or panel number, like `RPi`, `TM1` or `P9` (`P` for *panel*)
+- `xxx` is the board name or panel number, like `RPi` (raspberry Pi), `8TM` (TM1638), `7TM` (TM1637) or `P9` (`P` for *panel*)
 - `yyy` is the button/signal/io name (like `GPIO12` or `LED`)
 - `zz` is the number (may be empty if not necessary)
 
@@ -30,27 +31,24 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 | 03 (**GPIO02**, SDA1, I2C)    | `RPi_IO2`  | In  | `P8_PB_`      |   |               |     |            |                       (5v) 04 |
 | 05 (**GPIO03**, SCL1, I2C)    | `RPi_IO3`  | In  | `P8_PB_`      |   |               |     |            |                      (GND) 06 |
 | 07 (**GPIO04**, GPIO_GCLK)    | `RPi_IO4`  | In  | `P8_PB_`      |   | `P8_PB_`      | In  | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
-| 09 (GND)                      |            |     |               |   |               |     | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
+| 09 (GND)                      |            |     |               |   |   x           |     | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
 | 11 (**GPIO17**, GPIO_GEN0)    | `RPi_IO17` | In  | `P8_PB_`      |   | `P8_PB_`      | In  | `RPi_IO18` |    (GPIO_GEN1, **GPIO18**) 12 |
 | 13 (**GPIO27**, GPIO_GEN2)    | `RPi_IO27` | In  | `P8_PB_`      |   |               |     |            |                      (GND) 14 |
-| 15 (**GPIO22**, GPIO_GEN3)    | `RPi_IO22` | In  | `P8_PB_`      |   |   x           | In  | `RPi_IO23` |    (GPIO_GEN4, **GPIO23**) 16 |
-| 17 (3.3v)                     |            |     |               |   |   x           | In  | `RPi_IO24` |    (GPIO_GEN5, **GPIO24**) 18 |
-| 19 (**GPIO10**, SPI_MOSI)     | `RPi_MOSI` | Out |  `AT_MOSI`    |   |               |     |            |                      (GND) 20 |
-| 21 (**GPIO09**, SPI_MISO)     | `RPi_MISO` | In  |  `AT_MISO`    |   |   x           | In  | `RPi_IO25` |    (GPIO_GEN6, **GPIO25**) 22 |
-| 23 (**GPIO11**, SPI_CLK)      | `RPi_SCK`  | Out |  `AT_SCK`     |   | `AT_RESET`    | Out | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
+| 15 (**GPIO22**, GPIO_GEN3)    | `RPi_IO22` | In  | `P8_PB_`      |   |   x           |     | `RPi_IO23` |    (GPIO_GEN4, **GPIO23**) 16 |
+| 17 (3.3v)                     |            |     |               |   |   x           |     | `RPi_IO24` |    (GPIO_GEN5, **GPIO24**) 18 |
+| 19 (**GPIO10**, SPI_MOSI)     | `RPi_MOSI` | Out | `AT_MOSI`     |   |               |     |            |                      (GND) 20 |
+| 21 (**GPIO09**, SPI_MISO)     | `RPi_MISO` | In  | `AT_MISO`     |   | `AT_RESET`    | Out | `RPi_IO25` |    (GPIO_GEN6, **GPIO25**) 22 |
+| 23 (**GPIO11**, SPI_CLK)      | `RPi_SCK`  | Out | `AT_SCK`      |   | `AT_SS`       | Out | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
 | 25 (GND)                      |            |     |               |   | `P7_JOY_`     | In  | `RPi_IO7`  |    (SPI_CE1_N, **GPIO07**) 26 |
 | 27 (**ID_SD**, I2C ID EEPROM) |            |     |               |   |               |     |            | (I2C ID EEPROM, **ID_SC**) 28 |
 | 29 (**GPIO05**)               | `RPi_IO5`  | In  | `P7_JOY_`     |   |               |     |            |                      (GND) 30 |
 | 31 (**GPIO06**)               | `RPi_IO6`  | In  | `P7_JOY_`     |   | `P7_JOY_`     | In  | `RPi_IO12` |               (**GPIO12**) 32 |
-| 33 (**GPIO13**)               | `RPi_IO13` | In  | `TM3_STB`??   |   |               |     |            |                      (GND) 34 |
-| 35 (**GPIO19**)               | `RPi_IO19` | In  | `TM1_STB`     |   | `TM2_STB`??   | Out | `RPi_IO16` |               (**GPIO16**) 36 |
-| 37 (**GPIO26**)               | `RPi_IO26` | In  |  ???          |   | `TM_CLK`      | Out | `RPi_IO20` |               (**GPIO20**) 38 |
-| 39 (GND)                      |            |     |               |   | `TM_DIO`      | I/O | `RPi_IO21` |               (**GPIO21**) 40 |
+| 33 (**GPIO13**)               | `RPi_IO13` |     |               |   |               |     |            |                      (GND) 34 |
+| 35 (**GPIO19**)               | `RPi_IO19` |     |   x           |   |   x           |     | `RPi_IO16` |               (**GPIO16**) 36 |
+| 37 (**GPIO26**)               | `RPi_IO26` |     |   x           |   |   x           |     | `RPi_IO20` |               (**GPIO20**) 38 |
+| 39 (GND)                      |            |     |   x           |   |   x           |     | `RPi_IO21` |               (**GPIO21**) 40 |
 
-To add (in the `x`):
-- 4 Inputs for the Joystick
-- 9 Inputs for the push-buttons
-- 5 Inputs for the TMs (at least 3)
+x: still available
 
 *[Here](datasheet/RPi3-GPIO.png) is the official Raspberry GPIO table*
 
@@ -71,40 +69,55 @@ To add (in the `x`):
 ## ATtiny
 
 
-| ATtiny861V Pin number         | Name       | IO  | Connected to  |   | Connected to  | IO  | Name       | ATtiny861V Pin number                |
-|:------------------------------|:----------:|:---:|:-------------:|:-:|:-------------:|:---:|:----------:|-------------------------------------:|
-| 01 (**PB0**, MOSI, SDA, ...)  | `AT_MOSI`  | In  | `RPi_MOSI`    |   |               |     |            |              (ADC0, SDA, **PA0**) 20 |
-| 02 (**PB1**, MISO, DO, ...)   | `AT_MISO`  | Out | `RPi_MISO`    |   | `P2_RGB_DIN`  | Out | `AT_PA1`   |               (ADC1, DO, **PA1**) 19 |
-| 03 (**PB2**, SCK, SCL, ...)   | `AT_SCK`   | In  | `RPi_SCK`     |   | `P8_LED`      | Out | `AT_PA2`   |              (ADC2, SCL, **PA2**) 18 |
-| 04 (**PB3**, OC1B, ...)       |            |     |               |   |               |     |            |                   (AREF, **PA3**) 17 |
-| 05 (VCC)                      |            |     |     +5V       |   |     GND       |     |            |                            (AGND) 16 |
-| 06 (GND)                      |            |     |     GND       |   |     +5V       |     |            |                            (AVCC) 15 |
-| 07 (**PB4**, XTAL1, ...)      |            |     |               |   |               |     |            |             (ADC3, ICP0, **PA4**) 14 |
-| 08 (**PB5**, XTAL2, ...)      |            |     |               |   |  `P4_POT_2`   | In  | `AT_ADC4`  |             (ADC4, AIN2, **PA5**) 13 |
-| 09 (**PB6**  ADC9, T0, ...)   | `AT_PB6`   | Out | `AT_LED`      |   |  `P4_POT_1`   | In  | `AT_ADC5`  |             (ADC5, AIN0, **PA6**) 12 |
-| 10 (**PB7**, RESET, ...)      | `AT_RESET` | In  | `RPi_IO8`     |   |  `P4_POT_0`   | In  | `AT_ADC6`  |             (ADC6, AIN1, **PA7**) 11 |
+| ATtiny88   Pin number    | Name       | IO  | Connected to   |   | Connected to  | IO  | Name       |  ATtiny88   Pin number    |
+|:-------------------------|:----------:|:---:|:--------------:|:-:|:-------------:|:---:|:----------:|--------------------------:|
+| 01 (**PC6**, RESET)      | `AT_RESET` | In  | `RPi_IO25`     |   | `7TM3_CLK`    | Out | `AT_PC5`   |   (ADC5, SCL, **PC5**) 28 |
+| 02 (**PD0**)             | `AT_PD0`   | In  |  I_KB0         |   | `7TM2_CLK`    | Out | `AT_PC4`   |   (ADC4, SDA, **PC4**) 27 |
+| 03 (**PD1**)             | `AT_PD1`   | In  |  I_KB1         |   | `7TM1_CLK`    | Out | `AT_PC3`   |   (ADC3, SCL, **PC3**) 26 |
+| 04 (**PD2**, INT0)       | `AT_PD2`   | In  |  I_KB2         |   | `P4_POT_2`    | In  | `AT_ADC2`  |        (ADC2, **PC2**) 25 |
+| 05 (**PD3**, INT1)       | `AT_PD3`   | In  |  I_KB3         |   | `P4_POT_1`    | In  | `AT_ADC1`  |        (ADC1, **PC1**) 24 |
+| 06 (**PD4**, T0)         | `AT_PD4`   | Out |  O_KB0         |   | `P4_POT_0`    | In  | `AT_ADC0`  |        (ADC0, **PC0**) 23 |
+| 07 (VCC)                 |            |     |     +5V        |   |     GND       |     |            |                  (GND) 22 |
+| 08 (GND)                 |            |     |     GND        |   | `AT_LED`, OKB2| Out | `AT_PC7`   |              (**PC7**) 21 |
+| 09 (**PB6**, CLKI)       | `AT_PB6`   | I/O | `8TM_DIO`      |   |     +5V       |     |            |                 (AVCC) 20 |
+| 10 (**PB7**)             | `AT_PB7`   | Out | `8TM_CLK`,O_KB3|   |  `Rpi_SCK`    | In  | `AT_SCK`   |         (SCK, **PB5**) 19 |
+| 11 (**PD5**  T1)         | `AT_PD5`   | Out | `8TM1_STB`     |   |  `Rpi_MISO`   | Out | `AT_MISO`  |        (MISO, **PB4**) 18 |
+| 12 (**PD6**, AIN0)       | `AT_PD6`   | Out | `8TM2_STB`     |   |  `Rpi_MOSI`   | In  | `AT_MOSI`  |        (MOSI, **PB3**) 17 |
+| 13 (**PD7**  AIN1)       | `AT_PD7`   | Out | `8TM3_STB`     |   |  `Rpi_CE0`    | In  | `AT_SS`    |          (SS, **PB2**) 16 |
+| 14 (**PB0**, CLK0,ICP1)  | `AT_PB0`   | Out | `7TM_DATA`     |   |  `P2_RGB`     | Out | `AT_PB1`   |        (OC1A, **PB1**) 15 |
+
                                               
 For debug purpose only, a simple LED is connected to `AT_PB6`.
+The I_KBx and O_KBy corresponds to a possible matrix 4*4 keyboard (don't know yet if I will put it or not).
 
 
-## TM1638 boards
+## TM163x boards
 
-The four TM1638s are chained (to save some GPIO), so it means they share the same clock and data I/O. Only the STB (Chip select) is different:
+### TM1638 boards
+The three TM1638s are "chained" (to save some GPIO), so it means they share the same clock (`8TM_CLK`) and data I/O (`8TM_DIO`). Only the STB (`8TM1_STB`, `8TM2_STB` and `8TM3_STB`) is different:
 - the TM Board #1 is used for the IOs of the bottom panels (toggle switch buttons, leds and counter)
 - TM Board #2 is used for
 - TM Board #3 is used for
-- TM Board #4 is used for
 
 
-| Pin description   | Name      | Connected to |
-|:------------------|:---------:|:------------:|
-| STB (TM board #1) | `TM1_STB` | `RPi_IO19`   |
-| STB (TM board #2) | `TM2_STB` |              |
-| STB (TM board #3) | `TM3_STB` |              |
-| STB (TM board #4) | `TM4_STB` |              |
-| STB (TM board #5) | `TM5_STB` |              |
-| CLK (Clock input) | `TM_CLK`  | `RPi_IO20`   |
-| DIO (Data I/O)    | `TM_DIO`  | `RPi_IO21`   |
+| Pin description   | Name       | Connected to |
+|:------------------|:----------:|:------------:|
+| STB (TM board #1) | `8TM1_STB` | `AT_PD5`     |
+| STB (TM board #2) | `8TM2_STB` | `AT_PD6`     |
+| STB (TM board #3) | `8TM3_STB` | `AT_PD7`     |
+| CLK (Clock input) | `8TM_CLK`  | `AT_PB7`     |
+| DIO (Data I/O)    | `8TM_DIO`  | `AT_PB6`     |
+
+
+### TM1637 boards
+The three TM1637 have common data (`7TM_DATA`), but separated clocks (`7TM1_CLK`, `7TM2_CLK`, `7TM2_CLK`).
+
+| TM Board | Pin  | Name        | Connected to |
+|:--------:|:-----|:-----------:|:------------:| 
+| #1, 2, 3 | DATA | `7TM_DATA`  | `AT_PB0`     |
+| #1       | CLK  | `7TM1_CLK`  | `AT_PC3`     |
+| #2       | CLK  | `7TM2_CLK`  | `AT_PC2`     |
+| #3       | CLK  | `7TM3_CLK`  | `AT_PC1`     |
 
 
 ### Outputs

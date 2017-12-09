@@ -1,10 +1,7 @@
 /*
-* Light_WS2812 library example - RGB_blinky
+* Author: T. HILAIRE
 *
-* cycles one LED through red, green, blue
-*
-* This example is configured for a ATtiny85 with PLL clock fuse set and
-* the WS2812 string connected to PB4.
+* Licence: GPL v3
 */
 
 #include <util/delay.h>
@@ -27,28 +24,25 @@ struct cRGB leds[NB_LEDS] = {0};
 //	USIBR = val+1;
 //}
 
-ISR (TIMER0_COMPA_vect )
-{
-	TCNT0H = 0;
-	TCNT0L = 0; /* soft CTC mode */
-
-	if (PORTB&(1<<6))
-		PORTB &= ~(1<<6);
-	else
-		PORTB |= (1<<6);
-
-}
+//ISR (TIMER0_COMPA_vect )
+//{
+//	TCNT0H = 0;
+//	TCNT0L = 0; /* soft CTC mode */
+//
+//	if (PORTB&(1<<6))
+//		PORTB &= ~(1<<6);
+//	else
+//		PORTB |= (1<<6);
+//
+//}
 
 int main(void)
 {
 
-	#ifdef DEBUG
-	leds[12].g = 255;
-	#endif
-
 	/* configure inputs/outputs */
-	DDRA = 0b00000110;       /* PA1 and PA2 are outputs */
-	DDRB = 0b01000010;       /* PB1 and PB6 are outputs */
+	DDRB = 0b11010011;       /* PB0, PB1, PB4, PB6 and PB7 are outputs */
+	DDRC = 0b10111000;       /* PC3, PC4, PC5 and PC7 are outputs */
+	DDRD = 0b11110000;      /* PD4, PD5, PD6 and PD7 are outputs */
 
 	/* configure the USI */
 	//USICR |= 0b01011000;
