@@ -91,9 +91,7 @@ For debug purpose only, a simple LED is connected to `AT_PB6`.
 The I_KBx and O_KBy corresponds to a possible matrix 4*4 keyboard (don't know yet if I will put it or not).
 
 
-## TM163x boards
-
-### TM1638 boards
+## TM1638 boards
 The three TM1638s are "chained" (to save some GPIO), so it means they share the same clock (`8TM_CLK`) and data I/O (`8TM_DIO`). Only the STB (`8TM1_STB`, `8TM2_STB` and `8TM3_STB`) is different:
 - the TM Board #1 is used for the IOs of the bottom panels (toggle switch buttons, leds and counter)
 - TM Board #2 is used for
@@ -109,15 +107,6 @@ The three TM1638s are "chained" (to save some GPIO), so it means they share the 
 | DIO (Data I/O)    | `8TM_DIO`  | `AT_PB6`     |
 
 
-### TM1637 boards
-The three TM1637 have common data (`7TM_DATA`), but separated clocks (`7TM1_CLK`, `7TM2_CLK`, `7TM2_CLK`).
-
-| TM Board | Pin  | Name        | Connected to |
-|:--------:|:-----|:-----------:|:------------:| 
-| #1, 2, 3 | DATA | `7TM_DATA`  | `AT_PB0`     |
-| #1       | CLK  | `7TM1_CLK`  | `AT_PC3`     |
-| #2       | CLK  | `7TM2_CLK`  | `AT_PC2`     |
-| #3       | CLK  | `7TM3_CLK`  | `AT_PC1`     |
 
 
 ### Outputs
@@ -165,3 +154,15 @@ All the inputs use the input line #1 (denoted `K1` in the datasheet)
 | 6       |              |
 | 7       |              |
 | 8       |              |
+
+
+## TM1637 boards
+The three TM1637 have common data (`7TM_DATA`), but separated clocks (`7TM1_CLK`, `7TM2_CLK`, `7TM2_CLK`).
+
+| TM Board | Pin  | Name        | Connected to |
+|:--------:|:-----|:-----------:|:------------:| 
+| #1, 2, 3 | DATA | `7TM_DATA`  | `AT_PB0`     |
+| #1       | CLK  | `7TM1_CLK`  | `AT_PC3`     |
+| #2       | CLK  | `7TM2_CLK`  | `AT_PC2`     |
+| #3       | CLK  | `7TM3_CLK`  | `AT_PC1`     |
+

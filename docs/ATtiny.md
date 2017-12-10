@@ -141,3 +141,24 @@ avr-objcopy -j .text -j .data -O ihex toto.elf toto.hex
 ```
 
 (there is a dedicated `Makefile` for this in the `src/AVR/` folder)
+
+
+## Polling and timing
+
+The ATtiny need to do some polling to detect some changes in the switches/potentiometers. I also want to make the RGB LEDs (and the LCD displays) blinking.
+
+For that purpose, I need to prepare some periodic tasks:
+- polling of the analog inputs (potentiometers)
+- polling to get data from the TM1638
+- polling to make the RGB LED blink
+- polling to get data from the matrix keyboard (if I add it, one day)
+- update the display (TM1637 and TM1638) if needed
+
+I need to read the inputs at leat 10 times a second (rought approximation), and each "task" take between few cycles (read the matrix keyboard or run the ADC) and less than a millisecond (pilot the RGB leds or talk with the TM). So I have decided to set a period of 15.625ms (1/64 of a second), and to count in which cycle we are (8 bit variable `ncycle`):
+- when `ncycle&3==0`: (every 62.5ms) run ADC0, read `8TM1` (1st TM1638), update `8TM1` and `7TM1` displays if necessary
+- when `ncycle&3==1`: (every 62.5ms) run ADC1, read `8TM2` (2nd TM1638), update `8TM2` and `7TM2` displays if necessary
+- when `ncycle&3==2`: (every 62.5ms) run ADC2, read `8TM3` (2nd TM1638), update `8TM3` and `7TM3` displays if necessary
+- when `ncyccle&15==3`: (every 250ms) update the RGB leds if necessary (according to blinking)
+
+## 
+
