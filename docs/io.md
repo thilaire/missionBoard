@@ -38,7 +38,7 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 | 17 (3.3v)                     |            |     |               |   |   x           |     | `RPi_IO24` |    (GPIO_GEN5, **GPIO24**) 18 |
 | 19 (**GPIO10**, SPI_MOSI)     | `RPi_MOSI` | Out | `AT_MOSI`     |   |               |     |            |                      (GND) 20 |
 | 21 (**GPIO09**, SPI_MISO)     | `RPi_MISO` | In  | `AT_MISO`     |   | `AT_RESET`    | Out | `RPi_IO25` |    (GPIO_GEN6, **GPIO25**) 22 |
-| 23 (**GPIO11**, SPI_CLK)      | `RPi_SCK`  | Out | `AT_SCK`      |   | `AT_SS`       | Out | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
+| 23 (**GPIO11**, SPI_CLK)      | `RPi_SCK`  | Out | `AT_SCK`      |   |   x (SPI?)    |  ?  | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
 | 25 (GND)                      |            |     |               |   | `P7_JOY_`     | In  | `RPi_IO7`  |    (SPI_CE1_N, **GPIO07**) 26 |
 | 27 (**ID_SD**, I2C ID EEPROM) |            |     |               |   |               |     |            | (I2C ID EEPROM, **ID_SC**) 28 |
 | 29 (**GPIO05**)               | `RPi_IO5`  | In  | `P7_JOY_`     |   |               |     |            |                      (GND) 30 |
@@ -77,18 +77,21 @@ x: still available
 | 04 (**PD2**, INT0)       | `AT_PD2`   | In  |  I_KB2         |   | `P4_POT_2`    | In  | `AT_ADC2`  |        (ADC2, **PC2**) 25 |
 | 05 (**PD3**, INT1)       | `AT_PD3`   | In  |  I_KB3         |   | `P4_POT_1`    | In  | `AT_ADC1`  |        (ADC1, **PC1**) 24 |
 | 06 (**PD4**, T0)         | `AT_PD4`   | Out |  O_KB0         |   | `P4_POT_0`    | In  | `AT_ADC0`  |        (ADC0, **PC0**) 23 |
-| 07 (VCC)                 |            |     |     +5V        |   |     GND       |     |            |                  (GND) 22 |
+| 07 (VCC)                 |            |     |    3.3V        |   |     GND       |     |            |                  (GND) 22 |
 | 08 (GND)                 |            |     |     GND        |   | `AT_LED`, OKB2| Out | `AT_PC7`   |              (**PC7**) 21 |
-| 09 (**PB6**, CLKI)       | `AT_PB6`   | I/O | `8TM_DIO`      |   |     +5V       |     |            |                 (AVCC) 20 |
+| 09 (**PB6**, CLKI)       | `AT_PB6`   | I/O | `8TM_DIO`      |   |    +3.3V      |     |            |                 (AVCC) 20 |
 | 10 (**PB7**)             | `AT_PB7`   | Out | `8TM_CLK`,O_KB3|   |  `Rpi_SCK`    | In  | `AT_SCK`   |         (SCK, **PB5**) 19 |
 | 11 (**PD5**  T1)         | `AT_PD5`   | Out | `8TM1_STB`     |   |  `Rpi_MISO`   | Out | `AT_MISO`  |        (MISO, **PB4**) 18 |
 | 12 (**PD6**, AIN0)       | `AT_PD6`   | Out | `8TM2_STB`     |   |  `Rpi_MOSI`   | In  | `AT_MOSI`  |        (MOSI, **PB3**) 17 |
-| 13 (**PD7**  AIN1)       | `AT_PD7`   | Out | `8TM3_STB`     |   |  `Rpi_CE0`    | In  | `AT_SS`    |          (SS, **PB2**) 16 |
+| 13 (**PD7**  AIN1)       | `AT_PD7`   | Out | `8TM3_STB`     |   |     GND       | In  | `AT_SS`    |          (SS, **PB2**) 16 |
 | 14 (**PB0**, CLK0,ICP1)  | `AT_PB0`   | Out | `7TM_DATA`     |   |  `P2_RGB`     | Out | `AT_PB1`   |        (OC1A, **PB1**) 15 |
 
                                               
 For debug purpose only, a simple LED is connected to `AT_PB6`.
 The I_KBx and O_KBy corresponds to a possible matrix 4*4 keyboard (don't know yet if I will put it or not).
+
+Note that the ATtiny is powered by 3.3V (and not 5V).
+There are some 100k resistor between the ATtiny and the RPi for the lines `SCK`, `MISO`, `MOSI`, `RESET` and `SS`.
 
 
 ## TM1638 boards
@@ -156,7 +159,7 @@ All the inputs use the input line #1 (denoted `K1` in the datasheet)
 | 8       |              |
 
 
-## TM1637 boards
+##x TM1637 boards
 The three TM1637 have common data (`7TM_DATA`), but separated clocks (`7TM1_CLK`, `7TM2_CLK`, `7TM2_CLK`).
 
 | TM Board | Pin  | Name        | Connected to |
