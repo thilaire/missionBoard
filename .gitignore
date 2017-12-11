@@ -233,6 +233,9 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+
+.idea/*
+
 .gitignore
 .idea/deployment.xml
 .idea/encodings.xml
