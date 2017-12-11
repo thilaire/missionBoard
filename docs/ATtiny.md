@@ -142,6 +142,13 @@ avr-objcopy -j .text -j .data -O ihex toto.elf toto.hex
 
 (there is a dedicated `Makefile` for this in the `src/AVR/` folder)
 
+6. *Warning* !
+After each use of avrdude (of the SPI bus), I need to reinitalize the SPI with
+```
+sudo rmmod spi_bcm2835
+sudo modprobe spi_bcm2835
+```
+
 
 ## Polling and timing
 

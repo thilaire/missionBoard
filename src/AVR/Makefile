@@ -32,10 +32,12 @@ $(OUT).hex: $(OUT).elf
 	$(OBJCPY) -j .text -j .data -O ihex $< $@
 
 # Flash the AVR (with avrdude)
+# (use ssh with public/private key, so as to do not have to type the password each time...)
 program: $(OUT).hex
 	scp $< $(HOST):.
 	ssh -t $(HOST) sudo avrdude -c linuxgpio -p $(DEVICE) -U flash:w:$< -v
-
+	ssh -t $(HOST) sudo rmmod spi_bcm2835
+	ssh -t $(HOST) sudo modprobe spi_bcm2835
 
 # Clen the mess
 clean:

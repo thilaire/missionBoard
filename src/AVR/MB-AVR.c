@@ -8,55 +8,48 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "light_ws2812.h"
-
-
-struct LED
-{
-	uint8_t red;
-	uint8_t green;
-	uint8_t blue;
-	uint8_t blink;
-};
-
-
+#include <string.h>
 
 /* RGB LEDS */
 #define NB_LEDS 20
 
-struct LED leds[NB_LEDS] = {0};     /* leds */
+struct cRGB LedOff = {0};
+struct cRGB leds[NB_LEDS] = {0};     /* leds */
 struct cRGB bufferLeds[NB_LEDS] = {0};  /* buffer of data to send (dedicated to light_ws2812 libray) */
+uint8_t blink[NB_LEDS]; /* blink scheme (mask+threshold) for each led */
 uint8_t hasChanged = 1;
+
 
 /* timer */
 uint8_t cycle=0;
 
 
 /* SPI */
-uint8_t SPIbuffer[5];
+uint8_t SPIcommand;
+uint8_t SPIbuffer[4];
 uint8_t SPIcycle = 0;
+
+
 
 ISR (SPI_STC_vect)                  // SPI interrupts
 {
 	PORTC |= (1U<<7);
-	SPIbuffer[ SPIcycle++ ] = SPDR;
-
+	/* copy the data in the SPI buffer (1st data in SPIcommand) */
+	if (SPIcycle)
+		SPIbuffer[ SPIcycle-1 ] = SPDR;
+	else
+		SPIcommand = SPDR;
+	SPIcycle++;
+	/* check if the end of the data transfer */
 	if (SPIcycle == 5)
 	{
 		SPIcycle = 0;
-		uint8_t* sr = (uint8_t*) &leds[ SPIbuffer[0] ];
-		uint8_t* de = &SPIbuffer[1];
-		*sr++ = *de++;
-		*sr++ = *de++;
-		*sr++ = *de++;
-		*sr++ = *de++;
-		/*leds[ SPIbuffer[0] ].red = SPIbuffer[1];
-		leds[ SPIbuffer[0] ].green = SPIbuffer[2];
-		leds[ SPIbuffer[0] ].blue = SPIbuffer[3];
-		leds[ SPIbuffer[0] ].blink = SPIbuffer[4];*/
+		leds[ SPIcommand ] = *(struct cRGB*) SPIbuffer;    /* copy the first three octets */
+		blink[ SPIcommand ] = SPIbuffer[3];
 	}
 
 	PORTC &= ~(1U<<7);
-	SPDR = 42;
+	SPDR = SPIcommand;
 }
 
 ISR (TIMER1_COMPA_vect  )
@@ -78,27 +71,20 @@ ISR (TIMER1_COMPA_vect  )
 	if ((cycle&15) == 3)
 	{
 		/* deal with the RGB leds */
-		struct LED *pL = leds;
-		struct cRGB *pB = bufferLeds;
-		uint8_t bcycle = cycle>>4;
+		memcpy(bufferLeds, leds, 3*NB_LEDS);
+		struct cRGB *pLeds = leds;
+		struct cRGB *pBuffer = bufferLeds;
+		uint8_t *pBlink = blink;
 		for( uint8_t i=0; i<NB_LEDS; i++)
 		{
-			if ( (bcycle & (pL->blink>>4)) >= (pL->blink&15) )
-			{
-				/* this led is on */
-				pB->r = pL->red;
-				pB->g = pL->green;
-				pB->b = pL->blue;
-			}
-			else
+			if ( ((cycle & *pBlink)>>4) < (*pBlink&15) )
 			{
 				/* this led is off */
-				pB->r = 0;
-				pB->g = 0;
-				pB->b = 0;
+				*pBuffer = LedOff;
 			}
-			pL++;
-			pB++;
+			pLeds++;
+			pBuffer++;
+			pBlink++;
 		}
 		ws2812_setleds(bufferLeds,NB_LEDS);
 	}
@@ -135,16 +121,16 @@ int main(void)
 
 
 
-	leds[0].red = 255;
-	leds[0].blink = 0x11;
+	leds[0].r = 255;
+	blink[0] = 0x11;
 
-	leds[2].red = 255;
-	leds[2].green = 255;
-	leds[2].blink = 0x41;
+	leds[2].r = 255;
+	leds[2].g = 255;
+	blink[2] = 0x41;
 
-	leds[4].blue = 255;
-	leds[4].green = 255;
-	leds[4].blink = 0x72;
+	leds[4].b = 255;
+	leds[4].g = 255;
+	blink[4] = 0x72;
 
 
 
