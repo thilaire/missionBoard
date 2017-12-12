@@ -18,10 +18,10 @@ So this is the plan: I will design something that can fit in a case, and this gi
 # Projet steps
 
 - [x] [Decide the functionalities](functionalities.md)
-- [x] [Choose the materials](bom.md)
+- [x] [Choose the materials](bom.md) ([µC](ATtiny.md), [RGB LEDs](APA106.md), [displays](TM1638.md), etc.)
 - [x] [Design the panels](panels/panels.md)
 - [x] [Realize the panels](panels/panels.md)
-- [ ] [Solder and connect everything](io.md)
+- [x] [Solder and connect everything](io.md)
 - [ ] Develop the software
 - [ ] Enjoy with the kids !
 
