@@ -17,24 +17,78 @@ struct cRGB LedOff = {0};
 struct cRGB leds[NB_LEDS] = {0};     /* leds */
 struct cRGB bufferLeds[NB_LEDS] = {0};  /* buffer of data to send (dedicated to light_ws2812 libray) */
 uint8_t blink[NB_LEDS]; /* blink scheme (mask+threshold) for each led */
-uint8_t hasChanged = 1;
+uint8_t ledsHasChanged = 0;
+uint16_t toBlinkTable = 0;  /* the x-th bit of toBlinkTable indicates if a Led need to change its color (blink) at cycle #x wrt to the previous cycle */
 
 
-/* timer */
-uint8_t cycle=0;
-
-
-/* SPI */
-uint8_t SPIcommand;
-uint8_t SPIbuffer[4];
-uint8_t SPIcycle = 0;
-
-
-
-ISR (SPI_STC_vect)                  // SPI interrupts
+/* add a new command for a led
+nLed: number of the led
+led: the new color
+blink: blink pattern
+*/
+void newCommandLed(uint8_t nLed, uint8_t* buffer)
 {
-	PORTC |= (1U<<7);
-	/* copy the data in the SPI buffer (1st data in SPIcommand) */
+	uint8_t *pBlink = blink;
+
+	ledsHasChanged = 1;
+	/* copy the first three octets */
+	leds[ nLed ] = *(struct cRGB*) buffer;
+	blink[ nLed ] = buffer[3];
+	/* update the blink table
+	ie iterate on each blink led
+	and for each of them
+	iterate on each cycle to detect when the state of the led changes
+	and update toBlinkTable according to it */
+	toBlinkTable = 0;
+	for( uint8_t i=0; i<NB_LEDS; i++)
+	{
+		if (*pBlink)    // this led blinks
+		{
+			uint8_t precBlink = ((0 & *pBlink>>4)) >= (*pBlink&15);
+			uint8_t currBlink;
+			for( uint8_t cycle=15; cycle>0; cycle--)
+			{
+				currBlink = ((cycle & *pBlink>>4)) >= (*pBlink&15);
+				toBlinkTable |= (currBlink!=precBlink);
+				toBlinkTable <<= 1;
+			}
+		}
+		pBlink++;
+	}
+}
+
+/* fill the Led Buffer with the led colors
+  (manage the blinking according to the cycle) */
+void fillLedBuffer( uint8_t bcycle)
+{
+	struct cRGB *pBuffer = bufferLeds;
+	uint8_t *pBlink = blink;
+
+	/* copy the leds to the buffer */
+	memcpy(bufferLeds, leds, 3*NB_LEDS);
+
+	/* switch off the leds that blink in that cycle */
+	for( uint8_t i=0; i<NB_LEDS; i++)
+	{
+		if ( ((bcycle & *pBlink>>4)) < (*pBlink&15) )
+		{
+			/* this led is off */
+			*pBuffer = LedOff;
+		}
+		pBuffer++;
+		pBlink++;
+	}
+}
+
+
+/* SPI interrupt function */
+ISR (SPI_STC_vect)
+{
+	static uint8_t SPIcycle = 0;
+	static uint8_t SPIcommand;
+	static uint8_t SPIbuffer[4];
+
+	/* copy the data (1st data in SPIcommand, the others in SPIbuffer) */
 	if (SPIcycle)
 		SPIbuffer[ SPIcycle-1 ] = SPDR;
 	else
@@ -44,18 +98,15 @@ ISR (SPI_STC_vect)                  // SPI interrupts
 	if (SPIcycle == 5)
 	{
 		SPIcycle = 0;
-		leds[ SPIcommand ] = *(struct cRGB*) SPIbuffer;    /* copy the first three octets */
-		blink[ SPIcommand ] = SPIbuffer[3];
+		newCommandLed( SPIcommand, SPIbuffer);
 	}
-
-	PORTC &= ~(1U<<7);
-	SPDR = SPIcommand;
 }
 
+
+/* Timer 1 interrupt function (when TIMER1==OCR1A) */
 ISR (TIMER1_COMPA_vect  )
 {
-	cycle++;
-
+	static uint8_t cycle=0;
 	if ((cycle&3) == 0)
 	{
 		/* capture ADC0, TM1637[0] and TM1638[0] */
@@ -70,28 +121,20 @@ ISR (TIMER1_COMPA_vect  )
 	}
 	if ((cycle&15) == 3)
 	{
-		/* deal with the RGB leds */
-		memcpy(bufferLeds, leds, 3*NB_LEDS);
-		struct cRGB *pLeds = leds;
-		struct cRGB *pBuffer = bufferLeds;
-		uint8_t *pBlink = blink;
-		for( uint8_t i=0; i<NB_LEDS; i++)
+		/* check if we need to send data to the led (something has changed since previous cycle ?) */
+		if (ledsHasChanged || (toBlinkTable & (1U<<(cycle>>4))) )
 		{
-			if ( ((cycle & *pBlink)>>4) < (*pBlink&15) )
-			{
-				/* this led is off */
-				*pBuffer = LedOff;
-			}
-			pLeds++;
-			pBuffer++;
-			pBlink++;
+			/* prepare the buffer */
+			fillLedBuffer(cycle>>4);
+			ws2812_setleds( bufferLeds, NB_LEDS);
+			ledsHasChanged = 0;
 		}
-		ws2812_setleds(bufferLeds,NB_LEDS);
 	}
 
-
-
+	/* next cycle */
+	cycle++;
 }
+
 
 int main(void)
 {
@@ -106,7 +149,7 @@ int main(void)
 	/* turn off the leds */
 	ws2812_setleds(bufferLeds, NB_LEDS);
 
-	/* blink LED C7 to tell we are alive */
+	/* blink LED C7 (debug LED) to tell we are alive */
 	PORTC |= (1U<<7);
 	_delay_ms(500);
 	PORTC &= ~(1U<<7);
@@ -121,6 +164,7 @@ int main(void)
 
 
 
+	/* test */
 	leds[0].r = 255;
 	blink[0] = 0x11;
 
@@ -132,41 +176,7 @@ int main(void)
 	leds[4].g = 255;
 	blink[4] = 0x72;
 
-
-
-
-	SPDR = 42;
-	sei();  /* enable interrupts */
+	/* enable interrupts and wait */
+	sei();
 	while(1);   /*TODO: idle mode? */
-
-
-/*	 unsigned char i, delta=0;
-	 struct cRGB colors[8];
-  //Rainbowcolors
-    colors[0].r=150; colors[0].g=150; colors[0].b=150;
-    colors[1].r=255; colors[1].g=000; colors[1].b=000;//red
-    colors[2].r=255; colors[2].g=100; colors[2].b=000;//orange
-    colors[3].r=100; colors[3].g=255; colors[3].b=000;//yellow
-    colors[4].r=000; colors[4].g=255; colors[4].b=000;//green
-    colors[5].r=000; colors[5].g=100; colors[5].b=255;//light blue (türkis)
-    colors[6].r=000; colors[6].g=000; colors[6].b=255;//blue
-    colors[7].r=100; colors[7].g=000; colors[7].b=255;//violet
-
-
-  while(1)
-  {
-
-    for(i=0; i<NB_LEDS; i++)
-    {
-        bufferLeds[i] = colors[(i+delta)&7];
-    }
-    delta++;
-
-    ws2812_setleds(bufferLeds,NB_LEDS);
-    _delay_ms(500);                         // wait for 500ms.
-
-  }*/
-
-
-
 }
