@@ -1,7 +1,7 @@
 # Compilation options
 CC = avr-gcc
 OBJCPY = avr-objcopy
-CCFLAGS = -Wall
+CCFLAGS = -Wall -O3
 OPTIM = -Os
 
 # about the AVR
@@ -30,6 +30,10 @@ $(OUT).elf: $(OBJ)
 # Generate the hex
 $(OUT).hex: $(OUT).elf
 	$(OBJCPY) -j .text -j .data -O ihex $< $@
+
+assembly: $(SRC:.c=.s)
+%.s : %.c
+	$(CC) $(CCFLAGS) $(OPTIM) -mmcu=$(DEVICE) -DF_CPU=$(FREQ) -S -fverbose-asm $< -o $@
 
 # Flash the AVR (with avrdude)
 # (use ssh with public/private key, so as to do not have to type the password each time...)
