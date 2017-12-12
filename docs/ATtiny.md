@@ -167,5 +167,17 @@ I need to read the inputs at leat 10 times a second (rought approximation), and 
 - when `ncycle&3==2`: (every 62.5ms) run ADC2, read `8TM3` (2nd TM1638), update `8TM3` and `7TM3` displays if necessary
 - when `ncyccle&15==3`: (every 250ms) update the RGB leds if necessary (according to blinking)
 
+So TIME1 is configured to generate interruption every 15625 ticks, with a prescaler of 1/8 (Frequency of the ATtiny: 8MHz, see this [AVR timer calculator](http://eleccelerator.com/avr-timer-calculator/)):
+
+```C
+	TCCR1B = (1U<<CS11) | (1U<<WGM12);     /* prescaler = 1/8 and Clear Timer on Compare match (CTC) T*/
+	TCCR1C = (1U<<FOC1A);    /* channel A */
+	OCR1A = 15625;              /* 15625 ticks @ 1MHz -> 15.625ms */
+	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
+```
+
+
+
+
 ## 
 
