@@ -176,7 +176,7 @@ So TIME1 is configured to generate interruption every 15625 ticks, with a presca
 	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
 ```
 
-
+See the [APA106 documentation](APA106.md) for the blinking details (how to encode blink pattern, how to compute when to send data, and when it is not necessary, etc.)
 
 
 ## 
