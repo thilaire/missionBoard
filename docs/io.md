@@ -55,6 +55,7 @@ x: still available
 ### other devices
 
 - USB connectivity:
+
 | RPi USB | Connected to                  |
 |:-------:|:-----------------------------:|
 | #1      | LCD touchscreen `P14_LCD_USB` |
@@ -124,6 +125,7 @@ The three TM1638s are "chained" (to save some GPIO), so it means they share the 
 ### Inputs
 
 #### TM Board #1
+
 | Input Line | Input   | Connected to |
 |:----------:|:-------:|:------------:|
 | 1          | 1       | `P9_SW3:1`   |
@@ -159,7 +161,7 @@ All the inputs use the input line #1 (denoted `K1` in the datasheet)
 | 8       |              |
 
 
-##x TM1637 boards
+## TM1637 boards
 The three TM1637 have common data (`7TM_DATA`), but separated clocks (`7TM1_CLK`, `7TM2_CLK`, `7TM2_CLK`).
 
 | TM Board | Pin  | Name        | Connected to |
