@@ -7,14 +7,14 @@ From the [functionalities](functionalities.md), we can deduce the bill of materi
 
 ### Electronic devices
 - 4 Bargraphs (for the oxygen, rocket fuel and spaceship levels)
-- 7 blocks of four 7-segment displays  (2 for the countdown, speed, position, altitude, pitch and roll)
-- some leds (start (green), manual command (green), lights (green x2), electricity (green x2), turbo (blue x2)). See [doc on the TM1637 and TM1638](TM1638.md) for details.
+- 7 blocks of four 7-segment displays  (2 for the countdown, speed, position, altitude, pitch and roll). See [doc on the TM1637 and TM1638](TM1638.md) for details.
+- some leds (start (green), manual command (green), lights (green x2), electricity (green x2), turbo (blue x2)). 
 - 20 multicolor (RGB) leds (1 per push button + leds in panel display (oxygen, doors x2, electricity, automatic pilot, alarm, takeoff, orbit, landing, overspeed). See [this](APA106.md) for details.
 - 4 10k\omega potentiometers (one online for the engine power, and 3 rotary for the audio, pitch and roll)
 
 ### (micro) computers
 - 1 raspberry pi (I have Pi3, but Pi2 should be ok. Pi Zero is ok, but cannot be used in game mode IMHO)
-- 1 micro-controllers for the WS812b-like leds: I choose an AVR ATtiny861V (because I had it in stock). See [this](ATtiny.md) to understand why this one, and how I program it directly with the Raspberry Pi.
+- 1 micro-controllers for the WS812b-like leds and other IOs: I choose an AVR ATtiny88 (because I had it in stock). See [this](ATtiny.md) to understand why this one, and how I program it directly with the Raspberry Pi.
 
 ### switchs/buttons
 - 10 2-position switches (laser, automatic pilot, lights (x2), electricity (x3), turbo (x2), computer)
