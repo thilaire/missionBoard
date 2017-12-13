@@ -1,6 +1,5 @@
 # coding=utf-8
 
-from rpi_TM1638 import TMBoards
 from re import compile
 
 from Element import Element
@@ -21,11 +20,9 @@ class MissionBoard:
 	Main object (contains interfaces to buttons, displays, callbacks, etc.)
 	"""
 
-	def __init__(self, TM_clk, TM_dio, TM_stb, brightness):
-		# initialize the TMboards
-		self._TMB = TMBoards(dio=TM_dio, clk=TM_clk, stb=TM_stb, brightness=brightness)    # chained TM Boards
-		# initialize the TMB for all the elements
-		Element.setTMB(self._TMB)
+	def __init__(self):
+		# nothing to do
+		pass
 
 	def runCheck(self):
 		"""

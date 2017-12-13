@@ -6,12 +6,9 @@ Define the different callbacks
 """
 
 from MissionBoard import MissionBoard
-import RPi.GPIO as GPIO
 
-# create the main object
-MB = MissionBoard(TM_clk=20, TM_dio=21, TM_stb=19, brightness=2)
-
-# add the different buttons/displays for each panel
+# create the main object and add the different buttons/displays for each panel
+MB = MissionBoard()
 
 # Panel 1: start/mode
 #MB.addRotary3(['P1_ROT3', 'gameMode'], TMindex=1, line=2, pins=[2,3])
@@ -20,14 +17,14 @@ MB = MissionBoard(TM_clk=20, TM_dio=21, TM_stb=19, brightness=2)
 #MB.addRGBLED(['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1',
 #             'automaticPilot', 'orbit', '', 'gate2', 'alarm', 'landing', ''], start=0)
 
-MB.add('P3_SSD', 'counter', TMindex=0, block=0)
+#MB.add('P3_SSD', 'counter', TMindex=0, block=0)
 
 # Panel 3: laser
 #MB.addSwitch2(['P3_SW_0', 'LaserArmed'], TMindex=1, line=1, pin=1)
 #MB.addSwitch2(['P3_SW_1', 'LaserColor'], TMindex=1, line=1, pin=2)
 
 # Panel 4: pilot
-MB.add('P4_LED', 'manual', TMindex=0, index=0)
+#MB.add('P4_LED', 'manual', TMindex=0, index=0)
 #MB.addPotentiometer(['P4_POT_0', 'roll'], AN=1)
 #MB.addPotentiometer(['P4_POT_1', 'yaw'], AN=2)
 #MB.addPotentiometer(['P4_POT_0', 'speed'], AN=0)
@@ -59,7 +56,7 @@ MB.add('P4_LED', 'manual', TMindex=0, index=0)
 #MB.addPushButton(['P8_PB_8', 'go'], IO=12)
 #MB.addRGBLED(['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unhook',
 #             'oxygenPump', 'laser', 'landingGear'], start=12)
-MB.add('P8_LED_8', 'go', TMindex=0, index=1)
+#MB.add('P8_LED_8', 'go', TMindex=0, index=1)
 
 # Panel 9: audio
 #MB.addSwitch3(['P9_SW4'])
