@@ -13,13 +13,14 @@ HOST = pi@raspberrypi.local
 
 # files
 OUT = MB-AVR
-SRC = light_ws2812.c MB-AVR.c
+SRC = light_ws2812.c MB-AVR.c TM163x.c
 OBJ = $(SRC:.c=.o)
 
 all: $(OUT).hex
 
 # Compile the C files
 light_ws2812.o: light_ws2812.h ws2812_config.h
+TM163x.o: TM163x.h
 %.o: %.c
 	$(CC) $(CCFLAGS) $(OPTIM) -mmcu=$(DEVICE) -DF_CPU=$(FREQ) -o $@ -c $<
 
@@ -32,7 +33,7 @@ $(OUT).hex: $(OUT).elf
 	$(OBJCPY) -j .text -j .data -O ihex $< $@
 
 assembly: $(SRC:.c=.s)
-%.s : %.c
+%.s : %.c %.o
 	$(CC) $(CCFLAGS) $(OPTIM) -mmcu=$(DEVICE) -DF_CPU=$(FREQ) -S -fverbose-asm $< -o $@
 
 # Flash the AVR (with avrdude)
@@ -45,5 +46,5 @@ program: $(OUT).hex
 
 # Clen the mess
 clean:
-	rm -f $(OBJ) $(OUT).elf $(OUT).hex
+	rm -f $(OBJ) $(OUT).elf $(OUT).hex $(SRC:.c=.s)
 	ssh $(HOST) rm -f $(OUT).hex

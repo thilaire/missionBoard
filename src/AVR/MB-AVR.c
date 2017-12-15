@@ -8,10 +8,17 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "light_ws2812.h"
+#include "TM163x.h"
 #include <string.h>
 
+
+/* TMx8 */
+const uint8_t TMx8_STB_PINMASK[3] = { BIT(TMx8_STB_PIN0), BIT(TMx8_STB_PIN1), BIT(TMx8_STB_PIN2)};  /* STB0, STB1 and STB2 are on PD5, PD6 and PD7 respectively */
+
+
+
 /* RGB LEDS */
-#define NB_LEDS 20
+#define NB_LEDS 21
 
 
 struct sLED{
@@ -161,6 +168,11 @@ int main(void)
 	OCR1A = 15625;              /* 15625 ticks @ 1MHz -> 15.625ms */
 	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
 
+
+	TMx8_setup(1);
+	TMx8_sendData(0,0b01101101,TMx8_STB_PINMASK[0]);
+	TMx8_sendData(2,0b00000110,TMx8_STB_PINMASK[0]);
+	//TMx8_sendData(1,255,TMx8_STB_PINMASK[0]);
 
 	/* enable interrupts and wait */
 	sei();
