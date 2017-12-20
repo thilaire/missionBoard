@@ -1,15 +1,17 @@
 # coding=utf-8
 
 from re import compile
-
+from spidev import SpiDev
 from Element import Element
 from LED import LED
-from SSD import SSD
+#from SSD import SSD
 #from PushButton import PB
+from RGB import RGB
 
 
-# list of required arguments (used to check)
-dictOfElements = {'LED': LED, 'SSD': SSD}   # TODO: no need, use subclass !!{ x.__name__:x for x in Element.__subclasses__()}
+# list of possible elements
+dictOfElements = {x.__name__: x for x in Element.__subclasses__()}
+
 
 # simple regex for Pxx_YYY_zzz or Pxx_YYY
 regElement = compile("P(\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
@@ -21,8 +23,13 @@ class MissionBoard:
 	"""
 
 	def __init__(self):
-		# nothing to do
-		pass
+		# save itself to ELement
+		Element.setMB(self)
+
+		# open SPI connection
+		self._spi = SpiDev()
+		self._spi.open(0,0)
+
 
 	def runCheck(self):
 		"""
@@ -40,7 +47,6 @@ class MissionBoard:
 		pass
 
 
-
 	def add(self, keyname, name, **args):
 		"""
 		Declares a new element
@@ -50,9 +56,6 @@ class MissionBoard:
 			- name: name of the element
 			- args: arguments used to determine the elements (TMindex, etc.)
 		"""
-		# check the name
-		if hasattr(self, name):
-			raise ValueError("An element with the same name (%s) already exists", name)
 		# get the element Type
 		m = regElement.search(keyname)
 		if not m:
@@ -60,4 +63,23 @@ class MissionBoard:
 		elementType = m.group(2)    # panel, elementType, number = m.group(1,2,4)
 		# create the object and add it has an attribute
 		# (of the class, we have a singleton here; and it's the way to do with Python)
-		setattr(self.__class__, name, dictOfElements[elementType](keyname, name, **args))
+		if isinstance(name, str):
+			# check the name
+			if hasattr(self, name):
+				raise ValueError("An element with the same name (%s) already exists", name)
+			# add this as an attribute
+			setattr(self.__class__, elementType+'_'+name, dictOfElements[elementType](keyname, name, **args))
+		else:
+			if 'pos' not in args:
+				args['pos'] = 0
+			for n in name:
+				# check the name
+				if hasattr(self, n):
+					raise ValueError("An element with the same name (%s) already exists", name)
+				# add this as an attribute
+				setattr(self.__class__, elementType+'_'+n, dictOfElements[elementType](keyname, n, **args ))
+				args['pos'] += 1
+
+	def sendSPI(self, data):
+		print(data)
+		self._spi.xfer(data)

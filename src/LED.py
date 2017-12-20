@@ -3,6 +3,7 @@
 from Element import Element
 from time import sleep
 
+
 class LED(Element):
 	"""
 	class for a LED
