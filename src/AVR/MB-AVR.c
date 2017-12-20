@@ -12,40 +12,67 @@
 #include <string.h>
 
 
-/* TMx8 */
+/* data for TMx8 */
+#define NB_TMx8 3
+#define NB_TMx7 3
 const uint8_t TMx8_STB_PINMASK[3] = { BIT(TMx8_STB_PIN0), BIT(TMx8_STB_PIN1), BIT(TMx8_STB_PIN2)};  /* STB0, STB1 and STB2 are on PD5, PD6 and PD7 respectively */
 
+uint8_t TMx8data[NB_TMx8][16]={0};  /* each TM1638 has 16 bytes of addressable data */
+uint8_t TMx8toChangeDisplay[NB_TMx8] = {0};    /* x-th bit set to 1 => the x-th byte has changed (should be sent to the TMx8) */
+uint8_t TMx8toChangeLed[NB_TMx8] = {0};    /* x-th bit set to 1 => the x-th byte has changed (should be sent to the TMx8) */
+
+uint8_t TMx7data[NB_TMx7][8]={0};  /* each TM1638 has 16 bytes of addressable data */
+uint8_t TMx7toChange[NB_TMx7] = {0};    /* x-th bit set to 1 => the x-th byte has changed (should be sent to the TMx8) */
 
 
-/* RGB LEDS */
+/* data for RGB LEDS */
 #define NB_LEDS 21
-
-
-struct sLED{
+struct sRGB_LED{
 	uint16_t blinkPattern;  /* pattern: x-th bits indicates if the led is on at cycle x; 0xffff for always on, 0b0101010101010101 for fast blinking */
 	struct cRGB color;
 };
-
-const struct cRGB LedOff = {0};
-struct sLED leds[NB_LEDS] = {0};     /* leds */
+const struct cRGB LedOff = {0};         /* led off */
+struct sRGB_LED RGBleds[NB_LEDS] = {0};        /* array of leds */
 struct cRGB bufferLeds[NB_LEDS] = {0};  /* buffer of data to send (dedicated to light_ws2812 libray) */
 
-uint8_t ledsHasChanged = 0;
+uint8_t RGBledsHasChanged = 0; /* bool that indicates if the leds has changed during last cycle */
 uint16_t blinkEvent = 0;  /* the x-th bit of blinkEvent indicates if a Led need to change its color (blink) at cycle #x WRT to the previous cycle */
 uint16_t blinkEventTable[NB_LEDS] = {0};    /* intermediate table: the same as blinkEvent, but for each led. Use only to do not have to recompute it every time (we have here enough bytes in RAM for this) */
+
+
+
+
+
+void setDisplayTMx8(uint8_t SPIcommand, uint8_t* SPIbuffer)
+{
+	uint8_t size = 8 ? SPIcommand & (1<<4) : 4; /* 4 or 8 bytes */
+	uint8_t* TMbuffer = TMx8data[SPIcommand&3];
+	uint8_t* TMtoChange = TMx8toChangeDisplay[SPIcommand&3];
+	for( uint8_t i = 4 ? SPIcommand & (1<<3) : 0; i<size; i++)  /* 1st or 2nd display */
+	{
+		/* check if the byte has changed */
+		if (*TMbuffer != *SPIbuffer)
+		{
+			*TMtoChange |= (1<<i);  /* note that it has changed */
+		}
+		*TMbuffer++ = *SPIbuffer++;   /* copy the new data */
+	}
+}
+
+
 
 /* add a new command for a led
 nLed: number of the led
 buffer: the 5 bytes for the SPI buffer */
-void newCommandLed(uint8_t nLed, uint8_t* buffer)
+void setRGBLed(uint8_t nLed, uint8_t* buffer)
 {
-	ledsHasChanged = 1;
+	RGBledsHasChanged = 1;
 
 	/* copy the five bytes */
-	leds[ nLed ] = *(struct sLED*) buffer;
+	RGBleds[ nLed ] = *(struct sRGB_LED*) buffer;
 
 	/* update the blink Event Table for the concerned led */
-	uint16_t blinkPatternOfThisLed = leds[ nLed].blinkPattern;
+	uint16_t blinkPatternOfThisLed = RGBleds[ nLed].blinkPattern;
 	blinkEventTable[ nLed ] = blinkPatternOfThisLed ^ ( (blinkPatternOfThisLed>>15) | (blinkPatternOfThisLed<<1) ); /* (a>>15) | (a<<1) corresponds to a 1-bit left bitwise rotation; a XOR with itself gives the place where the bit changes from it predecessor */
 
 	/* then re-compute blinkEvent, as the OR-sum of each blinkEventTable element */
@@ -60,10 +87,10 @@ void newCommandLed(uint8_t nLed, uint8_t* buffer)
 
 /* fill the Led Buffer with the led colors
   (manage the blinking according to the cycle) */
-void fillLedBuffer( uint8_t bcycle)
+void fillRGBBuffer( uint8_t bcycle)
 {
 	struct cRGB *pBuffer = bufferLeds;
-	struct sLED *pLeds = leds;
+	struct sRGB_LED *pLeds = RGBleds;
 	uint16_t pattern = (1U<<bcycle);
 
 	/* copy the leds to the buffer */
@@ -88,21 +115,59 @@ void fillLedBuffer( uint8_t bcycle)
 /* SPI interrupt function */
 ISR (SPI_STC_vect)
 {
-	static uint8_t SPIcycle = 0;
-	static uint8_t SPIcommand;
-	static uint8_t SPIbuffer[5];    /* 5 bytes for a LED ( RGB+ blink pattern) */
-
+	static uint8_t SPIcycle = 0;     /* counts the cycles */
+	static uint8_t SPIcommand;      /* 1st byte received (indicates which command, and how many other bytes will follow */
+	static uint8_t SPIbuffer[8] = {0};    /* buffer (5 bytes for a LED, 8 for display, etc.) */
+	static uint8_t SPInbBytes = 0;      /* how many bytes we will receive in the buffer for this command */
 	/* copy the data (1st data in SPIcommand, the others in SPIbuffer) */
 	if (SPIcycle)
 		SPIbuffer[ SPIcycle-1 ] = SPDR;
 	else
+	{
+		/* copy the header*/
 		SPIcommand = SPDR;
+		/* compute how many bytes we will next receive */
+		if ((SPIcommand & 0xF0) == 0b11000000)
+			SPInbBytes = 4;
+		else if ((SPIcommand & 0xF0) == 0b11010000)
+			SPInbBytes = 8;
+		else if ((SPIcommand & 0xE0) == 0)
+			SPInbBytes = 5;
+		else
+			SPInbBytes = 0;
+	}
 	SPIcycle++;
 	/* check if the end of the data transfer */
-	if (SPIcycle == 6)
+	if (SPIcycle > SPInbBytes)
 	{
 		SPIcycle = 0;
-		newCommandLed( SPIcommand, SPIbuffer);
+		switch (SPIcommand & 0b11000000)
+		{
+			case 0:
+				/* set RGB color */
+				if (SPIcommand)
+					setRGBLed( SPIcommand, SPIbuffer);
+				break;
+			case 0b01000000:
+				/* set a led */
+				break;
+			case 0b10000000:
+				/* set the brightness */
+				break;
+			default:    /* 0b11000000 */
+				if ( !(SPIcommand & 0b00100000 ) )
+				{
+					/* set the display */
+				}
+				else if (SPIcommand & 0b00010000)
+				{
+					/* clear the display */
+				}
+				else
+				{
+					/* turn on/off the display */
+				}
+		}
 	}
 }
 
@@ -126,14 +191,12 @@ ISR (TIMER1_COMPA_vect  )
 	if ((cycle&15) == 3)
 	{
 		/* check if we need to send data to the led (something has changed since previous cycle ?) */
-		if (ledsHasChanged || ((blinkEvent >> (cycle>>4))&1) )      /* cycle>>4 -th bit of blinkEvent */
+		if (RGBledsHasChanged || ((blinkEvent >> (cycle>>4))&1) )      /* cycle>>4 -th bit of blinkEvent */
 		{
 			/* prepare the buffer */
-PORTC |= (1U<<7);
-			fillLedBuffer(cycle>>4);
-			ws2812_setleds( bufferLeds, NB_LEDS);
-			ledsHasChanged = 0;
-PORTC &= ~(1U<<7);
+			fillRGBBuffer(cycle>>4);
+			ws2812_setleds(bufferLeds, NB_LEDS);
+			RGBledsHasChanged = 0;
 		}
 	}
 
@@ -152,7 +215,7 @@ int main(void)
 	/* configure the USI */
 	SPCR |= (1<<SPIE) | (1<<SPE);
 
-	/* turn off the leds */
+	/* turn off the RGB leds */
 	ws2812_setleds(bufferLeds, NB_LEDS);
 
 	/* blink LED C7 (debug LED) to tell we are alive */
