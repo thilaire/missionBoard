@@ -32,10 +32,10 @@ SLOW = 0xFF00
 
 def bitRotation(b, shift):
 	"""#right and left bit rotation (16-bit numbers)"""
-	if shift>0:
-		return ( (b>>shift) | (b<<(16-shift)) ) & 0xFFFF
+	if shift > 0:
+		return ((b >> shift) | (b << (16-shift))) & 0xFFFF
 	else:
-		return ( (b<<shift) | (b>>(16-shift)) ) & 0xFFFF
+		return ((b << shift) | (b >> (16-shift))) & 0xFFFF
 
 
 class RGB(Element):

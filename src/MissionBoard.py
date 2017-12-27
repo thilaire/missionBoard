@@ -1,13 +1,16 @@
 # coding=utf-8
 
 from re import compile
-from spidev import SpiDev
+try:
+	from spidev import SpiDev
+except ImportError:
+	pass
 from Element import Element
 from LED import LED
 #from SSD import SSD
 #from PushButton import PB
 from RGB import RGB
-
+import asyncio
 
 # list of possible elements
 dictOfElements = {x.__name__: x for x in Element.__subclasses__()}
@@ -27,8 +30,13 @@ class MissionBoard:
 		Element.setMB(self)
 
 		# open SPI connection
-		self._spi = SpiDev()
-		self._spi.open(0,0)
+		try:
+			self._spi = SpiDev()
+			self._spi.open(0,0)
+		except NameError:
+			pass
+		self._loop = asyncio.get_event_loop()
+		self._SPIqueue = asyncio.Queue(loop=self._loop)
 
 
 	def runCheck(self):
@@ -39,12 +47,14 @@ class MissionBoard:
 			e.runCheck()
 
 
-	def run(self):
+	def run(self, fct):
 		"""
 		Main loop (manage the different loops
 		"""
-		#TODO: do nothing for the moment
-		pass
+		self._loop.run_until_complete(asyncio.gather(self._proceedSPIQueue(), fct()))
+
+		self._loop.close()
+
 
 
 	def add(self, keyname, name, **args):
@@ -80,6 +90,22 @@ class MissionBoard:
 				setattr(self.__class__, elementType+'_'+n, dictOfElements[elementType](keyname, n, **args ))
 				args['pos'] += 1
 
+
+
 	def sendSPI(self, data):
-		print(data)
-		self._spi.xfer(data)
+		"""Simply add the data in the queue"""
+		print("sendSPI: send " + str(data))
+		self._SPIqueue.put_nowait(data)
+
+
+	async def _proceedSPIQueue(self):
+		while True:
+			print("_proceedSPIQueue: wait for data")
+			# wait for data
+			data = await self._SPIqueue.get()
+			# process the item
+			try:
+				self._spi.xfer(data)
+			except AttributeError:
+				await asyncio.sleep(0.1)
+			print("_proceedSPIQueue: received " +str(data))

@@ -4,6 +4,8 @@
 Describe how the different buttons/displays are connected
 Define the different callbacks
 """
+from time import sleep
+import asyncio
 
 from MissionBoard import MissionBoard
 from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW
@@ -72,11 +74,16 @@ MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unho
 
 # run tests!
 #MB.runCheck()
+async def test():
+	MB.RGB_Go = RED
 
-MB.RGB_Go = RED
+	await asyncio.sleep(10)
 
-MB.RGB_gate1 = YELLOW, FAST
-MB.RGB_gate2 = OLIVE, SLOW
-MB.RGB_orbit = GREEN, SLOW, 1
+	MB.RGB_gate1 = YELLOW, FAST
+	MB.RGB_gate2 = OLIVE, SLOW
+	MB.RGB_orbit = GREEN, SLOW, 1
 
-print('Done')
+
+	print('Done')
+
+MB.run(test)
