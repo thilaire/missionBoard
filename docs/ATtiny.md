@@ -182,11 +182,44 @@ See the [APA106 documentation](APA106.md) for the blinking details (how to encod
 
 ## Communication between RPi and micro-controller (protocol)
 
+The communication between the Raspberry Pi is "simple". The RPi send a first byte, that indicates the command. This command may be followed by some data (up to 8 bytes).
+The following table sums up the commands:
 
 |7|6|5|4|3|2|1|0|Details|Extra bytes|
+|-|-|-|-|-|-|-|-|:-|:-|
+|`0`|`0`|`0`|`0`|`0`|`0`|`0`|`0`| No Operation |0|
 |-|-|-|-|-|-|-|-|-|-|
-|0|0|0|0|0|0|0|0| No Operation |0|
-|-|-|-|-|-|-|-|-|-|-|
-|0|0|0|x|x|x|x|x| Set RGB Led | 5 bytes |
+|`0`|`0`|`0`|`x`|`x`|`x`|`x`|`x`| Set RGB Led | 5 bytes |
 | | | | | | | | | `xxxxx` is the number of the Led |(blinkH, blinkL, Red, Green, Blue)
 |-|-|-|-|-|-|-|-|-|-|
+|`0`|`1`|`s`|`l`|`l`|`l`|`t`|`t`| Set/clear a led | 0 |
+| | | | | | | | | `s` is 1 to set a led, 0 to clear | |
+| | | | | | | | | `lll` is the number of the led | |
+| | | | | | | | | `tt` is the number of the TM1638 considered | |
+|-|-|-|-|-|-|-|-|-|-|
+|`1`|`0`|`b`|`b`|`b`|`x`|`t`|`t`| Set the brightness of the TM163x | 0 |
+| | | | | | | | | `bbb` is the brightness | |
+| | | | | | | | | `x` is 1 for the TM1637, 0 for the TM1638 | |
+| | | | | | | | | `tt` is the number of the TM163x considered | |
+|-|-|-|-|-|-|-|-|-|-|
+|`1`|`1`|`0`|`a`|`d`|`x`|`t`|`t`| Set the 7+segment display of the TM163x | 4 or 8 bytes |
+| | | | | | | | | `a` is 0 to set 4 digits, 1 to set 8 digits | |
+| | | | | | | | | `d` is 0 for the 1st display, 1 for the 2nd display | |
+| | | | | | | | | `x` is 1 for the TM1637, 0 for the TM1638 | |
+| | | | | | | | | `tt` is the number of the TM163x considered | |
+|-|-|-|-|-|-|-|-|-|-|
+|`1`|`1`|`1`|`0`|`o`|`x`|`t`|`t`| Turn on/off the display of the TM163x | 0 |
+| | | | | | | | | `o` is 0 to set 4 digits, 1 to set 8 digits | |
+| | | | | | | | | `d` is 0 for the 1st display, 1 for the 2nd display | |
+| | | | | | | | | `x` is 1 for the TM1637, 0 for the TM1638 | |
+| | | | | | | | | `tt` is the number of the TM163x considered | |
+|-|-|-|-|-|-|-|-|-|-|
+|`1`|`1`|`1`|`1`|`0`|`x`|`t`|`t`| Clear the display of the TM163x | 0 |
+| | | | | | | | | `x` is 1 for the TM1637, 0 for the TM1638 | |
+| | | | | | | | | `tt` is the number of the TM163x considered | |
+|-|-|-|-|-|-|-|-|-|-|
+|`1`|`1`|`1`|`1`|`1`|`x`|`x`|`x`| not used | 0 |
+|`0`|`0`|`1`|`x`|`x`|`x`|`x`|`x`| not used | 0 |
+|`0`|`0`|`0`|`1`|`1`|`x`|`x`|`x`| not used | 0 |
+|-|-|-|-|-|-|-|-|-|-|
+
