@@ -182,3 +182,11 @@ See the [APA106 documentation](APA106.md) for the blinking details (how to encod
 
 ## Communication between RPi and micro-controller (protocol)
 
+
+|7|6|5|4|3|2|1|0|Details|Extra bytes|
+|-|-|-|-|-|-|-|-|-|-|
+|0|0|0|0|0|0|0|0| No Operation |0|
+|-|-|-|-|-|-|-|-|-|-|
+|0|0|0|x|x|x|x|x| Set RGB Led | 5 bytes |
+| | | | | | | | | `xxxxx` is the number of the Led |(blinkH, blinkL, Red, Green, Blue)
+|-|-|-|-|-|-|-|-|-|-|

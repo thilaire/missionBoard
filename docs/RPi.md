@@ -7,8 +7,12 @@ tar -xvf Python-3.5.2.tar.xz
 cd Python-3.5.2
 ./configure
 make -j4
-make altinstall
+sudo make altinstall
 ``` 
 
 This version of Python is required, because my program relies on the `asyncio` library.
 
+## Python Libraries
+
+You will need the following libraries:
+-
