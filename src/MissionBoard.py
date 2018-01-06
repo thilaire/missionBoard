@@ -5,12 +5,14 @@ try:
 	from spidev import SpiDev
 except ImportError:
 	pass
+
 from Element import Element
 from LED import LED
 #from SSD import SSD
-#from PushButton import PB
+from PushButton import PB
 from RGB import RGB
 import asyncio
+import types
 
 # list of possible elements
 dictOfElements = {x.__name__: x for x in Element.__subclasses__()}
@@ -35,8 +37,11 @@ class MissionBoard:
 			self._spi.open(0,0)
 		except NameError:
 			pass
+
+		# prepare the asyncio loop and the queues
 		self._loop = asyncio.get_event_loop()
 		self._SPIqueue = asyncio.Queue(loop=self._loop)
+		self._EventQueue = asyncio.Queue(loop=self._loop)
 
 
 	def runCheck(self):
@@ -49,10 +54,10 @@ class MissionBoard:
 
 	def run(self, fct):
 		"""
-		Main loop (manage the different loops
+		Main loop (manage the different queues)
 		"""
-		self._loop.run_until_complete(asyncio.gather(self._proceedSPIQueue(), fct()))
-
+		self._loop.run_until_complete(asyncio.gather(self._proceedSPIQueue(), self._manageEvents(), fct()))
+		# should never happened
 		self._loop.close()
 
 
@@ -71,6 +76,8 @@ class MissionBoard:
 		if not m:
 			raise ValueError("The keyname %s doesn't follow the pattern `Pxx_YYY_zzz` or `Pxx_YYY`", keyname)
 		elementType = m.group(2)    # panel, elementType, number = m.group(1,2,4)
+		if elementType not in dictOfElements:
+			raise ValueError("The name of the element does not correspond to an existing type")
 		# create the object and add it has an attribute
 		# (of the class, we have a singleton here; and it's the way to do with Python)
 		if isinstance(name, str):
@@ -99,6 +106,10 @@ class MissionBoard:
 
 
 	async def _proceedSPIQueue(self):
+		"""
+		Infinite loop to send every message in the SPI queue to the ATtiny through the SPI
+		(a way to send one message at once)
+		"""
 		while True:
 			print("_proceedSPIQueue: wait for data")
 			# wait for data
@@ -107,5 +118,31 @@ class MissionBoard:
 			try:
 				self._spi.xfer(data)
 			except AttributeError:
-				await asyncio.sleep(0.1)
+				await asyncio.sleep(0.2)
 			print("_proceedSPIQueue: received " +str(data))
+
+
+	async def _manageEvents(self):
+		"""
+		Infinite loop to manage the events in the Event Queue
+		"""
+		while True:
+			print("_manageEvents: wait for event")
+			# wait for event
+			event = await self._EventQueue.get()
+			# process the event
+			print("_manageEvents: call on change")
+			await event.onChange()
+
+
+	def addEvent(self, obj):
+		"""Simply add the object in the Event Queue"""
+		self._EventQueue.put_nowait(obj)
+
+# decorator onChange !
+def onChange(obj):
+	def fc_wrapper(func):
+		# see https://stackoverflow.com/questions/972/adding-a-method-to-an-existing-object-instance
+		# for solutions to "Add a Method to an Existing Object Instance"
+		setattr(obj, 'onChange', types.MethodType(func, obj))
+	return fc_wrapper
