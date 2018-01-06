@@ -7,10 +7,9 @@ Finally I decided to give him all the polling tasks (pilot the TM1638s, pilot th
 
 I just needed a SPI connection with the Raspberry Pi, few ADCs (to "read" the potentiometer), and a lot of IOs.
 
-
 I have listed all the micro-controllers I had in stock, and I've chose the  **ATtiny88**, because, among all the micro-controllers I have in stock, this one has enough IOs, run fast enough (8MHz without external quartz, up to 10MHz) and has enough RAM/Flash (I am sure that 1Kb is enough, but I wanted some extra space, "just in case").
 
-Of course, any AVR or PIC (or any other micro-controller) you have in stock, or any Arduino-based board would be ok.
+Of course, any AVR or PIC (or any other micro-controller) you have in stock, or any Arduino-based board would be ok (At first, I choosed a **ATtiny631**, but finally, I moved the connection to the TM1638 and TM1637 boards from the RPi to the micro-controller, and the 631 did not have enough IOs).
 
 As a bonus, I can directly program it through the Raspberry Pi, through the SPI.
 
@@ -152,20 +151,20 @@ sudo modprobe spi_bcm2835
 
 ## Polling and timing
 
-The ATtiny need to do some polling to detect some changes in the switches/potentiometers. I also want to make the RGB LEDs (and the LCD displays) blinking.
+The ATtiny need to do some polling to detect some changes in the switches/potentiometers, through the TM1638 boards. I also wanted to make the RGB LEDs (and the LCD displays?) blinking.
 
 For that purpose, I need to prepare some periodic tasks:
 - polling of the analog inputs (potentiometers)
 - polling to get data from the TM1638
-- polling to make the RGB LED blink
+- make the RGB LED blink
 - polling to get data from the matrix keyboard (if I add it, one day)
 - update the display (TM1637 and TM1638) if needed
 
-I need to read the inputs at leat 10 times a second (rought approximation), and each "task" take between few cycles (read the matrix keyboard or run the ADC) and less than a millisecond (pilot the RGB leds or talk with the TM). So I have decided to set a period of 15.625ms (1/64 of a second), and to count in which cycle we are (8 bit variable `ncycle`):
-- when `ncycle&3==0`: (every 62.5ms) run ADC0, read `8TM1` (1st TM1638), update `8TM1` and `7TM1` displays if necessary
-- when `ncycle&3==1`: (every 62.5ms) run ADC1, read `8TM2` (2nd TM1638), update `8TM2` and `7TM2` displays if necessary
-- when `ncycle&3==2`: (every 62.5ms) run ADC2, read `8TM3` (2nd TM1638), update `8TM3` and `7TM3` displays if necessary
-- when `ncyccle&15==3`: (every 250ms) update the RGB leds if necessary (according to blinking)
+I need to read the inputs (switches, not push button) at leat 10 times a second (rought approximation), and each "task" take between few cycles (read the matrix keyboard or run the ADC) and less than a millisecond (pilot the RGB leds or talk with the TMs). So I have decided to set a period of 15.625ms (1/64 of a second), and to count in which cycle we are (with the 8-bit variable `ncycle`):
+- when `(ncycle&3) == 0`: (every 62.5ms) run ADC0, read `8TM1` (1st TM1638), update `8TM1` and `7TM1` displays if necessary
+- when `(ncycle&3) == 1`: (every 62.5ms) run ADC1, read `8TM2` (2nd TM1638), update `8TM2` and `7TM2` displays if necessary
+- when `(ncycle&3) == 2`: (every 62.5ms) run ADC2, read `8TM3` (2nd TM1638), update `8TM3` and `7TM3` displays if necessary
+- when `(ncyccle&15) == 15`: (every 250ms) update the RGB leds if necessary (according to blinking)
 
 So TIME1 is configured to generate interruption every 15625 ticks, with a prescaler of 1/8 (Frequency of the ATtiny: 8MHz, see this [AVR timer calculator](http://eleccelerator.com/avr-timer-calculator/)):
 
@@ -176,8 +175,9 @@ So TIME1 is configured to generate interruption every 15625 ticks, with a presca
 	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
 ```
 
+For the RGB Leds, the 4 MSB of `ncycle` (so `ncycle>>4`) indicates in which blinking cycle we are. So, for each RGB Led, a 16-bit word encodes the blinking scheme (each bit indicates if the LED is on/off in the corresponding blinking cycle). 
 See the [APA106 documentation](APA106.md) for the blinking details (how to encode blink pattern, how to compute when to send data, and when it is not necessary, etc.)
 
 
-## 
+## Communication between RPi and micro-controller (protocol)
 
