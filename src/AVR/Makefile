@@ -13,14 +13,14 @@ HOST = pi@raspberrypi.local
 
 # files
 OUT = MB-AVR
-SRC = light_ws2812.c MB-AVR.c TM163x.c
+SRC = light_ws2812.c MB-AVR.c TMx8.c
 OBJ = $(SRC:.c=.o)
 
 all: $(OUT).hex
 
 # Compile the C files
 light_ws2812.o: light_ws2812.h ws2812_config.h
-TM163x.o: TM163x.h
+TMx8.o: TMx8.h
 %.o: %.c
 	$(CC) $(CCFLAGS) $(OPTIM) -mmcu=$(DEVICE) -DF_CPU=$(FREQ) -o $@ -c $<
 

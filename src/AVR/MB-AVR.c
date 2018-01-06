@@ -8,21 +8,23 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "light_ws2812.h"
-#include "TM163x.h"
+#include "TMx8.h"
 #include <string.h>
 
 
-/* data for TMx8 */
+/* data for TM1637 and TM1638 */
 #define NB_TMx8 3
 #define NB_TMx7 3
+uint8_t TMxDisplay[NB_TMx8+NB_TMx7] = {0};    /* display data of the TM1637 and TM1638*/
+
+
 const uint8_t TMx8_STB_PINMASK[3] = { BIT(TMx8_STB_PIN0), BIT(TMx8_STB_PIN1), BIT(TMx8_STB_PIN2)};  /* STB0, STB1 and STB2 are on PD5, PD6 and PD7 respectively */
 
-uint8_t TMx8data[NB_TMx8][16]={0};  /* each TM1638 has 16 bytes of addressable data */
-uint8_t TMx8toChangeDisplay[NB_TMx8] = {0};    /* x-th bit set to 1 => the x-th byte has changed (should be sent to the TMx8) */
-uint8_t TMx8toChangeLed[NB_TMx8] = {0};    /* x-th bit set to 1 => the x-th byte has changed (should be sent to the TMx8) */
 
-uint8_t TMx7data[NB_TMx7][8]={0};  /* each TM1638 has 16 bytes of addressable data */
-uint8_t TMx7toChange[NB_TMx7] = {0};    /* x-th bit set to 1 => the x-th byte has changed (should be sent to the TMx8) */
+
+//#define NB_TMx7 3
+//uint8_t TMx7data[NB_TMx7][8]={0};  /* each TM1638 has 16 bytes of addressable data */
+//uint8_t TMx7toChange[NB_TMx7] = {0};    /* x-th bit set to 1 => the x-th byte has changed (should be sent to the TMx8) */
 
 
 /* data for RGB LEDS */
@@ -39,24 +41,36 @@ uint8_t RGBledsHasChanged = 0; /* bool that indicates if the leds has changed du
 uint16_t blinkEvent = 0;  /* the x-th bit of blinkEvent indicates if a Led need to change its color (blink) at cycle #x WRT to the previous cycle */
 uint16_t blinkEventTable[NB_LEDS] = {0};    /* intermediate table: the same as blinkEvent, but for each led. Use only to do not have to recompute it every time (we have here enough bytes in RAM for this) */
 
+/*TODO: put it in a fancy struct */
 
 
 
 
-void setDisplayTMx8(uint8_t SPIcommand, uint8_t* SPIbuffer)
+void setDisplayTMx(uint8_t SPIcommand, uint8_t* SPIbuffer)
 {
-	uint8_t size = 8 ? SPIcommand & (1<<4) : 4; /* 4 or 8 bytes */
-	uint8_t* TMbuffer = TMx8data[SPIcommand&3];
-	uint8_t* TMtoChange = TMx8toChangeDisplay[SPIcommand&3];
+	uint8_t nTM = SPIcommand&7;     /* number of the TM board: 0-3 for the TMx8 and 4-7 for the TMx7 */
+	uint8_t size = 8 ? (SPIcommand & (1<<4)) : 4; /* 4 or 8 bytes */
+	uint8_t* TMbuffer = &(TMxDisplay[nTM]);
 	for( uint8_t i = 4 ? SPIcommand & (1<<3) : 0; i<size; i++)  /* 1st or 2nd display */
 	{
-		/* check if the byte has changed */
+		/* if the byte has changed, then send it! */
 		if (*TMbuffer != *SPIbuffer)
 		{
-			*TMtoChange |= (1<<i);  /* note that it has changed */
+			if (SPIcommand & (1<<2))
+			{
+				/* send to TM1638 */
+				TMx8_sendData(i<<1, *SPIbuffer, TMx8_STB_PINMASK[SPIcommand&3]);
+			}
+			else
+			{
+				/* send to TM1637 */
+
+			}
 		}
 		*TMbuffer++ = *SPIbuffer++;   /* copy the new data */
 	}
+	/* send command */
+
 }
 
 
@@ -128,13 +142,13 @@ ISR (SPI_STC_vect)
 		SPIcommand = SPDR;
 		/* compute how many bytes we will next receive */
 		if ((SPIcommand & 0xF0) == 0b11000000)
-			SPInbBytes = 4;
+			SPInbBytes = 4;     /* set the 7-segment display, 4-byte mode */
 		else if ((SPIcommand & 0xF0) == 0b11010000)
-			SPInbBytes = 8;
-		else if ((SPIcommand & 0xE0) == 0)
-			SPInbBytes = 5;
+			SPInbBytes = 8;     /* set the 7-segment display, 8-byte mode */
+		else if ( ((SPIcommand & 0xE0) == 0) && (SPIcommand!=0) )
+			SPInbBytes = 5;     /* set RGB Led */
 		else
-			SPInbBytes = 0;
+			SPInbBytes = 0;     /* other command requires no extra bytes */
 	}
 	SPIcycle++;
 	/* check if the end of the data transfer */
@@ -146,7 +160,8 @@ ISR (SPI_STC_vect)
 			case 0:
 				/* set RGB color */
 				if (SPIcommand)
-					setRGBLed( SPIcommand, SPIbuffer);
+					setRGBLed( SPIcommand-1, SPIbuffer);
+				/*else NOP: do nothing */
 				break;
 			case 0b01000000:
 				/* set a led */
@@ -154,10 +169,11 @@ ISR (SPI_STC_vect)
 			case 0b10000000:
 				/* set the brightness */
 				break;
-			default:    /* 0b11000000 */
+			default:    /* 0b11xxxxxx */
 				if ( !(SPIcommand & 0b00100000 ) )
 				{
 					/* set the display */
+					setDisplayTMx(SPIcommand, SPIbuffer);
 				}
 				else if (SPIcommand & 0b00010000)
 				{
@@ -233,8 +249,8 @@ int main(void)
 
 
 	TMx8_setup(1);
-	TMx8_sendData(0,0b01101101,TMx8_STB_PINMASK[0]);
-	TMx8_sendData(2,0b00000110,TMx8_STB_PINMASK[0]);
+	//TMx8_sendData(0,0b01101101,TMx8_STB_PINMASK[0]);
+	//TMx8_sendData(2,0b00000110,TMx8_STB_PINMASK[0]);
 	//TMx8_sendData(1,255,TMx8_STB_PINMASK[0]);
 
 	/* enable interrupts and wait */

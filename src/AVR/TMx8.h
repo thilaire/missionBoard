@@ -8,6 +8,7 @@
 #define _TM163x_H_
 
 #define BIT(x) (0x01 << (x))
+/* TODO: utiliser la macro un peu partout dans le code */
 
 /* Constants to define the Ports for DIO (Data IO), CLK (Clock) and STBs (Enable pins) */
 #define TMx8_DIO_PORT      PORTB
@@ -57,6 +58,5 @@ void TMx8_sendData(uint8_t addr, uint8_t data, uint8_t StbMask);
 void TMx8_setDataMode(uint8_t wr_mode, uint8_t addr_mode);
 void TMx8_sendByte(uint8_t data);
 uint8_t TMx8_getByte();
-
 
 #endif
