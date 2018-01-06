@@ -147,6 +147,7 @@ After each use of avrdude (of the SPI bus), I need to reinitalize the SPI with
 sudo rmmod spi_bcm2835
 sudo modprobe spi_bcm2835
 ```
+this is already included in the Makefile provided.
 
 
 ## Polling and timing

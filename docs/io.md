@@ -31,7 +31,7 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 | 03 (**GPIO02**, SDA1, I2C)    | `RPi_IO2`  | In  | `P8_PB_`      |   |               |     |            |                       (5v) 04 |
 | 05 (**GPIO03**, SCL1, I2C)    | `RPi_IO3`  | In  | `P8_PB_`      |   |               |     |            |                      (GND) 06 |
 | 07 (**GPIO04**, GPIO_GCLK)    | `RPi_IO4`  | In  | `P8_PB_`      |   | `P8_PB_`      | In  | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
-| 09 (GND)                      |            |     |               |   |   x           |     | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
+| 09 (GND)                      |            |     |               |   | `P8_PB_`      |     | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
 | 11 (**GPIO17**, GPIO_GEN0)    | `RPi_IO17` | In  | `P8_PB_`      |   | `P8_PB_`      | In  | `RPi_IO18` |    (GPIO_GEN1, **GPIO18**) 12 |
 | 13 (**GPIO27**, GPIO_GEN2)    | `RPi_IO27` | In  | `P8_PB_`      |   |               |     |            |                      (GND) 14 |
 | 15 (**GPIO22**, GPIO_GEN3)    | `RPi_IO22` | In  | `P8_PB_`      |   |   x           |     | `RPi_IO23` |    (GPIO_GEN4, **GPIO23**) 16 |
