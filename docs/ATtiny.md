@@ -199,23 +199,23 @@ The following table sums up the commands:
 |-|-|-|-|-|-|-|-|-|-|
 |`1`|`0`|`b`|`b`|`b`|`x`|`t`|`t`| Set the brightness of the TM163x | 0 |
 | | | | | | | | | `bbb` is the brightness | |
-| | | | | | | | | `x` is 1 for the TM1637, 0 for the TM1638 | |
+| | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
 |`1`|`1`|`0`|`a`|`d`|`x`|`t`|`t`| Set the 7+segment display of the TM163x | 4 or 8 bytes |
 | | | | | | | | | `a` is 0 to set 4 digits, 1 to set 8 digits | |
 | | | | | | | | | `d` is 0 for the 1st display, 1 for the 2nd display | |
-| | | | | | | | | `x` is 1 for the TM1637, 0 for the TM1638 | |
+| | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
 |`1`|`1`|`1`|`0`|`o`|`x`|`t`|`t`| Turn on/off the display of the TM163x | 0 |
 | | | | | | | | | `o` is 0 to set 4 digits, 1 to set 8 digits | |
 | | | | | | | | | `d` is 0 for the 1st display, 1 for the 2nd display | |
-| | | | | | | | | `x` is 1 for the TM1637, 0 for the TM1638 | |
+| | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
 |`1`|`1`|`1`|`1`|`0`|`x`|`t`|`t`| Clear the display of the TM163x | 0 |
-| | | | | | | | | `x` is 1 for the TM1637, 0 for the TM1638 | |
+| | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
 |`1`|`1`|`1`|`1`|`1`|`x`|`x`|`x`| not used | 0 |

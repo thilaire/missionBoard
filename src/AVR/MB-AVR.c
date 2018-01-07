@@ -15,7 +15,7 @@
 /* data for TM1637 and TM1638 */
 #define NB_TMx8 3
 #define NB_TMx7 3
-uint8_t TMxDisplay[NB_TMx8+NB_TMx7] = {0};    /* display data of the TM1637 and TM1638*/
+uint8_t TMxDisplay[4*NB_TMx7+8*NB_TMx8] = {0};    /* display data of the TM1637 and TM1638*/
 
 
 const uint8_t TMx8_STB_PINMASK[3] = { BIT(TMx8_STB_PIN0), BIT(TMx8_STB_PIN1), BIT(TMx8_STB_PIN2)};  /* STB0, STB1 and STB2 are on PD5, PD6 and PD7 respectively */
@@ -48,18 +48,25 @@ uint16_t blinkEventTable[NB_LEDS] = {0};    /* intermediate table: the same as b
 
 void setDisplayTMx(uint8_t SPIcommand, uint8_t* SPIbuffer)
 {
-	uint8_t nTM = SPIcommand&7;     /* number of the TM board: 0-3 for the TMx8 and 4-7 for the TMx7 */
-	uint8_t size = 8 ? (SPIcommand & (1<<4)) : 4; /* 4 or 8 bytes */
-	uint8_t* TMbuffer = &(TMxDisplay[nTM]);
-	for( uint8_t i = 4 ? SPIcommand & (1<<3) : 0; i<size; i++)  /* 1st or 2nd display */
+	uint8_t size = (SPIcommand & (1<<4)) ? 8 : 4; /* 4 or 8 bytes */
+	uint8_t pos = (SPIcommand & (1<<3))? 4 : 0;      /* 1st or 2nd 4-digit display */
+	/* compute the adress of the TM buffer (in TMxDisplay) */
+	uint8_t* TMbuffer;
+	if (SPIcommand & (1<<2))
+		TMbuffer = TMxDisplay + 4*NB_TMx7 + (SPIcommand&3)*8 + pos;
+	else
+		TMbuffer = TMxDisplay + (SPIcommand&3)*4;
+
+	/* loop for every byte sent */
+	for( uint8_t i = 0; i<size; i++,pos++)
 	{
 		/* if the byte has changed, then send it! */
-		if (*TMbuffer != *SPIbuffer)
+		if ((*TMbuffer) != (*SPIbuffer) )
 		{
 			if (SPIcommand & (1<<2))
 			{
 				/* send to TM1638 */
-				TMx8_sendData(i<<1, *SPIbuffer, TMx8_STB_PINMASK[SPIcommand&3]);
+				TMx8_sendData(pos<<1, *SPIbuffer, TMx8_STB_PINMASK[SPIcommand&3]);
 			}
 			else
 			{
@@ -69,8 +76,6 @@ void setDisplayTMx(uint8_t SPIcommand, uint8_t* SPIbuffer)
 		}
 		*TMbuffer++ = *SPIbuffer++;   /* copy the new data */
 	}
-	/* send command */
-
 }
 
 
@@ -255,5 +260,15 @@ int main(void)
 
 	/* enable interrupts and wait */
 	sei();
+
+
+
+	TMx8_sendData(1, 255, TMx8_STB_PINMASK[0]);
+	_delay_ms(250);
+	TMx8_sendData(1, 0, TMx8_STB_PINMASK[0]);
+
+
+
+
 	while(1);   /*TODO: idle mode? */
 }
