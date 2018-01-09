@@ -9,7 +9,7 @@ import asyncio
 from aioconsole import ainput
 
 from MissionBoard import MissionBoard, onChange
-from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW
+from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW, BLACK
 
 
 # create the main object and add the different buttons/displays for each panel
@@ -66,36 +66,25 @@ MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unho
 #MB.addSwitch3(['P9_SW4'])
 
 
-# some test to debug
-#MB.counter = '0.1.2.3.'
-#MB.go = True
-#MB.manual = True
 
 
+MB.PB_Go.state=0
 @onChange(MB.PB_Go)
 async def GoChange(self):
 	print("GoChange !!")
-	MB.RGB_Go = RED, FAST
-
+	if MB.PB_Go.state==1:
+		MB.RGB_Go = RED, FAST
+		MB.PB_Go.state = 0
+	else:
+		MB.RGB_Go = BLACK
+		MB.PB_Go.state = 1
 
 
 
 # run tests!
 #MB.runCheck()
-async def test():
-	MB.RGB_Go = RED
+async def debug():
 
-	#print("Test: addEvent")
-	#MB.addEvent(MB.PB_Go)
-
-	MB.RGB_gate1 = YELLOW, FAST
-	MB.RGB_gate2 = OLIVE, SLOW
-	MB.RGB_orbit = GREEN, SLOW, 1
-
-	MB.DISP_counter = " . . . . . . . ."
-	#MB.DISP_counter.setBrightness(1)
-	#MB.DISP_counter.off()
-	#MB.DISP_counter.setBrightness(7)
 
 	while True:
 		com = await ainput(">>>")
@@ -105,4 +94,4 @@ async def test():
 			print(e)
 
 
-MB.run(test)
+MB.run(debug)

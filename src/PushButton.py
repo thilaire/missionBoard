@@ -14,17 +14,10 @@ class PB(Element):
 		self._gpio = gpio
 		self._value = False
 
-
-		def addEvent(gpio):
-			self._MB._loop.call_soon_threadsafe(self._MB._EventQueue.put_nowait, self)
-			#self._MB.addEvent(self)
-
-
-
 		# configure the pin for input, with pull-up
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.add_event_detect(gpio, GPIO.BOTH, callback=addEvent , bouncetime=200)
+		GPIO.add_event_detect(gpio, GPIO.BOTH, callback=lambda x:self._MB.addEvent(self) , bouncetime=200)
 
 	def runCheck(self):
 		"""

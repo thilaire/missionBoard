@@ -114,20 +114,25 @@ class MissionBoard:
 	async def _manageEvents(self):
 		"""
 		Infinite loop to manage the events in the Event Queue
+		(the queue contains directly the PB objects)
 		"""
 		while True:
-			print("_manageEvents: wait for event")
 			# wait for event
 			event = await self._EventQueue.get()
 			# process the event
-			print("_manageEvents: call on change %s"%str(event))
 			await event.onChange()
 
 
 	def addEvent(self, obj):
-		"""Simply add the object in the Event Queue"""
-		print("call AddEvent: %s"%str(obj))
-		self._EventQueue.put_nowait(obj)
+		"""Simply add the object in the Event Queue
+		the put_nowait is done in the same thread as the loop with call_soon_threadsafe
+		addEvent is called by a RPi.GIPIO callback, that is in another thread, see
+		https://raspberrypi.stackexchange.com/questions/54514/implement-a-gpio-function-with-a-callback-calling-a-asyncio-method
+		and
+		https://stackoverflow.com/questions/32889527/is-there-a-way-to-use-asyncio-queue-in-multiple-threads
+		"""
+		self._loop.call_soon_threadsafe(self._EventQueue.put_nowait, obj)
+
 
 # decorator onChange !
 def onChange(obj):
