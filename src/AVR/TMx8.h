@@ -59,4 +59,5 @@ void TMx8_setDataMode(uint8_t wr_mode, uint8_t addr_mode);
 void TMx8_sendByte(uint8_t data);
 uint8_t TMx8_getByte();
 
+
 #endif

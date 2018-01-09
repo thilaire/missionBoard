@@ -197,7 +197,7 @@ The following table sums up the commands:
 | | | | | | | | | `lll` is the number of the led | |
 | | | | | | | | | `tt` is the number of the TM1638 considered | |
 |-|-|-|-|-|-|-|-|-|-|
-|`1`|`0`|`b`|`b`|`b`|`x`|`t`|`t`| Set the brightness of the TM163x | 0 |
+|`1`|`0`|`b`|`b`|`b`|`x`|`t`|`t`| Turn on and set the brightness of the TM163x | 0 |
 | | | | | | | | | `bbb` is the brightness | |
 | | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
@@ -208,17 +208,17 @@ The following table sums up the commands:
 | | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
-|`1`|`1`|`1`|`0`|`o`|`x`|`t`|`t`| Turn on/off the display of the TM163x | 0 |
+|`1`|`1`|`1`|`0`|`o`|`x`|`t`|`t`| Turn off the display of the TM163x | 0 |
 | | | | | | | | | `o` is 0 to set 4 digits, 1 to set 8 digits | |
 | | | | | | | | | `d` is 0 for the 1st display, 1 for the 2nd display | |
 | | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
-|`1`|`1`|`1`|`1`|`0`|`x`|`t`|`t`| Clear the display of the TM163x | 0 |
+|`1`|`1`|`1`|`0`|`1`|`x`|`t`|`t`| Clear the display of the TM163x | 0 |
 | | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
-|`1`|`1`|`1`|`1`|`1`|`x`|`x`|`x`| not used | 0 |
+|`1`|`1`|`1`|`1`|`x`|`x`|`x`|`x`| not used | 0 |
 |`0`|`0`|`1`|`x`|`x`|`x`|`x`|`x`| not used | 0 |
 |`0`|`0`|`0`|`1`|`1`|`x`|`x`|`x`| not used | 0 |
 |-|-|-|-|-|-|-|-|-|-|
