@@ -2,10 +2,8 @@
 
 from Element import Element
 from time import sleep
-try:
-	import GPIO
-except ImportError:
-	pass
+import RPi.GPIO as GPIO
+
 
 class PB(Element):
 	"""
@@ -15,13 +13,18 @@ class PB(Element):
 		super(PB, self).__init__(keyname, name)
 		self._gpio = gpio
 		self._value = False
-		try:
-			# configure the pin for input, with pull-up
-			GPIO.setmode(GPIO.BCM)
-			GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD)
-			GPIO.add_event_detect(gpio, GPIO.BOTH, callback=lambda: self._MB.addEvent(self), bouncetime=200)
-		except NameError:
-			pass
+
+
+		def addEvent(gpio):
+			self._MB._loop.call_soon_threadsafe(self._MB._EventQueue.put_nowait, self)
+			#self._MB.addEvent(self)
+
+
+
+		# configure the pin for input, with pull-up
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.add_event_detect(gpio, GPIO.BOTH, callback=addEvent , bouncetime=200)
 
 	def runCheck(self):
 		"""
@@ -43,12 +46,13 @@ class PB(Element):
 	@property
 	def value(self):
 		"""Get the value"""
-		try:
-			self._value = GPIO.input(self._gpio)
-		except NameError:
-			pass
-
+		self._value = GPIO.input(self._gpio)
 		return self._value
 
+
+	async def onChange(self):
+		"""onChange method
+		to be filled for each PushButton"""
+		pass
 
 

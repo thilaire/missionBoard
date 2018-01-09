@@ -39,10 +39,10 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 | 19 (**GPIO10**, SPI_MOSI)     | `RPi_MOSI` | Out | `AT_MOSI`     |   |               |     |            |                      (GND) 20 |
 | 21 (**GPIO09**, SPI_MISO)     | `RPi_MISO` | In  | `AT_MISO`     |   | `AT_RESET`    | Out | `RPi_IO25` |    (GPIO_GEN6, **GPIO25**) 22 |
 | 23 (**GPIO11**, SPI_CLK)      | `RPi_SCK`  | Out | `AT_SCK`      |   |   x (SPI?)    |  ?  | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
-| 25 (GND)                      |            |     |               |   | `P7_JOY_`     | In  | `RPi_IO7`  |    (SPI_CE1_N, **GPIO07**) 26 |
+| 25 (GND)                      |            |     |               |   | `P7_PB_UP`    | In  | `RPi_IO7`  |    (SPI_CE1_N, **GPIO07**) 26 |
 | 27 (**ID_SD**, I2C ID EEPROM) |            |     |               |   |               |     |            | (I2C ID EEPROM, **ID_SC**) 28 |
-| 29 (**GPIO05**)               | `RPi_IO5`  | In  | `P7_JOY_`     |   |               |     |            |                      (GND) 30 |
-| 31 (**GPIO06**)               | `RPi_IO6`  | In  | `P7_JOY_`     |   | `P7_JOY_`     | In  | `RPi_IO12` |               (**GPIO12**) 32 |
+| 29 (**GPIO05**)               | `RPi_IO5`  | In  | `P7_PB_DOWN`  |   |               |     |            |                      (GND) 30 |
+| 31 (**GPIO06**)               | `RPi_IO6`  | In  | `P7_PB_RIGHT` |   | `P7_PB_LEFT`  | In  | `RPi_IO12` |               (**GPIO12**) 32 |
 | 33 (**GPIO13**)               | `RPi_IO13` |     |               |   |               |     |            |                      (GND) 34 |
 | 35 (**GPIO19**)               | `RPi_IO19` |     |   x           |   |   x           |     | `RPi_IO16` |               (**GPIO16**) 36 |
 | 37 (**GPIO26**)               | `RPi_IO26` |     |   x           |   |   x           |     | `RPi_IO20` |               (**GPIO20**) 38 |

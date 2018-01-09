@@ -22,5 +22,6 @@ This version of Python is required, because my program relies on the `asyncio` l
 ## Python Libraries
 
 You will need the following libraries:
-- spidev
+- spidev (for the SPI communication with the AVR micro-controller)
+- RPi.GPIO
 

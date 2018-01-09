@@ -6,6 +6,7 @@ Define the different callbacks
 """
 from time import sleep
 import asyncio
+from aioconsole import ainput
 
 from MissionBoard import MissionBoard, onChange
 from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW
@@ -21,14 +22,14 @@ MB = MissionBoard()
 MB.add('P2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', '', 'gate2',
 	'alarm', 'landing', ''], pos=1)
 
-#MB.add('P3_SSD', 'counter', TMindex=0, block=0)
+MB.add('P3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 # Panel 3: laser
 #MB.addSwitch2(['P3_SW_0', 'LaserArmed'], TMindex=1, line=1, pin=1)
 #MB.addSwitch2(['P3_SW_1', 'LaserColor'], TMindex=1, line=1, pin=2)
 
 # Panel 4: pilot
-#MB.add('P4_LED', 'manual', TMindex=0, index=0)
+MB.add('P4_LED', 'manual', TMindex=4, index=0)
 #MB.addPotentiometer(['P4_POT_0', 'roll'], AN=1)
 #MB.addPotentiometer(['P4_POT_1', 'yaw'], AN=2)
 #MB.addPotentiometer(['P4_POT_0', 'speed'], AN=0)
@@ -43,21 +44,21 @@ MB.add('P2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'aut
 #MB.addSwitch2(['P6_SW2_3', 'phase3'], TMindex=1, line=1, pin=14)
 
 # Panel 7: Joystick
-MB.add('P6_PB_UP', 'Up', gpio=5)
-MB.add('P6_PB_DOWN', 'Down', gpio=6)
-MB.add('P6_PB_LEFT', 'Left', gpio=7)
-MB.add('P6_PB_RIGHT', 'Right', gpio=12)
+MB.add('P7_PB_UP', 'Up', gpio=7)
+MB.add('P7_PB_DOWN', 'Down', gpio=5)
+MB.add('P7_PB_LEFT', 'Left', gpio=12)
+MB.add('P7_PB_RIGHT', 'Right', gpio=6)
 
 # Panel 8: commands
-MB.add('P8_PB_0', 'RocketEngine', gpio=2)
-MB.add('P8_PB_1', 'SpaceshipEngine', gpio=3)
-MB.add('P8_PB_2', 'Parachute', gpio=4)
+MB.add('P8_PB_0', 'RocketEngine', gpio=22)
+MB.add('P8_PB_1', 'SpaceshipEngine', gpio=0)
+MB.add('P8_PB_2', 'Parachute', gpio=27)
 MB.add('P8_PB_3', 'Brake', gpio=17)
-MB.add('P8_PB_4', 'Unhook', gpio=27)
-MB.add('P8_PB_5', 'OxygenPump', gpio=22)
-MB.add('P8_PB_6', 'Laser', gpio=14)
-MB.add('P8_PB_7', 'LandingGear', gpio=18)
-MB.add('P8_PB_8', 'Go', gpio=15)
+MB.add('P8_PB_4', 'Unhook', gpio=3)
+MB.add('P8_PB_5', 'OxygenPump', gpio=14)
+MB.add('P8_PB_6', 'Laser', gpio=15)
+MB.add('P8_PB_7', 'LandingGear', gpio=2)
+MB.add('P8_PB_8', 'Go', gpio=18)
 MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unhook', 'oxygenPump', 'laser',
 	'landingGear', 'Go'], pos=13)
 
@@ -74,8 +75,7 @@ MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unho
 @onChange(MB.PB_Go)
 async def GoChange(self):
 	print("GoChange !!")
-	if self._value:
-		MB.RGB_go = RED, FAST
+	MB.RGB_Go = RED, FAST
 
 
 
@@ -92,9 +92,17 @@ async def test():
 	MB.RGB_gate2 = OLIVE, SLOW
 	MB.RGB_orbit = GREEN, SLOW, 1
 
+	MB.DISP_counter = " . . . . . . . ."
+	#MB.DISP_counter.setBrightness(1)
+	#MB.DISP_counter.off()
+	#MB.DISP_counter.setBrightness(7)
 
-
-
+	while True:
+		com = await ainput(">>>")
+		try:
+			exec(com)
+		except Exception as e:
+			print(e)
 
 
 MB.run(test)
