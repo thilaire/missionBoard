@@ -12,11 +12,11 @@ class LED(Element):
 
 	def __init__(self, keyname, name, TMindex, index):
 		super(LED, self).__init__(keyname, name)
-		self._TMindex = TMindex
+		self._TMindex = TMindex&3
 		self._index = index
-		self._isOn = False  # the led is off at the beginning
 
 	def runCheck(self):
+		pass
 		input('Checking LED %s'%str(self))
 		self.set(False)
 		print('.',end='')
@@ -27,13 +27,6 @@ class LED(Element):
 		self.set(False)
 		print('Done')
 
-	def __get__(self, obj, objtype):
-		return self._isOn
-
-	def set(self, value):
-		"""set the value of the LED"""
-		self._TMB.leds[self._TMindex * 8 + self._index] = value
-		self._isOn = value
-
 	def __set__(self, obj, value):
-		self.set(value)
+		"""Set the led (value is evaluated as a boolean)"""
+		self._MB.sendSPI([0b01000000 | self._TMindex | self._index<<2 | (1<<5 if value else 0)])

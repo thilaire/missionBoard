@@ -1,14 +1,11 @@
 # coding=utf-8
 
 from re import compile
-try:
-	from spidev import SpiDev
-except ImportError:
-	pass
+from spidev import SpiDev
 
 from Element import Element
 from LED import LED
-#from SSD import SSD
+from DISP import DISP
 from PushButton import PB
 from RGB import RGB
 import asyncio
@@ -32,11 +29,8 @@ class MissionBoard:
 		Element.setMB(self)
 
 		# open SPI connection
-		try:
-			self._spi = SpiDev()
-			self._spi.open(0,0)
-		except NameError:
-			pass
+		self._spi = SpiDev()
+		self._spi.open(0,0)
 
 		# prepare the asyncio loop and the queues
 		self._loop = asyncio.get_event_loop()
@@ -111,15 +105,10 @@ class MissionBoard:
 		(a way to send one message at once)
 		"""
 		while True:
-			print("_proceedSPIQueue: wait for data")
 			# wait for data
 			data = await self._SPIqueue.get()
 			# process the item
-			try:
-				self._spi.xfer(data)
-			except AttributeError:
-				await asyncio.sleep(0.2)
-			print("_proceedSPIQueue: received " +str(data))
+			self._spi.xfer(data)
 
 
 	async def _manageEvents(self):
@@ -131,12 +120,13 @@ class MissionBoard:
 			# wait for event
 			event = await self._EventQueue.get()
 			# process the event
-			print("_manageEvents: call on change")
+			print("_manageEvents: call on change %s"%str(event))
 			await event.onChange()
 
 
 	def addEvent(self, obj):
 		"""Simply add the object in the Event Queue"""
+		print("call AddEvent: %s"%str(obj))
 		self._EventQueue.put_nowait(obj)
 
 # decorator onChange !
