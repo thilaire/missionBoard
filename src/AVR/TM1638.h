@@ -4,8 +4,8 @@
 * Licence: GPL v3
 */
 
-#ifndef _TM163x_H_
-#define _TM163x_H_
+#ifndef _TM1638_H_
+#define _TM1638_H_
 
 #define BIT(x) (0x01 << (x))
 /* TODO: utiliser la macro un peu partout dans le code */
@@ -57,6 +57,7 @@ void TMx8_sendCommand(uint8_t cmd, uint8_t StbMask);
 void TMx8_sendData(uint8_t addr, uint8_t data, uint8_t StbMask);
 void TMx8_setDataMode(uint8_t wr_mode, uint8_t addr_mode);
 void TMx8_sendByte(uint8_t data);
+void getData(uint8_t* data, uint8_t StbMask);
 uint8_t TMx8_getByte();
 
 

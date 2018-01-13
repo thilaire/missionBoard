@@ -8,7 +8,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "light_ws2812.h"
-#include "TMx8.h"
+#include "TM1638.h"
 #include <string.h>
 
 
@@ -60,6 +60,92 @@ uint16_t blinkEventTable[NB_LEDS] = {0};    /* intermediate table: the same as b
 
 
 
+/* data to send through the SPI */
+ struct {
+	uint8_t TMx8K1[NB_TMx8];        /* TMx8 data on line K1 */
+	uint8_t TMx8K2[NB_TMx8];        /* TMx8 data on line K2 */
+	uint8_t dataADC[3];                 /* ADC value */
+}  SPItoSend = {0};
+uint8_t SPItoSendHeader = 0;
+uint8_t SPItoSendcycle = 0;
+uint8_t SPItoSendByte = 0;      /* byte to send, when we only send one byte */
+
+
+/* get input data from the TM1638 boards */
+void getDataTMx8(uint8_t nTM)
+{
+	uint8_t K1=0, K2=0;
+	uint8_t data;
+
+	/* set the TMx8 in read mode */
+	clearTMx8_Stb(TMx8_STB_PINMASK[nTM]);
+	TMx8_setDataMode(READ_MODE, INCR_ADDR);
+	_delay_us(20);  /* wait at least 10µs ? */
+	/* get the 1st byte and put it in K1 and K2 */
+	data = TMx8_getByte();
+	K1 = (data & BIT(2)) >> 2;
+	K1 |= (data & BIT(6)) >> 5;
+	K2 = (data & BIT(1)) >> 1;
+	K2 |= (data & BIT(5)) >> 4;
+	/* get the 2nd byte and put it in K1 and K2 */
+	data = TMx8_getByte();
+	K1 |= (data & BIT(2));
+	K1 |= (data & BIT(6)) >> 3;
+	K2 |= (data & BIT(1)) << 1;
+	K2 |= (data & BIT(5)) >> 2;
+	/* get the 3rd byte and put it in K1 and K2 */
+	data = TMx8_getByte();
+	K1 |= (data & BIT(2)) << 2;
+	K1 |= (data & BIT(6)) >> 1;
+	K2 |= (data & BIT(1)) << 3;
+	K2 |= (data & BIT(5));
+	/* get the last byte and put it in K1 and K2 */
+	data = TMx8_getByte();
+	K1 |= (data & BIT(2)) << 4;
+	K1 |= (data & BIT(6)) << 1;
+	K2 |= (data & BIT(1)) << 5;
+	K2 |= (data & BIT(5)) << 2;
+	/* close the connection */
+	setTMx8_Stb();
+
+	/* check if K1 and K2 has changed
+	and update SPItoSend datas */
+	if (K1 != SPItoSend.TMx8K1[nTM])
+	{
+		SPItoSend.TMx8K1[nTM] = K1;
+		if (SPItoSendHeader)
+		{
+			/* something has already changed */
+			SPItoSendHeader = 0b10000000;
+		}
+		else
+		{
+			/* first change. We save it in SPItoSendByte */
+			SPItoSendHeader = 0b01000000 | nTM;
+			SPItoSendByte = K1;
+		}
+	}
+	if (K2 != SPItoSend.TMx8K2[nTM])
+	{
+		SPItoSend.TMx8K2[nTM] = K2;
+		if (SPItoSendHeader)
+		{
+			/* something has already changed */
+			SPItoSendHeader = 0b10000000;
+		}
+		else
+		{
+			/* first change. We save it in SPItoSendByte */
+			SPItoSendHeader = 0b01000100 | nTM;
+			SPItoSendByte = K2;
+		}
+	}
+	/* copy to SPDR if we are not already sending something */
+	if (SPItoSendcycle==0)
+		SPDR = SPItoSendHeader;
+}
+
+
 /* according to the SPI data received, set the display of the TMx (send appropriate command) */
 void setDisplayTMx(uint8_t SPIcommand, uint8_t* SPIbuffer)
 {
@@ -97,12 +183,6 @@ void setDisplayTMx(uint8_t SPIcommand, uint8_t* SPIbuffer)
 /* according to the SPI data received, set the Leds of the TMx8 (send appropriate command) */
 void setLedTMx8(uint8_t SPIcommand)
 {
-/*TMx8_sendData(1, 255, TMx8_STB_PINMASK[0]);
-_delay_ms(250);
-TMx8_sendData(1, 0, TMx8_STB_PINMASK[0]);
-_delay_ms(250);*/
-
-
 	uint8_t nLed = (SPIcommand & 28)>>2; /* bits 2, 3 and 4 */
 	TMx8_sendData(
 		(nLed<<1)+1,                              /* address in memory */
@@ -215,6 +295,32 @@ ISR (SPI_STC_vect)
 	static uint8_t SPIcommand;      /* 1st byte received (indicates which command, and how many other bytes will follow */
 	static uint8_t SPIbuffer[8] = {0};    /* buffer (5 bytes for a LED, 8 for display, etc.) */
 	static uint8_t SPInbBytes = 0;      /* how many bytes we will receive in the buffer for this command */
+
+	static uint8_t SPItoSendMode = 0;
+	static uint8_t* SPItoSendBuffer;
+
+	/* prepare next byte to send */
+	if (SPItoSendcycle==0)
+	{
+		SPDR = SPItoSendHeader;
+		SPItoSendMode = SPItoSendHeader & 0b11000000;
+	}
+	else
+	{
+		if (SPItoSendMode == 0b01000000)
+		{
+			SPDR = SPItoSendByte;
+			SPItoSendcycle = 0;
+		}
+		else
+		{
+			SPDR = *SPItoSendBuffer++;
+			SPItoSendcycle++;
+			if (SPItoSendcycle==9)
+				SPItoSendcycle = 0; /* it was the last byte to send */
+		}
+	}
+
 	/* copy the data (1st data in SPIcommand, the others in SPIbuffer) */
 	if (SPIcycle)
 		SPIbuffer[ SPIcycle-1 ] = SPDR;
@@ -280,25 +386,32 @@ ISR (TIMER1_COMPA_vect  )
 	static uint8_t cycle=0;
 	if ((cycle&3) == 0)
 	{
-		/* capture ADC0, TM1637[0] and TM1638[0] */
+		/* run capture ADC0 and TM1638[0] */
+		getDataTMx8(0);
 	}
 	else if ((cycle&3) == 1)
 	{
-		/* capture ADC1, TM1637[1] and TM1638[1] */
+		/* run capture ADC1 and TM1638[1] */
+		getDataTMx8(1);
 	}
 	else if ((cycle&3) == 2)
 	{
-		/* capture ADC2, TM1637[2] and TM1638[2] */
+		/* run capture ADC2 and TM1638[2] */
+		getDataTMx8(2);
 	}
-	if ((cycle&15) == 3)
-	{
-		/* check if we need to send data to the led (something has changed since previous cycle ?) */
-		if (RGBledsHasChanged || ((blinkEvent >> (cycle>>4))&1) )      /* cycle>>4 -th bit of blinkEvent */
+	else
+	{   /* end capture ADC2 */
+		/* blinking cycle */
+		if ((cycle&15) == 3)
 		{
-			/* prepare the buffer */
-			fillRGBBuffer(cycle>>4);
-			ws2812_setleds(bufferLeds, NB_LEDS);
-			RGBledsHasChanged = 0;
+			/* check if we need to send data to the led (something has changed since previous cycle ?) */
+			if (RGBledsHasChanged || ((blinkEvent >> (cycle>>4))&1) )      /* cycle>>4 -th bit of blinkEvent */
+			{
+				/* prepare the buffer */
+				fillRGBBuffer(cycle>>4);
+				ws2812_setleds(bufferLeds, NB_LEDS);
+				RGBledsHasChanged = 0;
+			}
 		}
 	}
 
@@ -316,6 +429,7 @@ int main(void)
 
 	/* configure the USI */
 	SPCR |= (1<<SPIE) | (1<<SPE);
+	SPDR = 0;   /* next byte to send */
 
 	/* turn off the RGB leds */
 	ws2812_setleds(bufferLeds, NB_LEDS);
@@ -325,7 +439,6 @@ int main(void)
 	_delay_ms(500);
 	PORTC &= ~(1U<<7);
 
-
 	/* configure timer1, 16bits mode, Prescaler=1/8
 	interrupt after 15625 ticks (compare for channel A) */
 	TCCR1B = (1U<<CS11) | (1U<<WGM12);     /* prescaler = 1/8 and Clear Timer on Compare match (CTC) T*/
@@ -333,23 +446,10 @@ int main(void)
 	OCR1A = 15625;              /* 15625 ticks @ 1MHz -> 15.625ms */
 	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
 
-
+	/* setup the TMx8 and TMx7 boards */
 	TMx8_setup(1);
-	//TMx8_sendData(0,0b01101101,TMx8_STB_PINMASK[0]);
-	//TMx8_sendData(2,0b00000110,TMx8_STB_PINMASK[0]);
-	//TMx8_sendData(1,255,TMx8_STB_PINMASK[0]);
 
 	/* enable interrupts and wait */
 	sei();
-
-
-
-	TMx8_sendData(1, 255, TMx8_STB_PINMASK[0]);
-	_delay_ms(250);
-	TMx8_sendData(1, 0, TMx8_STB_PINMASK[0]);
-
-
-
-
 	while(1);   /*TODO: idle mode? */
 }

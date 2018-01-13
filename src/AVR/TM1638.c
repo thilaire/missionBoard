@@ -5,7 +5,8 @@
 */
 
 #include <avr/io.h>
-#include "TMx8.h"
+#include <util/delay.h>
+#include "TM1638.h"
 
 
 
@@ -99,25 +100,24 @@ void TMx8_sendData(uint8_t addr, uint8_t data, uint8_t StbMask)
 	setTMx8_Stb();
 }
 
+
 /* Get the data (buttons) of the TM
 - StbMask: bitmask indicating which TM is concerned
-Returns the four octets read
+- data: array to fill
+Fills the four octets read
 */
-/*
-def getData(self, TMindex):
-	"""
-	"""
-	# set in read mode
-	self._setStb(False, TMindex)
-	self._setDataMode(READ_MODE, INCR_ADDR)
-	sleep(20e-6) # wait at least 10µs ?
-	# read four bytes
-	b = []
-	for i in range(4):
-		b.append(self._getByte())
-	self._setStb(True, TMindex)
-	return b
-*/
+void getData(uint8_t* data, uint8_t StbMask)
+{
+	/* set in read mode */
+	clearTMx8_Stb(StbMask);
+	TMx8_setDataMode(READ_MODE, INCR_ADDR);
+	_delay_us(20);  /* wait at least 10µs ? */
+	/* read four bytes */
+	for(uint8_t i=0; i<4; i++)
+		*data++ = TMx8_getByte();
+	setTMx8_Stb();
+}
+
 
 /* Set the data modes
 - wr_mode: READ_MODE (read the key scan) or WRITE_MODE (write data)
