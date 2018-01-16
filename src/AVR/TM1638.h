@@ -1,6 +1,8 @@
 /*
 * Author: T. HILAIRE
 *
+* low-level driver for TM1638 chip
+*
 * Licence: GPL v3
 */
 
@@ -11,34 +13,34 @@
 /* TODO: utiliser la macro un peu partout dans le code */
 
 /* Constants to define the Ports for DIO (Data IO), CLK (Clock) and STBs (Enable pins) */
-#define TMx8_DIO_PORT      PORTB
-#define TMx8_DIO_DDR       DDRB
-#define TMx8_DIO_PINR      PINB
-#define TMx8_DIO_PIN       6
+#define TM1638_DIO_PORT      PORTB
+#define TM1638_DIO_DDR       DDRB
+#define TM1638_DIO_PINR      PINB
+#define TM1638_DIO_PIN       6
 
-#define TMx8_CLK_PORT      PORTB
-#define TMx8_CLK_DDR       DDRB
-#define TMx8_CLK_PIN       7
+#define TM1638_CLK_PORT      PORTB
+#define TM1638_CLK_DDR       DDRB
+#define TM1638_CLK_PIN       7
 
-#define TMx8_STB_PORT      PORTD
-#define TMx8_STB_DDR       DDRD
-#define TMx8_STB_MASK_PIN  0b11100000
-#define TMx8_STB_PIN0      5
-#define TMx8_STB_PIN1      6
-#define TMx8_STB_PIN2      7
+#define TM1638_STB_PORT      PORTD
+#define TM1638_STB_DDR       DDRD
+#define TM1638_STB_MASK_PIN  0b11100000
+#define TM1638_STB_PIN0      5
+#define TM1638_STB_PIN1      6
+#define TM1638_STB_PIN2      7
 
 
 /* intern bit manipulation macros */
 /* check if they correspond to asm set_bit / clear_bit ? */
-inline __attribute__((always_inline)) static void setTMx8_Clk() { TMx8_CLK_PORT |= BIT(TMx8_CLK_PIN); }
-inline __attribute__((always_inline)) static void clearTMx8_Clk() { TMx8_CLK_PORT &= ~BIT(TMx8_CLK_PIN); }
-inline __attribute__((always_inline)) static void setTMx8_Dio() { TMx8_DIO_PORT |= BIT(TMx8_DIO_PIN); }
-inline __attribute__((always_inline)) static void clearTMx8_Dio() { TMx8_DIO_PORT &= ~BIT(TMx8_DIO_PIN); }
-inline __attribute__((always_inline)) static void writeTMx8_Dio(uint8_t b) { b ? setTMx8_Dio() : clearTMx8_Dio(); }
-inline __attribute__((always_inline)) static void setTMx8_Dio_Input() { TMx8_DIO_DDR &= ~BIT(TMx8_DIO_PIN); }
-inline __attribute__((always_inline)) static void setTMx8_Dio_Output() { TMx8_DIO_DDR |= BIT(TMx8_DIO_PIN); }
-inline __attribute__((always_inline)) static void clearTMx8_Stb( uint8_t mask) { TMx8_STB_PORT &= ~mask; }
-inline __attribute__((always_inline)) static void setTMx8_Stb() { TMx8_STB_PORT |= TMx8_STB_MASK_PIN ; }
+inline __attribute__((always_inline)) static void setTM1638_Clk() { TM1638_CLK_PORT |= BIT(TM1638_CLK_PIN); }
+inline __attribute__((always_inline)) static void clearTM1638_Clk() { TM1638_CLK_PORT &= ~BIT(TM1638_CLK_PIN); }
+inline __attribute__((always_inline)) static void setTM1638_Dio() { TM1638_DIO_PORT |= BIT(TM1638_DIO_PIN); }
+inline __attribute__((always_inline)) static void clearTM1638_Dio() { TM1638_DIO_PORT &= ~BIT(TM1638_DIO_PIN); }
+inline __attribute__((always_inline)) static void writeTM1638_Dio(uint8_t b) { b ? setTM1638_Dio() : clearTM1638_Dio(); }
+inline __attribute__((always_inline)) static void setTM1638_Dio_Input() { TM1638_DIO_DDR &= ~BIT(TM1638_DIO_PIN); }
+inline __attribute__((always_inline)) static void setTM1638_Dio_Output() { TM1638_DIO_DDR |= BIT(TM1638_DIO_PIN); }
+inline __attribute__((always_inline)) static void clearTM1638_Stb( uint8_t mask) { TM1638_STB_PORT &= ~mask; }
+inline __attribute__((always_inline)) static void setTM1638_Stb() { TM1638_STB_PORT |= TM1638_STB_MASK_PIN ; }
 
 
 /* some constants (cf manual)*/
@@ -49,16 +51,16 @@ inline __attribute__((always_inline)) static void setTMx8_Stb() { TMx8_STB_PORT 
 
 
 /* functions */
-void TMx8_setup(uint8_t brightness);
-void TMx8_clearDisplay(uint8_t StbMask);
-void TMx8_turnOff(uint8_t StbMask);
-void TMx8_turnOn(uint8_t brightness, uint8_t StbMask);
-void TMx8_sendCommand(uint8_t cmd, uint8_t StbMask);
-void TMx8_sendData(uint8_t addr, uint8_t data, uint8_t StbMask);
-void TMx8_setDataMode(uint8_t wr_mode, uint8_t addr_mode);
-void TMx8_sendByte(uint8_t data);
-void getData(uint8_t* data, uint8_t StbMask);
-uint8_t TMx8_getByte();
+void TM1638_setup(uint8_t brightness);
+void TM1638_clearDisplay(uint8_t StbMask);
+void TM1638_turnOff(uint8_t StbMask);
+void TM1638_turnOn(uint8_t brightness, uint8_t StbMask);
+void TM1638_sendCommand(uint8_t cmd, uint8_t StbMask);
+void TM1638_sendData(uint8_t addr, uint8_t data, uint8_t StbMask);
+void TM1638_setDataMode(uint8_t wr_mode, uint8_t addr_mode);
+void TM1638_sendByte(uint8_t data);
+void TM1638_getData(uint8_t* data, uint8_t StbMask);
+uint8_t TM1638_getByte();
 
 
 #endif
