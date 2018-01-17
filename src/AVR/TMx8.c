@@ -63,8 +63,9 @@ uint8_t SPItoSendByte = 0;      /* byte to send, when we only send one byte */
 /* get input data from the TM1638 boards */
 void getDataTMx8(uint8_t nTM)
 {
-	uint8_t K1=0, K2=0;
+	uint8_t K1=0, K3=0;
 	uint8_t data;
+
 
 	/* set the TMx8 in read mode */
 	clearTM1638_Stb(TM1638_STB_PINMASK[nTM]);
@@ -72,28 +73,32 @@ void getDataTMx8(uint8_t nTM)
 	_delay_us(20);  /* wait at least 10µs ? */
 	/* get the 1st byte and put it in K1 and K2 */
 	data = TM1638_getByte();
-	K1 = (data & BIT(2)) >> 2;
-	K1 |= (data & BIT(6)) >> 5;
-	K2 = (data & BIT(1)) >> 1;
-	K2 |= (data & BIT(5)) >> 4;
+uint8_t data1 = data;
+	K3 = (data & BIT(3)) >> 3;
+	K3 |= (data & BIT(7)) >> 6;
+	K1 = (data & BIT(1)) >> 1;
+	K1 |= (data & BIT(5)) >> 4;
 	/* get the 2nd byte and put it in K1 and K2 */
 	data = TM1638_getByte();
-	K1 |= (data & BIT(2));
-	K1 |= (data & BIT(6)) >> 3;
-	K2 |= (data & BIT(1)) << 1;
-	K2 |= (data & BIT(5)) >> 2;
+uint8_t data2 = data;
+	K3 |= (data & BIT(3)) >> 1;
+	K3 |= (data & BIT(7)) >> 4;
+	K1 |= (data & BIT(1)) << 1;
+	K1 |= (data & BIT(5)) >> 2;
 	/* get the 3rd byte and put it in K1 and K2 */
 	data = TM1638_getByte();
-	K1 |= (data & BIT(2)) << 2;
-	K1 |= (data & BIT(6)) >> 1;
-	K2 |= (data & BIT(1)) << 3;
-	K2 |= (data & BIT(5));
+uint8_t data3 = data;
+	K3 |= (data & BIT(3)) << 1;
+	K3 |= (data & BIT(7)) >> 2;
+	K1 |= (data & BIT(1)) << 3;
+	K1 |= (data & BIT(5));
 	/* get the last byte and put it in K1 and K2 */
 	data = TM1638_getByte();
-	K1 |= (data & BIT(2)) << 4;
-	K1 |= (data & BIT(6)) << 1;
-	K2 |= (data & BIT(1)) << 5;
-	K2 |= (data & BIT(5)) << 2;
+uint8_t data4 = data;
+	K3 |= (data & BIT(3)) << 3;
+	K3 |= (data & BIT(7));
+	K1 |= (data & BIT(1)) << 5;
+	K1 |= (data & BIT(5)) << 2;
 	/* close the connection */
 	setTM1638_Stb();
 
@@ -114,9 +119,9 @@ void getDataTMx8(uint8_t nTM)
 			SPItoSendByte = K1;
 		}
 	}
-	if (K2 != SPItoSend.TMx8K2[nTM])
+	if (K3 != SPItoSend.TMx8K2[nTM])
 	{
-		SPItoSend.TMx8K2[nTM] = K2;
+		SPItoSend.TMx8K2[nTM] = K3;
 		if (SPItoSendHeader)
 		{
 			/* something has already changed */
@@ -126,24 +131,23 @@ void getDataTMx8(uint8_t nTM)
 		{
 			/* first change. We save it in SPItoSendByte */
 			SPItoSendHeader = 0b01000100 | nTM;
-			SPItoSendByte = K2;
+			SPItoSendByte = K3;
 		}
 	}
 	/* copy to SPDR if we are not already sending something */
 	if (SPItoSendcycle==0)
 		SPDR = SPItoSendHeader;
+
+
+/* debug */
+TM1638_sendData(0, K1, TM1638_STB_PINMASK[0]);
+TM1638_sendData(2, K3, TM1638_STB_PINMASK[0]);
+TM1638_sendData(8, data1, TM1638_STB_PINMASK[0]);
+TM1638_sendData(10, data2, TM1638_STB_PINMASK[0]);
+TM1638_sendData(12, data3, TM1638_STB_PINMASK[0]);
+TM1638_sendData(14, data4, TM1638_STB_PINMASK[0]);
+
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

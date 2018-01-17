@@ -34,27 +34,27 @@ ISR (SPI_STC_vect)
 	static uint8_t SPItoSendMode = 0;
 	static uint8_t* SPItoSendBuffer;
 
-	/* prepare next byte to send */
-	if (SPItoSendcycle==0)
-	{
-		SPDR = SPItoSendHeader;
-		SPItoSendMode = SPItoSendHeader & 0b11000000;
-	}
-	else
-	{
-		if (SPItoSendMode == 0b01000000)
-		{
-			SPDR = SPItoSendByte;
-			SPItoSendcycle = 0;
-		}
-		else
-		{
-			SPDR = *SPItoSendBuffer++;
-			SPItoSendcycle++;
-			if (SPItoSendcycle==9)
-				SPItoSendcycle = 0; /* it was the last byte to send */
-		}
-	}
+//	/* prepare next byte to send */
+//	if (SPItoSendcycle==0)
+//	{
+//		SPDR = SPItoSendHeader;
+//		SPItoSendMode = SPItoSendHeader & 0b11000000;
+//	}
+//	else
+//	{
+//		if (SPItoSendMode == 0b01000000)
+//		{
+//			SPDR = SPItoSendByte;
+//			SPItoSendcycle = 0;
+//		}
+//		else
+//		{
+//			SPDR = *SPItoSendBuffer++;
+//			SPItoSendcycle++;
+//			if (SPItoSendcycle==9)
+//				SPItoSendcycle = 0; /* it was the last byte to send */
+//		}
+//	}
 
 	/* copy the data (1st data in SPIcommand, the others in SPIbuffer) */
 	if (SPIcycle)
@@ -127,12 +127,12 @@ ISR (TIMER1_COMPA_vect  )
 	else if ((cycle&3) == 1)
 	{
 		/* run capture ADC1 and TM1638[1] */
-		getDataTMx8(1);
+		//getDataTMx8(1);
 	}
 	else if ((cycle&3) == 2)
 	{
 		/* run capture ADC2 and TM1638[2] */
-		getDataTMx8(2);
+		//getDataTMx8(2);
 	}
 	else
 	{   /* end capture ADC2 */
@@ -152,7 +152,6 @@ ISR (TIMER1_COMPA_vect  )
 	/* next cycle */
 	cycle++;
 }
-
 
 int main(void)
 {
@@ -182,6 +181,7 @@ int main(void)
 
 	/* setup the TMx8 and TMx7 boards */
 	setupTMx(1);
+
 
 	/* enable interrupts and wait */
 	sei();
