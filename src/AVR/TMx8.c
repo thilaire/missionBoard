@@ -52,7 +52,7 @@ const uint8_t TM1638_STB_PINMASK[3] = { BIT(TM1638_STB_PIN0), BIT(TM1638_STB_PIN
 /* data to send through the SPI */
  struct {
 	uint8_t TMx8K1[NB_TMx8];        /* TMx8 data on line K1 */
-	uint8_t TMx8K2[NB_TMx8];        /* TMx8 data on line K2 */
+	uint8_t TMx8K3[NB_TMx8];        /* TMx8 data on line K3 */
 	uint8_t dataADC[3];                 /* ADC value */
 }  SPItoSend = {0};
 uint8_t SPItoSendHeader = 0;
@@ -119,9 +119,9 @@ uint8_t data4 = data;
 			SPItoSendByte = K1;
 		}
 	}
-	if (K3 != SPItoSend.TMx8K2[nTM])
+	if (K3 != SPItoSend.TMx8K3[nTM])
 	{
-		SPItoSend.TMx8K2[nTM] = K3;
+		SPItoSend.TMx8K3[nTM] = K3;
 		if (SPItoSendHeader)
 		{
 			/* something has already changed */
