@@ -47,7 +47,11 @@ program: $(OUT).hex
 	ssh -t $(HOST) sudo rmmod spi_bcm2835
 	ssh -t $(HOST) sudo modprobe spi_bcm2835
 
-# Clen the mess
+# Clean the mess
 clean:
 	rm -f $(OBJ) $(OUT).elf $(OUT).hex $(SRC:.c=.s)
 	ssh $(HOST) rm -f $(OUT).hex
+
+# shutdown the raspberry
+shutdown:
+	ssh $(HOST) sudo shutdown now
