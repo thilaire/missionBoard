@@ -132,21 +132,21 @@ K3 is the original line on the board, and K1 was added. K1 is only used on the f
 | Line | Input   | Connected to | Functionality   |
 |:----:|:-------:|:------------:|:---------------:|
 | K1   | 0       |              |                 |  
-| K1   | 1       |  `P1_SW3:2`  |  Game mode      |
-| K1   | 2       |  `P1_SW3:1`  |  Game mode      |
+| K1   | 1       |              |                 |
+| K1   | 2       |              |                 |
 | K1   | 3       |  `P6_SW2_0`  |  Phase 1        |
 | K1   | 4       |  `P6_SW2_1`  |  Phase 2        |
 | K1   | 5       |  `P6_SW2_2`  |  Phase 3        |
 | K1   | 6       |  `P3_SW2_0`  |  Laser armement |
 | K1   | 7       |  `P3_SW2_1`  |  Laser color    |
 | K3   | 0       |              |                 |
-| K3   | 1       |              |                 |
-| K3   | 2       |              |                 |
-| K3   | 3       |  `P5_SW3:2`  | flight mode     |
-| K3   | 4       |  `P5_SW3:1`  | flight mode     |
-| K3   | 5       |  `P5_SW2`    |  autopilot      |
-| K3   | 6       |  `P9_SW3:2`  |  COM1/COM2      |
-| K3   | 7       |  `P9_SW3:1`  |  COM1/COM2      |
+| K3   | 1       |  `P1_SW3:2`  |  Game mode      | ok
+| K3   | 2       |  `P1_SW3:1`  |  Game mode      | ok
+| K3   | 3       |  `P5_SW3:2`  | flight mode     | ok
+| K3   | 4       |  `P5_SW3:1`  | flight mode     | ok
+| K3   | 5       |  `P5_SW2`    |  autopilot      | ok
+| K3   | 6       |  `P9_SW3:2`  |  COM2           | ok
+| K3   | 7       |  `P9_SW3:1`  |  COM1           | ok
 
 
 
