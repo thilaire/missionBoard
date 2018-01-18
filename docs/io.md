@@ -72,12 +72,12 @@ x: still available
 
 | ATtiny88   Pin number    | Name       | IO  | Connected to   |   | Connected to  | IO  | Name       |  ATtiny88   Pin number    |
 |:-------------------------|:----------:|:---:|:--------------:|:-:|:-------------:|:---:|:----------:|--------------------------:|
-| 01 (**PC6**, RESET)      | `AT_RESET` | In  | `RPi_IO25`     |   | `7TM3_CLK`    | Out | `AT_PC5`   |   (ADC5, SCL, **PC5**) 28 |
-| 02 (**PD0**)             | `AT_PD0`   | In  |  I_KB0         |   | `7TM2_CLK`    | Out | `AT_PC4`   |   (ADC4, SDA, **PC4**) 27 |
-| 03 (**PD1**)             | `AT_PD1`   | In  |  I_KB1         |   | `7TM1_CLK`    | Out | `AT_PC3`   |   (ADC3, SCL, **PC3**) 26 |
-| 04 (**PD2**, INT0)       | `AT_PD2`   | In  |  I_KB2         |   | `P4_POT_2`    | In  | `AT_ADC2`  |        (ADC2, **PC2**) 25 |
-| 05 (**PD3**, INT1)       | `AT_PD3`   | In  |  I_KB3         |   | `P4_POT_1`    | In  | `AT_ADC1`  |        (ADC1, **PC1**) 24 |
-| 06 (**PD4**, T0)         | `AT_PD4`   | Out |  O_KB0         |   | `P4_POT_0`    | In  | `AT_ADC0`  |        (ADC0, **PC0**) 23 |
+| 01 (**PC6**, RESET)      | `AT_RESET` | In  | `RPi_IO25`     |   | `P4_POT_2`    | Out | `AT_ADC5`  |   (ADC5, SCL, **PC5**) 28 |
+| 02 (**PD0**)             | `AT_PD0`   | In  |  I_KB0         |   | `P4_POT_1`    | Out | `AT_ADC4`  |   (ADC4, SDA, **PC4**) 27 |
+| 03 (**PD1**)             | `AT_PD1`   | In  |  I_KB1         |   | `P4_POT_0`    | Out | `AT_ADC3`  |   (ADC3, SCL, **PC3**) 26 |
+| 04 (**PD2**, INT0)       | `AT_PD2`   | In  |  I_KB2         |   | `7TM3_CLK`    | In  | `AT_PC2`   |        (ADC2, **PC2**) 25 |
+| 05 (**PD3**, INT1)       | `AT_PD3`   | In  |  I_KB3         |   | `7TM2_CLK`    | In  | `AT_PC1`   |        (ADC1, **PC1**) 24 |
+| 06 (**PD4**, T0)         | `AT_PD4`   | Out |  O_KB0         |   | `7TM1_CLK`    | In  | `AT_PC0`   |        (ADC0, **PC0**) 23 |
 | 07 (VCC)                 |            |     |    3.3V        |   |     GND       |     |            |                  (GND) 22 |
 | 08 (GND)                 |            |     |     GND        |   | `AT_LED`, OKB2| Out | `AT_PC7`   |              (**PC7**) 21 |
 | 09 (**PB6**, CLKI)       | `AT_PB6`   | I/O | `8TM_DIO`      |   |    +3.3V      |     |            |                 (AVCC) 20 |
@@ -115,39 +115,43 @@ The three TM1638s are "chained" (to save some GPIO), so it means they share the 
 
 ### Outputs
 
-| TM Board | Output       | Connected to |
-|:--------:|:------------:|:------------:|
-| #1       | `TM1_LED_7`  |              |
-| #1       | 8  | `P4_LED`     |
+| TM Board | Output | Connected to |
+|:--------:|:------:|:------------:|
+| #1       | 8      | `P4_LED`     |
 
 
 
 ### Inputs
 
+The TM1638 IC has three input lines, named K1, K2 and K3.
+K3 is the original line on the board, and K1 was added. K1 is only used on the first TM board (bottom)   
+
+
 #### TM Board #1
 
-| Input Line | Input   | Connected to |
-|:----------:|:-------:|:------------:|
-| 1          | 1       | `P9_SW3:1`   |
-| 1          | 2       | `P9_SW3:2`   |
-| 1          | 3       | `P5_SW2`     |
-| 1          | 4       | `P5_SW3:1`   |
-| 1          | 5       | `P5_SW3:2`   |
-| 1          | 6       | `P1_SW3:1`   |
-| 1          | 7       | `P1_SW3:2`   |
-| 1          | 8       |              |
-| 2          | 1       |  `P3_SW2_0`  |
-| 2          | 2       |  `P3_SW2_1`  |
-| 2          | 3       |  `P6_SW2_0`  |
-| 2          | 4       |  `P6_SW2_1`  |
-| 2          | 5       |  `P6_SW2_2`  |
-| 2          | 6       |              |
-| 2          | 7       |              |
-| 2          | 8       |              |
+| Line | Input   | Connected to | Functionality   |
+|:----:|:-------:|:------------:|:---------------:|
+| K1   | 0       |              |                 |  
+| K1   | 1       |  `P1_SW3:2`  |  Game mode      |
+| K1   | 2       |  `P1_SW3:1`  |  Game mode      |
+| K1   | 3       |  `P6_SW2_0`  |  Phase 1        |
+| K1   | 4       |  `P6_SW2_1`  |  Phase 2        |
+| K1   | 5       |  `P6_SW2_2`  |  Phase 3        |
+| K1   | 6       |  `P3_SW2_0`  |  Laser armement |
+| K1   | 7       |  `P3_SW2_1`  |  Laser color    |
+| K3   | 0       |              |                 |
+| K3   | 1       |              |                 |
+| K3   | 2       |              |                 |
+| K3   | 3       |  `P5_SW3:2`  | flight mode     |
+| K3   | 4       |  `P5_SW3:1`  | flight mode     |
+| K3   | 5       |  `P5_SW2`    |  autopilot      |
+| K3   | 6       |  `P9_SW3:2`  |  COM1/COM2      |
+| K3   | 7       |  `P9_SW3:1`  |  COM1/COM2      |
+
 
 
 #### TM Board #2
-All the inputs use the input line #1 (denoted `K1` in the datasheet)
+
 
 | Input   | Connected to |
 |:-------:|:------------:|
@@ -167,7 +171,7 @@ The three TM1637 have common data (`7TM_DATA`), but separated clocks (`7TM1_CLK`
 | TM Board | Pin  | Name        | Connected to |
 |:--------:|:-----|:-----------:|:------------:| 
 | #1, 2, 3 | DATA | `7TM_DATA`  | `AT_PB0`     |
-| #1       | CLK  | `7TM1_CLK`  | `AT_PC3`     |
-| #2       | CLK  | `7TM2_CLK`  | `AT_PC2`     |
-| #3       | CLK  | `7TM3_CLK`  | `AT_PC1`     |
+| #1       | CLK  | `7TM1_CLK`  | `AT_PC0`     |
+| #2       | CLK  | `7TM2_CLK`  | `AT_PC1`     |
+| #3       | CLK  | `7TM3_CLK`  | `AT_PC2`     |
 

@@ -120,6 +120,7 @@ class MissionBoard:
 			# wait for event
 			event = await self._EventQueue.get()
 			# process the event
+			print("Event "+str(event))
 			await event.onChange()
 
 

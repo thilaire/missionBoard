@@ -153,6 +153,7 @@ ISR (TIMER1_COMPA_vect  )
 	cycle++;
 }
 
+
 int main(void)
 {
 	/* configure inputs/outputs */
@@ -181,6 +182,7 @@ int main(void)
 
 	/* setup the TMx8 and TMx7 boards */
 	setupTMx(1);
+
 
 
 	/* enable interrupts and wait */

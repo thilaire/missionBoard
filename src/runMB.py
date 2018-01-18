@@ -25,8 +25,8 @@ MB.add('P2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'aut
 MB.add('P3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 # Panel 3: laser
-#MB.addSwitch2(['P3_SW_0', 'LaserArmed'], TMindex=1, line=1, pin=1)
-#MB.addSwitch2(['P3_SW_1', 'LaserColor'], TMindex=1, line=1, pin=2)
+#MB.add(['P3_SW2_0', 'LaserArmed'], TMindex=1, line=3, pin=7)
+#MB.add(['P3_SW2_1', 'LaserColor'], TMindex=1, line=3, pin=8)
 
 # Panel 4: pilot
 MB.add('P4_LED', 'manual', TMindex=4, index=0)
@@ -50,15 +50,15 @@ MB.add('P7_PB_LEFT', 'Left', gpio=12)
 MB.add('P7_PB_RIGHT', 'Right', gpio=6)
 
 # Panel 8: commands
-MB.add('P8_PB_0', 'RocketEngine', gpio=22)
-MB.add('P8_PB_1', 'SpaceshipEngine', gpio=0)
+MB.add('P8_PB_0', 'RocketEngine', gpio=4)
+MB.add('P8_PB_1', 'SpaceshipEngine', gpio=18)
 MB.add('P8_PB_2', 'Parachute', gpio=27)
 MB.add('P8_PB_3', 'Brake', gpio=17)
-MB.add('P8_PB_4', 'Unhook', gpio=3)
-MB.add('P8_PB_5', 'OxygenPump', gpio=14)
-MB.add('P8_PB_6', 'Laser', gpio=15)
-MB.add('P8_PB_7', 'LandingGear', gpio=2)
-MB.add('P8_PB_8', 'Go', gpio=18)
+MB.add('P8_PB_4', 'Unhook', gpio=14)
+MB.add('P8_PB_5', 'OxygenPump', gpio=3)
+MB.add('P8_PB_6', 'Laser', gpio=2)
+MB.add('P8_PB_7', 'LandingGear', gpio=15)
+MB.add('P8_PB_8', 'Go', gpio=22)
 MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unhook', 'oxygenPump', 'laser',
 	'landingGear', 'Go'], pos=13)
 
