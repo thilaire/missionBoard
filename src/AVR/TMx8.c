@@ -44,13 +44,11 @@ const uint8_t TM1638_STB_PINMASK[3] = { BIT(TM1638_STB_PIN0), BIT(TM1638_STB_PIN
 
 
 
-
-
 /* data to send through the SPI */
  struct {
-	uint8_t TMx8K1[NB_TMx8];        /* TMx8 data on line K1 */
-	uint8_t TMx8K3[NB_TMx8];        /* TMx8 data on line K3 */
+	uint8_t TMx8data[NB_TMx8];        /* TMx8 data on line K3 */
 	uint8_t dataADC[3];                 /* ADC value */
+	uint8_t IOdata;
 }  SPItoSend = {0};
 uint8_t SPItoSendHeader = 0;
 uint8_t SPItoSendcycle = 0;
@@ -60,61 +58,33 @@ uint8_t SPItoSendByte = 0;      /* byte to send, when we only send one byte */
 /* get input data from the TM1638 boards */
 void getDataTMx8(uint8_t nTM)
 {
-	uint8_t K1=0, K3=0;
+	uint8_t K3=0;
 	uint8_t data;
-
 
 	/* set the TMx8 in read mode */
 	clearTM1638_Stb(TM1638_STB_PINMASK[nTM]);
 	TM1638_setDataMode(READ_MODE, INCR_ADDR);
-	_delay_us(20);  /* wait at least 10µs ? */
-	/* get the 1st byte and put it in K1 and K2 */
+	_delay_us(10);  /* wait at least 10µs ? */
+	/* get the 4 bytes and put the useful bits in K3 */
 	data = TM1638_getByte();
-uint8_t data1 = data;
 	K3 = (data & (BIT(1)|BIT(5))) >> 1;
-	K1 = (data & (BIT(3)|BIT(7))) >> 3;
-	/* get the 2nd byte and put it in K1 and K2 */
 	data = TM1638_getByte();
-uint8_t data2 = data;
 	K3 |= (data & (BIT(1)|BIT(5)));
-	K1 |= (data & (BIT(3)|BIT(7))) >> 2;
-	/* get the 3rd byte and put it in K1 and K2 */
 	data = TM1638_getByte();
-uint8_t data3 = data;
 	K3 |= (data & (BIT(1)|BIT(5))) << 1;
-	K1 |= (data & (BIT(3)|BIT(7))) >> 1;
-	/* get the last byte and put it in K1 and K2 */
 	data = TM1638_getByte();
-uint8_t data4 = data;
 	K3 |= (data & (BIT(1)|BIT(5))) << 2;
-	K1 |= (data & (BIT(3)|BIT(7)));
 	/* close the connection */
 	setTM1638_Stb();
 
-	/* check if K1 and K2 has changed
-	and update SPItoSend datas */
-	if (K1 != SPItoSend.TMx8K1[nTM])
+	/* check if K3 has changed	and update SPItoSend datas */
+	if (K3 != SPItoSend.TMx8data[nTM])
 	{
-		SPItoSend.TMx8K1[nTM] = K1;
+		SPItoSend.TMx8data[nTM] = K3;
 		if (SPItoSendHeader)
 		{
 			/* something has already changed */
-			SPItoSendHeader = 0b10000000;
-		}
-		else
-		{
-			/* first change. We save it in SPItoSendByte */
-			SPItoSendHeader = 0b01000000 | nTM;
-			SPItoSendByte = K1;
-		}
-	}
-	if (K3 != SPItoSend.TMx8K3[nTM])
-	{
-		SPItoSend.TMx8K3[nTM] = K3;
-		if (SPItoSendHeader)
-		{
-			/* something has already changed */
-			SPItoSendHeader = 0b10000000;
+			SPItoSendHeader = 0b10000000;   /*TODO: Protocol has changed !! */
 		}
 		else
 		{
@@ -127,14 +97,6 @@ uint8_t data4 = data;
 	if (SPItoSendcycle==0)
 		SPDR = SPItoSendHeader;
 
-
-/* debug */
-TM1638_sendData(0, K1, TM1638_STB_PINMASK[0]);
-TM1638_sendData(2, K3, TM1638_STB_PINMASK[0]);
-TM1638_sendData(8, data1, TM1638_STB_PINMASK[0]);
-TM1638_sendData(10, data2, TM1638_STB_PINMASK[0]);
-TM1638_sendData(12, data3, TM1638_STB_PINMASK[0]);
-TM1638_sendData(14, data4, TM1638_STB_PINMASK[0]);
 
 }
 
