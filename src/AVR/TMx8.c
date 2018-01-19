@@ -74,31 +74,23 @@ void getDataTMx8(uint8_t nTM)
 	/* get the 1st byte and put it in K1 and K2 */
 	data = TM1638_getByte();
 uint8_t data1 = data;
-	K3 = (data & BIT(3)) >> 3;
-	K3 |= (data & BIT(7)) >> 6;
-	K1 = (data & BIT(1)) >> 1;
-	K1 |= (data & BIT(5)) >> 4;
+	K3 = (data & (BIT(1)|BIT(5))) >> 1;
+	K1 = (data & (BIT(3)|BIT(7))) >> 3;
 	/* get the 2nd byte and put it in K1 and K2 */
 	data = TM1638_getByte();
 uint8_t data2 = data;
-	K3 |= (data & BIT(3)) >> 1;
-	K3 |= (data & BIT(7)) >> 4;
-	K1 |= (data & BIT(1)) << 1;
-	K1 |= (data & BIT(5)) >> 2;
+	K3 |= (data & (BIT(1)|BIT(5)));
+	K1 |= (data & (BIT(3)|BIT(7))) >> 2;
 	/* get the 3rd byte and put it in K1 and K2 */
 	data = TM1638_getByte();
 uint8_t data3 = data;
-	K3 |= (data & BIT(3)) << 1;
-	K3 |= (data & BIT(7)) >> 2;
-	K1 |= (data & BIT(1)) << 3;
-	K1 |= (data & BIT(5));
+	K3 |= (data & (BIT(1)|BIT(5))) << 1;
+	K1 |= (data & (BIT(3)|BIT(7))) >> 1;
 	/* get the last byte and put it in K1 and K2 */
 	data = TM1638_getByte();
 uint8_t data4 = data;
-	K3 |= (data & BIT(3)) << 3;
-	K3 |= (data & BIT(7));
-	K1 |= (data & BIT(1)) << 5;
-	K1 |= (data & BIT(5)) << 2;
+	K3 |= (data & (BIT(1)|BIT(5))) << 2;
+	K1 |= (data & (BIT(3)|BIT(7)));
 	/* close the connection */
 	setTM1638_Stb();
 
