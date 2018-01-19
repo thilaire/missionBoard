@@ -11,7 +11,7 @@ I have listed all the micro-controllers I had in stock, and I've chose the  **AT
 
 Of course, any AVR or PIC (or any other micro-controller) you have in stock, or any Arduino-based board would be ok (At first, I choosed a **ATtiny631**, but finally, I moved the connection to the TM1638 and TM1637 boards from the RPi to the micro-controller, and the 631 did not have enough IOs).
 
-As a bonus, I can directly program it through the Raspberry Pi, through the SPI.
+As a bonus, I can directly program it through the Raspberry Pi, through the SPI (and that's very convenient!).
 
 ## Program it through the Raspberry Pi
 
@@ -162,9 +162,10 @@ For that purpose, I need to prepare some periodic tasks:
 - update the display (TM1637 and TM1638) if needed
 
 I need to read the inputs (switches, not push button) at leat 10 times a second (rought approximation), and each "task" take between few cycles (read the matrix keyboard or run the ADC) and less than a millisecond (pilot the RGB leds or talk with the TMs). So I have decided to set a period of 15.625ms (1/64 of a second), and to count in which cycle we are (with the 8-bit variable `ncycle`):
-- when `(ncycle&3) == 0`: (every 62.5ms) run ADC0, read `8TM1` (1st TM1638), update `8TM1` and `7TM1` displays if necessary
-- when `(ncycle&3) == 1`: (every 62.5ms) run ADC1, read `8TM2` (2nd TM1638), update `8TM2` and `7TM2` displays if necessary
-- when `(ncycle&3) == 2`: (every 62.5ms) run ADC2, read `8TM3` (2nd TM1638), update `8TM3` and `7TM3` displays if necessary
+- when `(ncycle&3) == 0`: (every 62.5ms) run ADC0, read `8TM1` (1st TM1638)
+- when `(ncycle&3) == 1`: (every 62.5ms) run ADC1, read `8TM2` (2nd TM1638)
+- when `(ncycle&3) == 2`: (every 62.5ms) run ADC2, read `8TM3` (2nd TM1638)
+- when `(ncycle&3) == 3`: (every 62.5ms) check if the switches connected to the ATtiny have changed (ok, I can also do it with interrupt, but I have already this polling timing ready)
 - when `(ncyccle&15) == 15`: (every 250ms) update the RGB leds if necessary (according to blinking)
 
 So TIME1 is configured to generate interruption every 15625 ticks, with a prescaler of 1/8 (Frequency of the ATtiny: 8MHz, see this [AVR timer calculator](http://eleccelerator.com/avr-timer-calculator/)):
@@ -218,8 +219,8 @@ The following table sums up the commands:
 | | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
-|`1`|`1`|`1`|`1`|`x`|`x`|`x`|`x`| not used | 0 |
-|`0`|`0`|`1`|`x`|`x`|`x`|`x`|`x`| not used | 0 |
-|`0`|`0`|`0`|`1`|`1`|`x`|`x`|`x`| not used | 0 |
+|`1`|`1`|`1`|`1`|`x`|`x`|`x`|`x`| not used yet | 0 |
+|`0`|`0`|`1`|`x`|`x`|`x`|`x`|`x`| not used yet | 0 |
+|`0`|`0`|`0`|`1`|`1`|`x`|`x`|`x`| not used yet | 0 |
 |-|-|-|-|-|-|-|-|-|-|
 

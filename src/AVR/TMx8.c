@@ -46,9 +46,6 @@ const uint8_t TM1638_STB_PINMASK[3] = { BIT(TM1638_STB_PIN0), BIT(TM1638_STB_PIN
 
 
 
-
-
-
 /* data to send through the SPI */
  struct {
 	uint8_t TMx8K1[NB_TMx8];        /* TMx8 data on line K1 */
