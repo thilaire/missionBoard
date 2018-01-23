@@ -25,29 +25,29 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 
 ### IOs
 
-| RPi Pin number                | Name       | IO  | Connected to  |   | Connected to  | IO  | Name       | RPi Pin number                |
-|:------------------------------|:----------:|:---:|:-------------:|:-:|:-------------:|:---:|:----------:|------------------------------:|
-| 01 (3.3v)                     |            |     |               |   |               |     |            |                       (5v) 02 |
-| 03 (**GPIO02**, SDA1, I2C)    | `RPi_IO2`  | In  | `P8_PB_`      |   |               |     |            |                       (5v) 04 |
-| 05 (**GPIO03**, SCL1, I2C)    | `RPi_IO3`  | In  | `P8_PB_`      |   |               |     |            |                      (GND) 06 |
-| 07 (**GPIO04**, GPIO_GCLK)    | `RPi_IO4`  | In  | `P8_PB_`      |   | `P8_PB_`      | In  | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
-| 09 (GND)                      |            |     |               |   | `P8_PB_`      |     | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
-| 11 (**GPIO17**, GPIO_GEN0)    | `RPi_IO17` | In  | `P8_PB_`      |   | `P8_PB_`      | In  | `RPi_IO18` |    (GPIO_GEN1, **GPIO18**) 12 |
-| 13 (**GPIO27**, GPIO_GEN2)    | `RPi_IO27` | In  | `P8_PB_`      |   |               |     |            |                      (GND) 14 |
-| 15 (**GPIO22**, GPIO_GEN3)    | `RPi_IO22` | In  | `P8_PB_`      |   |   x           |     | `RPi_IO23` |    (GPIO_GEN4, **GPIO23**) 16 |
-| 17 (3.3v)                     |            |     |               |   |   x           |     | `RPi_IO24` |    (GPIO_GEN5, **GPIO24**) 18 |
-| 19 (**GPIO10**, SPI_MOSI)     | `RPi_MOSI` | Out | `AT_MOSI`     |   |               |     |            |                      (GND) 20 |
-| 21 (**GPIO09**, SPI_MISO)     | `RPi_MISO` | In  | `AT_MISO`     |   | `AT_RESET`    | Out | `RPi_IO25` |    (GPIO_GEN6, **GPIO25**) 22 |
-| 23 (**GPIO11**, SPI_CLK)      | `RPi_SCK`  | Out | `AT_SCK`      |   |   x (SPI?)    |  ?  | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
-| 25 (GND)                      |            |     |               |   | `P7_PB_UP`    | In  | `RPi_IO7`  |    (SPI_CE1_N, **GPIO07**) 26 |
-| 27 (**ID_SD**, I2C ID EEPROM) |            |     |               |   |               |     |            | (I2C ID EEPROM, **ID_SC**) 28 |
-| 29 (**GPIO05**)               | `RPi_IO5`  | In  | `P7_PB_DOWN`  |   |               |     |            |                      (GND) 30 |
-| 31 (**GPIO06**)               | `RPi_IO6`  | In  | `P7_PB_RIGHT` |   | `P7_PB_LEFT`  | In  | `RPi_IO12` |               (**GPIO12**) 32 |
-| 33 (**GPIO13**)               | `RPi_IO13` |     |               |   |               |     |            |                      (GND) 34 |
-| 35 (**GPIO19**)               | `RPi_IO19` |     |   x           |   |   x           |     | `RPi_IO16` |               (**GPIO16**) 36 |
-| 37 (**GPIO26**)               | `RPi_IO26` |     |   x           |   |   x           |     | `RPi_IO20` |               (**GPIO20**) 38 |
-| 39 (GND)                      |            |     |   x           |   |   x           |     | `RPi_IO21` |               (**GPIO21**) 40 |
-
+| RPi Pin number             | Name       | IO  | Connected to            |   | Connected to            | IO  | Name       | RPi Pin number                |
+|:---------------------------|:----------:|:---:|:-----------------------:|:-:|:-----------------------:|:---:|:----------:|------------------------------:|
+| 01 (3.3v)                  |            |     |                         |   |                         |     |            |                       (5v) 02 |
+| 03 (**GPIO02**, SDA1, I2C) | `RPi_IO2`  | In  | `P8_PB_`                |   |                         |     |            |                       (5v) 04 |
+| 05 (**GPIO03**, SCL1, I2C) | `RPi_IO3`  | In  | `P8_PB_`                |   |                         |     |            |                      (GND) 06 |
+| 07 (**GPIO04**, GPIO_GCLK) | `RPi_IO4`  | In  | `P8_PB_`                |   | `P8_PB_`                | In  | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
+| 09 (GND)                   |            |     |                         |   | `P8_PB_`                |     | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
+| 11 (**GPIO17**, GPIO_GEN0) | `RPi_IO17` | In  | `P8_PB_`                |   | `P8_PB_`                | In  | `RPi_IO18` |    (GPIO_GEN1, **GPIO18**) 12 |
+| 13 (**GPIO27**, GPIO_GEN2) | `RPi_IO27` | In  | `P8_PB_`                |   |                         |     |            |                      (GND) 14 |
+| 15 (**GPIO22**, GPIO_GEN3) | `RPi_IO22` | In  | `P8_PB_`                |   |   x                     |     | `RPi_IO23` |    (GPIO_GEN4, **GPIO23**) 16 |
+| 17 (3.3v)                  |            |     |                         |   | `AT_PC0` (new data)     | In  | `RPi_IO24` |    (GPIO_GEN5, **GPIO24**) 18 |
+| 19 (**GPIO10**, SPI_MOSI)  | `RPi_MOSI` | Out | `AT_MOSI` (SPI)         |   |                         |     |            |                      (GND) 20 |
+| 21 (**GPIO09**, SPI_MISO)  | `RPi_MISO` | In  | `AT_MISO` (SPI)         |   | `AT_RESET` (Reset AT)   | Out | `RPi_IO25` |    (GPIO_GEN6, **GPIO25**) 22 |
+| 23 (**GPIO11**, SPI_CLK)   | `RPi_SCK`  | Out | `AT_SCK`  (SPI)         |   |   x (SPI Select)        |  ?  | `RPi_IO8`  |    (SPI_CE0_N, **GPIO08**) 24 |
+| 25 (GND)                   |            |     |                         |   | `P7_PB_UP` (Joystick)   | In  | `RPi_IO7`  |    (SPI_CE1_N, **GPIO07**) 26 |
+| 27 (**ID_SD**, EEPROM)     |            |     |                         |   |                         |     |            | (I2C ID EEPROM, **ID_SC**) 28 |
+| 29 (**GPIO05**)            | `RPi_IO5`  | In  | `P7_PB_DOWN` (Joystick) |   |                         |     |            |                      (GND) 30 |
+| 31 (**GPIO06**)            | `RPi_IO6`  | In  | `P7_PB_RIGHT`(Joystick) |   | `P7_PB_LEFT` (Joystick) | In  | `RPi_IO12` |               (**GPIO12**) 32 |
+| 33 (**GPIO13**)            | `RPi_IO13` |     |                         |   |                         |     |            |                      (GND) 34 |
+| 35 (**GPIO19**)            | `RPi_IO19` |     |   x                     |   |   x                     |     | `RPi_IO16` |               (**GPIO16**) 36 |
+| 37 (**GPIO26**)            | `RPi_IO26` |     |   x                     |   |   x                     |     | `RPi_IO20` |               (**GPIO20**) 38 |
+| 39 (GND)                   |            |     |   x                     |   |   x                     |     | `RPi_IO21` |               (**GPIO21**) 40 |
+                                                                                                     
 x: still available
 
 *[Here](datasheet/RPi3-GPIO.png) is the official Raspberry GPIO table*
@@ -72,12 +72,12 @@ x: still available
 
 | ATtiny88   Pin number    | Name       | IO  | Connected to   |   | Connected to  | IO  | Name       |  ATtiny88   Pin number    |
 |:-------------------------|:----------:|:---:|:--------------:|:-:|:-------------:|:---:|:----------:|--------------------------:|
-| 01 (**PC6**, RESET)      | `AT_RESET` | In  | `RPi_IO25`     |   | `P4_POT_2`    | Out | `AT_ADC5`  |   (ADC5, SCL, **PC5**) 28 |
-| 02 (**PD0**)             | `AT_PD0`   | In  |  `P3_SW1`      |   | `P4_POT_1`    | Out | `AT_ADC4`  |   (ADC4, SDA, **PC4**) 27 |
-| 03 (**PD1**)             | `AT_PD1`   | In  |  `P6_SW1`      |   | `P4_POT_0`    | Out | `AT_ADC3`  |   (ADC3, SCL, **PC3**) 26 |
-| 04 (**PD2**, INT0)       | `AT_PD2`   | In  |  `P6_SW2`      |   | `7TM3_CLK`    | In  | `AT_PC2`   |        (ADC2, **PC2**) 25 |
-| 05 (**PD3**, INT1)       | `AT_PD3`   | In  |  `P6_SW3`      |   | `7TM2_CLK`    | In  | `AT_PC1`   |        (ADC1, **PC1**) 24 |
-| 06 (**PD4**, T0)         | `AT_PD4`   | Out |      ???       |   | `7TM1_CLK`    | In  | `AT_PC0`   |        (ADC0, **PC0**) 23 |
+| 01 (**PC6**, RESET)      | `AT_RESET` | In  | `RPi_IO25`     |   | `P4_POT_2`    | Ana | `AT_ADC5`  |   (ADC5, SCL, **PC5**) 28 |
+| 02 (**PD0**)             | `AT_PD0`   | Out |  `7TM1_CLK`    |   | `P4_POT_1`    | Ana | `AT_ADC4`  |   (ADC4, SDA, **PC4**) 27 |
+| 03 (**PD1**)             | `AT_PD1`   | Out |  `7TM2_CLK`    |   | `P4_POT_0`    | Ana | `AT_ADC3`  |   (ADC3, SCL, **PC3**) 26 |
+| 04 (**PD2**, INT0)       | `AT_PD2`   | Out |  `7TM3_CLK`    |   | `P36_SW`      | Ana | `AT_PC2`   |        (ADC2, **PC2**) 25 |
+| 05 (**PD3**, INT1)       | `AT_PD3`   | ??  |     ???        |   | `P1_SW`?      | In  | `AT_PC1`   |        (ADC1, **PC1**) 24 |
+| 06 (**PD4**, T0)         | `AT_PD4`   | ??  |      ???       |   | `RPi_IO24`    | Out | `AT_PC0`   |        (ADC0, **PC0**) 23 |
 | 07 (VCC)                 |            |     |    3.3V        |   |     GND       |     |            |                  (GND) 22 |
 | 08 (GND)                 |            |     |     GND        |   | `AT_LED`,???  | Out | `AT_PC7`   |              (**PC7**) 21 |
 | 09 (**PB6**, CLKI)       | `AT_PB6`   | I/O | `8TM_DIO`      |   |    +3.3V      |     |            |                 (AVCC) 20 |
@@ -91,6 +91,14 @@ x: still available
 For debug purpose only, a simple LED is connected to `AT_PB6`.
 Note that the ATtiny is powered by 3.3V (and not 5V).
 There are some 100k resistor between the ATtiny and the RPi for the lines `SCK`, `MISO`, `MOSI`, `RESET` and `SS`.
+
+
+`P36_SW` regroups the switches `P3_SW1`, `P6_SW1`, `P6_SW2` and `P6_SW3` mounted in a R-2R ladder (see the [ATtiny doc](ATtiny.md)).
+
+To be added:
++ RPI_int (RPi_IO24 /  AT_PC0)
+- P1_SW (AT_PC1)
+- CONTROL_ALIM (PD3 ou PD4)
 
 
 ## TM1638 boards
