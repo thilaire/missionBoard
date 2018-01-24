@@ -66,6 +66,11 @@ MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unho
 #MB.addSwitch3(['P9_SW4'])
 
 
+MB.add('P0_PB','',gpio=9)
+@onChange(MB.PB_)
+async def Something(self):
+	print ("Something changed!!")
+
 
 
 MB.PB_Go.state=0

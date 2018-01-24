@@ -162,10 +162,10 @@ For that purpose, I need to prepare some periodic tasks:
 - update the display (TM1637 and TM1638) if needed
 
 I need to read the inputs (switches, not push button) at leat 10 times a second (rought approximation), and each "task" take between few cycles (read the matrix keyboard or run the ADC) and less than a millisecond (pilot the RGB leds or talk with the TMs). So I have decided to set a period of 15.625ms (1/64 of a second), and to count in which cycle we are (with the 8-bit variable `ncycle`):
-- when `(ncycle&3) == 0`: (every 62.5ms) run ADC3, read `8TM1` (1st TM1638)
-- when `(ncycle&3) == 1`: (every 62.5ms) run ADC4, read `8TM2` (2nd TM1638)
-- when `(ncycle&3) == 2`: (every 62.5ms) run ADC5, read `8TM3` (3rd TM1638)
-- when `(ncycle&3) == 3`: (every 62.5ms) run ADC2 and check if the switches connected to PC2 (analog sum)  have changed 
+- when `(ncycle&3) == 0`: (every 62.5ms) acquire ADC3, read `8TM1` (1st TM1638)
+- when `(ncycle&3) == 1`: (every 62.5ms) acquire ADC4, read `8TM2` (2nd TM1638)
+- when `(ncycle&3) == 2`: (every 62.5ms) acquire ADC5, read `8TM3` (3rd TM1638)
+- when `(ncycle&3) == 3`: (every 62.5ms) acquire ADC2 and check if the switches connected to PC2 (analog sum)  have changed 
 - when `(ncyccle&15) == 15`: (every 250ms) update the RGB leds if necessary (according to blinking)
 
 So TIME1 is configured to generate interruption every 15625 ticks, with a prescaler of 1/8 (Frequency of the ATtiny: 8MHz, see this [AVR timer calculator](http://eleccelerator.com/avr-timer-calculator/)):
@@ -224,3 +224,5 @@ The following table sums up the commands:
 |`0`|`0`|`0`|`1`|`1`|`x`|`x`|`x`| not used yet | 0 |
 |-|-|-|-|-|-|-|-|-|-|
 
+to add:
+- acknowledgment for "turn off the RPi" command

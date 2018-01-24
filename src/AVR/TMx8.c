@@ -12,7 +12,7 @@
 
 #include "TMx8.h"
 #include "TM1638.h"
-
+#include "MB-AVR.h"
 
 /* debug */
 const uint8_t NUMBER_FONT[] = {
@@ -43,18 +43,6 @@ uint8_t TMxDisplay[4*NB_TMx7+8*NB_TMx8] = {0};    /* display data of the TM1637 
 const uint8_t TM1638_STB_PINMASK[3] = { BIT(TM1638_STB_PIN0), BIT(TM1638_STB_PIN1), BIT(TM1638_STB_PIN2)};  /* STB0, STB1 and STB2 are on PD5, PD6 and PD7 respectively */
 
 
-
-/* data to send through the SPI */
- struct {
-	uint8_t TMx8data[NB_TMx8];        /* TMx8 data on line K3 */
-	uint8_t dataADC[3];                 /* ADC value */
-	uint8_t IOdata;
-}  SPItoSend = {0};
-uint8_t SPItoSendHeader = 0;
-uint8_t SPItoSendcycle = 0;
-uint8_t SPItoSendByte = 0;      /* byte to send, when we only send one byte */
-
-
 /* get input data from the TM1638 boards */
 void getDataTMx8(uint8_t nTM)
 {
@@ -78,26 +66,12 @@ void getDataTMx8(uint8_t nTM)
 	setTM1638_Stb();
 
 	/* check if K3 has changed	and update SPItoSend datas */
-	if (K3 != SPItoSend.TMx8data[nTM])
-	{
-		SPItoSend.TMx8data[nTM] = K3;
-		if (SPItoSendHeader)
-		{
-			/* something has already changed */
-			SPItoSendHeader = 0b10000000;   /*TODO: Protocol has changed !! */
-		}
-		else
-		{
-			/* first change. We save it in SPItoSendByte */
-			SPItoSendHeader = 0b01000100 | nTM;
-			SPItoSendByte = K3;
-		}
-	}
-	/* copy to SPDR if we are not already sending something */
-	if (SPItoSendcycle==0)
-		SPDR = SPItoSendHeader;
+	updateSPItoSendData(K3,nTM);
 
-
+	/* debug */
+	TM1638_sendData(8,  NUMBER_FONT[K3/100], TM1638_STB_PINMASK[0]);
+	TM1638_sendData(10,  NUMBER_FONT[(K3%100)/10], TM1638_STB_PINMASK[0]);
+	TM1638_sendData(12,  NUMBER_FONT[K3%10], TM1638_STB_PINMASK[0]);
 }
 
 

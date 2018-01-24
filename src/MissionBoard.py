@@ -31,6 +31,7 @@ class MissionBoard:
 		# open SPI connection
 		self._spi = SpiDev()
 		self._spi.open(0,0)
+		self._spi.max_speed_hz = 122000
 
 		# prepare the asyncio loop and the queues
 		self._loop = asyncio.get_event_loop()
@@ -108,7 +109,9 @@ class MissionBoard:
 			# wait for data
 			data = await self._SPIqueue.get()
 			# process the item
-			self._spi.xfer(data)
+			print("Send "+str(data))
+			toto = self._spi.xfer(data)
+			print("Receive "+ str(toto))
 
 
 	async def _manageEvents(self):

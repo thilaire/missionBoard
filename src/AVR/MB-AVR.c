@@ -13,10 +13,54 @@
 #include "TMx8.h"
 
 
-extern uint8_t SPItoSendHeader;
-extern uint8_t SPItoSendcycle;
-extern uint8_t SPItoSendByte;
 
+
+
+
+/* data to send through the SPI */
+#define SIZE_SPITOSEND NB_TMx8+3+1
+ struct {
+    uint8_t header;                     /* header of the SPI to send protocol */
+	uint8_t OnlyOneByte;                /* data, when it can be in one byte (only one thing has changed) */
+	uint8_t TMx8data[NB_TMx8];        /* TMx8 data on line K3 */
+	uint8_t ADCdata[3];                 /* ADC value */
+	uint8_t IOdata;
+}  SPItoSend_data = {0};
+uint8_t SPItoSend_nbBytes = 1;     /* nb byte to send: only the header */
+uint8_t SPItoSend_cycle = 0;           /* cycle number */
+
+
+void updateSPItoSendData( uint8_t data, uint8_t index)
+{
+	uint8_t* SPIbuffer = ((uint8_t*) &SPItoSend_data)+index+2;
+	if (data != *SPIbuffer)
+	{
+		*SPIbuffer = data;
+		if (SPItoSend_data.header&0b11110000)
+		{
+			/* something has already changed */
+			SPItoSend_data.header = 0b01110000;
+		}
+		else
+		{
+			/* first change. We save it in SPItoSendByte */
+			SPItoSend_data.header = 0b00010000 | index;
+			SPItoSend_data.OnlyOneByte = data;
+		}
+
+		PORTB |= (1<<4);
+		_delay_ms(1);
+		PORTB &= ~(1<<4);
+
+	}
+	/* copy to SPDR if we are not already sending something */
+	if (SPItoSend_cycle==0)
+	{
+		SPDR = SPItoSend_data.header;
+		/* determine the nb of bytes to send (including header) from the header */
+		SPItoSend_nbBytes = (SPItoSend_data.header>>4) + 1;
+	}
+}
 
 
 
@@ -26,35 +70,16 @@ extern uint8_t SPItoSendByte;
 /* SPI interrupt function */
 ISR (SPI_STC_vect)
 {
+	/* SPI receive data */
 	static uint8_t SPIcycle = 0;     /* counts the cycles */
 	static uint8_t SPIcommand;      /* 1st byte received (indicates which command, and how many other bytes will follow */
 	static uint8_t SPIbuffer[8] = {0};    /* buffer (5 bytes for a LED, 8 for display, etc.) */
 	static uint8_t SPInbBytes = 0;      /* how many bytes we will receive in the buffer for this command */
 
-	static uint8_t SPItoSendMode = 0;
-	static uint8_t* SPItoSendBuffer;
+	/* SPI send data */
+	static uint8_t *toSendBuffer = ((uint8_t*) &SPItoSend_data)-1;   /* the byte before, so that we can start with the 1st byte for the 1st transaction */
 
-//	/* prepare next byte to send */
-//	if (SPItoSendcycle==0)
-//	{
-//		SPDR = SPItoSendHeader;
-//		SPItoSendMode = SPItoSendHeader & 0b11000000;
-//	}
-//	else
-//	{
-//		if (SPItoSendMode == 0b01000000)
-//		{
-//			SPDR = SPItoSendByte;
-//			SPItoSendcycle = 0;
-//		}
-//		else
-//		{
-//			SPDR = *SPItoSendBuffer++;
-//			SPItoSendcycle++;
-//			if (SPItoSendcycle==9)
-//				SPItoSendcycle = 0; /* it was the last byte to send */
-//		}
-//	}
+	/* ===== Receive byte ==== */
 
 	/* copy the data (1st data in SPIcommand, the others in SPIbuffer) */
 	if (SPIcycle)
@@ -112,6 +137,32 @@ ISR (SPI_STC_vect)
 				}
 		}
 	}
+
+	/* ===== Send (prepare to send next) byte ====== */
+
+	/* increase cycle and data pointer */
+	SPItoSend_cycle++;
+	toSendBuffer++;
+	/* check if it's the end of the buffer */
+	if (SPItoSend_cycle==SPItoSend_nbBytes)
+	{
+		/* re-init the buffer to the beginning of SPItoSend_data */
+		toSendBuffer = ((uint8_t*) &SPItoSend_data);
+		SPItoSend_cycle=0;
+		/* initialize header (nothing to send) */
+		SPItoSend_data.header = 0;
+		SPItoSend_nbBytes = 1;
+	}
+	/* skip the next byte if more than one byte (+header) is to sent */
+	else if (SPItoSend_cycle==1 && (SPItoSend_nbBytes>2) )
+	{
+		toSendBuffer++; /* we skip the next byte that is not to send in that mode */
+	}
+	/* finaly, copy the next byte to SPDR */
+	SPDR = *toSendBuffer;
+
+
+
 }
 
 
@@ -166,6 +217,7 @@ int main(void)
 	SPDR = 0;   /* next byte to send */
 
 	/* turn off the RGB leds */
+	_delay_ms(100);
 	updateRGB();
 
 	/* blink LED C7 (debug LED) to tell we are alive */
@@ -184,6 +236,18 @@ int main(void)
 	setupTMx(1);
 
 
+	SPDR = 0;
+
+/*	SPItoSend_data.header = 0b00110000;
+	SPItoSend_nbBytes = 4;
+	SPItoSend_data.OnlyOneByte = 38;*/
+	SPItoSend_data.TMx8data[0] = 100;
+	SPItoSend_data.TMx8data[1] = 101;
+	SPItoSend_data.TMx8data[2] = 102;
+	SPItoSend_data.ADCdata[0] = 127;
+	SPItoSend_data.ADCdata[1] = 132;
+	SPItoSend_data.ADCdata[2] = 135;
+	SPItoSend_data.IOdata = 42;
 
 	/* enable interrupts and wait */
 	sei();
