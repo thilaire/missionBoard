@@ -219,6 +219,7 @@ The following table sums up the commands:
 | | | | | | | | | `x` is 0 for the TM1637, 1 for the TM1638 | |
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
+|`1`|`1`|`1`|`1`|`0`|`0`|`0`|`0`| ask the AVR for its data (TMx8 and potentiometer). Data will arrive in the following polling cycles | 0 |
 |`1`|`1`|`1`|`1`|`x`|`x`|`x`|`x`| not used yet | 0 |
 |`0`|`0`|`1`|`x`|`x`|`x`|`x`|`x`| not used yet | 0 |
 |`0`|`0`|`0`|`1`|`1`|`x`|`x`|`x`| not used yet | 0 |
