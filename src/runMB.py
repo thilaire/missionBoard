@@ -66,11 +66,6 @@ MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unho
 #MB.addSwitch3(['P9_SW4'])
 
 
-MB.add('P0_PB','',gpio=24)
-@onChange(MB.PB_)
-async def Something(self):
-	print ("Something changed!!")
-	MB.sendSPI([0,0,0,0,0,0,0])
 
 
 

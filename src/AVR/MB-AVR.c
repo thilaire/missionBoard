@@ -95,7 +95,7 @@ ISR (SPI_STC_vect)
 	}
 
 	/* ===== Send (prepare to send next) byte ====== */
-	if (SPISend_cycle == (SPISend_header>>4))
+	if (SPISend_cycle >= (SPISend_header>>4))
 	{
 		/* end of the cycle; start over */
 		SPISend_cycle = 0;

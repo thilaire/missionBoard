@@ -2,6 +2,7 @@
 
 from re import compile
 from spidev import SpiDev
+import RPi.GPIO as GPIO
 
 from Element import Element
 from LED import LED
@@ -37,6 +38,11 @@ class MissionBoard:
 		self._loop = asyncio.get_event_loop()
 		self._SPIqueue = asyncio.Queue(loop=self._loop)
 		self._EventQueue = asyncio.Queue(loop=self._loop)
+
+		# take the IO24 into consideration when AVR wants to communicate
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.add_event_detect(24, GPIO.BOTH, callback=lambda x:self._loop.call_soon_threadsafe(self._SPIqueue.put_nowait, [0]))      # send 0 into SPIQueue in a threadsafe way, see addEvent
 
 
 	def runCheck(self):
@@ -109,9 +115,14 @@ class MissionBoard:
 			# wait for data
 			data = await self._SPIqueue.get()
 			# process the item
-			print("Send "+str(data))
-			toto = self._spi.xfer(data)
-			print("Receive "+ str(toto))
+			print("Send "+str(data[0]))
+			header = self._spi.xfer([data.pop(0)])
+			print("Receive Header=" + str(header))
+			data.extend([0] * ((header[0]>>4) - len(data)))
+			if data:
+				print("Send "+str(data))
+				recv = self._spi.xfer(data)
+				print("Receive data"+ str(recv))
 
 
 	async def _manageEvents(self):
@@ -136,6 +147,8 @@ class MissionBoard:
 		https://stackoverflow.com/questions/32889527/is-there-a-way-to-use-asyncio-queue-in-multiple-threads
 		"""
 		self._loop.call_soon_threadsafe(self._EventQueue.put_nowait, obj)
+
+
 
 
 # decorator onChange !
