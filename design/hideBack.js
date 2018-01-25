@@ -16,4 +16,4 @@ function hideBack(layers)
 }
 
 
-hideBack(app.activeDocument.layers)
+hideBack(app.activeDocument.layers);

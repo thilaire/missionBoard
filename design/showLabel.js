@@ -24,4 +24,4 @@ function showLabel(layers)
 }
 
 
-showLabel(app.activeDocument.layers)
+showLabel(app.activeDocument.layers);

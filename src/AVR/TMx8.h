@@ -15,7 +15,7 @@
 #define NB_TMx7 3
 
 
-void getDataTMx8(uint8_t nTM);
+uint8_t getDataTMx8(uint8_t nTM, uint8_t* data);
 void setDisplayTMx(uint8_t SPIcommand, uint8_t* SPIbuffer);
 void setLedTMx8(uint8_t SPIcommand);
 void setBrightnessTMx(uint8_t SPIcommand);

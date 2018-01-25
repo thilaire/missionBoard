@@ -42,36 +42,49 @@ uint8_t TMxDisplay[4*NB_TMx7+8*NB_TMx8] = {0};    /* display data of the TM1637 
 
 const uint8_t TM1638_STB_PINMASK[3] = { BIT(TM1638_STB_PIN0), BIT(TM1638_STB_PIN1), BIT(TM1638_STB_PIN2)};  /* STB0, STB1 and STB2 are on PD5, PD6 and PD7 respectively */
 
+uint8_t TMx8Input[NB_TMx8] = {0};       /* data from the line input K3*/
 
-/* get input data from the TM1638 boards */
-void getDataTMx8(uint8_t nTM)
+
+
+
+/* get input data from the TM1638 boards, and returns 1 if something have changed */
+uint8_t getDataTMx8(uint8_t nTM, uint8_t* data)
 {
-	uint8_t K3=0;
-	uint8_t data;
+	*data=0; /* corresponds to K3 byte of the TM */
+	uint8_t TMdata;
 
 	/* set the TMx8 in read mode */
 	clearTM1638_Stb(TM1638_STB_PINMASK[nTM]);
 	TM1638_setDataMode(READ_MODE, INCR_ADDR);
 	_delay_us(10);  /* wait at least 10µs ? */
-	/* get the 4 bytes and put the useful bits in K3 */
-	data = TM1638_getByte();
-	K3 = (data & (BIT(1)|BIT(5))) >> 1;
-	data = TM1638_getByte();
-	K3 |= (data & (BIT(1)|BIT(5)));
-	data = TM1638_getByte();
-	K3 |= (data & (BIT(1)|BIT(5))) << 1;
-	data = TM1638_getByte();
-	K3 |= (data & (BIT(1)|BIT(5))) << 2;
+	/* get the 4 bytes and put the useful bits (those from K3) in data */
+	TMdata = TM1638_getByte();
+	*data = (TMdata & (BIT(1)|BIT(5))) >> 1;
+	TMdata = TM1638_getByte();
+	*data |= (TMdata & (BIT(1)|BIT(5)));
+	TMdata = TM1638_getByte();
+	*data |= (TMdata & (BIT(1)|BIT(5))) << 1;
+	TMdata = TM1638_getByte();
+	*data |= (TMdata & (BIT(1)|BIT(5))) << 2;
 	/* close the connection */
 	setTM1638_Stb();
 
-	/* check if K3 has changed	and update SPItoSend datas */
-	updateSPItoSendData(K3,nTM);
+		TM1638_sendData(8,  NUMBER_FONT[*data/100], 32);
+	TM1638_sendData(10,  NUMBER_FONT[(*data%100)/10], 32);
+	TM1638_sendData(12,  NUMBER_FONT[*data%10], 32);
 
-	/* debug */
-	TM1638_sendData(8,  NUMBER_FONT[K3/100], TM1638_STB_PINMASK[0]);
-	TM1638_sendData(10,  NUMBER_FONT[(K3%100)/10], TM1638_STB_PINMASK[0]);
-	TM1638_sendData(12,  NUMBER_FONT[K3%10], TM1638_STB_PINMASK[0]);
+
+	/* check if K3 has changed	and update SPItoSend datas */
+	if (*data != TMx8Input[nTM])
+	{
+		TMx8Input[nTM] = *data;
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+
 }
 
 

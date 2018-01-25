@@ -63,6 +63,8 @@ class RGB(Element):
 				blink = ~blink
 			elif isinstance(offset, int):
 				blink = bitRotation(blink, offset)
+		else:
+			raise ValueError("Value is not a int nor a length of size 2 or 3")
 
 		# convert it to list of bytes, and send it
 		data = [self._pos,] + list(blink.to_bytes(2, byteorder='big')) + list(color.to_bytes(3, byteorder='big'))

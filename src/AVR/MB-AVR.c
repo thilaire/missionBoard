@@ -14,56 +14,15 @@
 
 
 
+//debug
+extern const uint8_t NUMBER_FONT[];
 
 
-
-/* data to send through the SPI */
-#define SIZE_SPITOSEND NB_TMx8+3+1
- struct {
-    uint8_t header;                     /* header of the SPI to send protocol */
-	uint8_t OnlyOneByte;                /* data, when it can be in one byte (only one thing has changed) */
-	uint8_t TMx8data[NB_TMx8];        /* TMx8 data on line K3 */
-	uint8_t ADCdata[3];                 /* ADC value */
-	uint8_t IOdata;
-}  SPItoSend_data = {0};
-uint8_t SPItoSend_nbBytes = 1;     /* nb byte to send: only the header */
-uint8_t SPItoSend_cycle = 0;           /* cycle number */
-
-
-void updateSPItoSendData( uint8_t data, uint8_t index)
-{
-	uint8_t* SPIbuffer = ((uint8_t*) &SPItoSend_data)+index+2;
-	if (data != *SPIbuffer)
-	{
-		*SPIbuffer = data;
-		if (SPItoSend_data.header&0b11110000)
-		{
-			/* something has already changed */
-			SPItoSend_data.header = 0b01110000;
-		}
-		else
-		{
-			/* first change. We save it in SPItoSendByte */
-			SPItoSend_data.header = 0b00010000 | index;
-			SPItoSend_data.OnlyOneByte = data;
-		}
-
-		PORTB |= (1<<4);
-		_delay_ms(1);
-		PORTB &= ~(1<<4);
-
-	}
-	/* copy to SPDR if we are not already sending something */
-	if (SPItoSend_cycle==0)
-	{
-		SPDR = SPItoSend_data.header;
-		/* determine the nb of bytes to send (including header) from the header */
-		SPItoSend_nbBytes = (SPItoSend_data.header>>4) + 1;
-	}
-}
-
-
-
+/* data to send through SPI */
+uint8_t SPISend_header = 0;
+uint8_t SPISend_cycle = 0;
+uint8_t SPISend_data[2] = {0};
+const uint8_t NB_BYTES[4] = { 0b00000000, 0b00010000, 0b00010000, 0b00100000};
 
 
 
@@ -71,122 +30,131 @@ void updateSPItoSendData( uint8_t data, uint8_t index)
 ISR (SPI_STC_vect)
 {
 	/* SPI receive data */
-	static uint8_t SPIcycle = 0;     /* counts the cycles */
-	static uint8_t SPIcommand;      /* 1st byte received (indicates which command, and how many other bytes will follow */
-	static uint8_t SPIbuffer[8] = {0};    /* buffer (5 bytes for a LED, 8 for display, etc.) */
-	static uint8_t SPInbBytes = 0;      /* how many bytes we will receive in the buffer for this command */
-
-	/* SPI send data */
-	static uint8_t *toSendBuffer = ((uint8_t*) &SPItoSend_data)-1;   /* the byte before, so that we can start with the 1st byte for the 1st transaction */
+	static uint8_t SPIRec_cycle = 0;     /* counts the cycles */
+	static uint8_t SPIRec_command;      /* 1st byte received (indicates which command, and how many other bytes will follow */
+	static uint8_t SPIRec_buffer[8] = {0};    /* buffer (5 bytes for a LED, 8 for display, etc.) */
+	static uint8_t SPIRec_nbBytes = 0;      /* how many bytes we will receive in the buffer for this command */
 
 	/* ===== Receive byte ==== */
 
-	/* copy the data (1st data in SPIcommand, the others in SPIbuffer) */
-	if (SPIcycle)
-		SPIbuffer[ SPIcycle-1 ] = SPDR;
+	/* copy the data (1st data in SPIRec_command, the others in SPIRec_buffer) */
+	if (SPIRec_cycle)
+		SPIRec_buffer[ SPIRec_cycle-1 ] = SPDR;
 	else
 	{
 		/* copy the header*/
-		SPIcommand = SPDR;
+		SPIRec_command = SPDR;
 		/* compute how many bytes we will next receive */
-		if ((SPIcommand & 0xF0) == 0b11000000)
-			SPInbBytes = 4;     /* set the 7-segment display, 4-byte mode */
-		else if ((SPIcommand & 0xF0) == 0b11010000)
-			SPInbBytes = 8;     /* set the 7-segment display, 8-byte mode */
-		else if ( ((SPIcommand & 0xE0) == 0) && (SPIcommand!=0) )
-			SPInbBytes = 5;     /* set RGB Led */
+		if ((SPIRec_command & 0xF0) == 0b11000000)
+			SPIRec_nbBytes = 4;     /* set the 7-segment display, 4-byte mode */
+		else if ((SPIRec_command & 0xF0) == 0b11010000)
+			SPIRec_nbBytes = 8;     /* set the 7-segment display, 8-byte mode */
+		else if ( ((SPIRec_command & 0xE0) == 0) && (SPIRec_command!=0) )
+			SPIRec_nbBytes = 5;     /* set RGB Led */
 		else
-			SPInbBytes = 0;     /* other command requires no extra bytes */
+			SPIRec_nbBytes = 0;     /* other command requires no extra bytes */
 	}
-	SPIcycle++;
+	SPIRec_cycle++;
 	/* check if the end of the data transfer */
-	if (SPIcycle > SPInbBytes)
+	if (SPIRec_cycle > SPIRec_nbBytes)
 	{
-		SPIcycle = 0;
-		switch (SPIcommand & 0b11000000)
+		SPIRec_cycle = 0;
+		switch (SPIRec_command & 0b11000000)
 		{
 			case 0:
 				/* set RGB color */
-				if (SPIcommand)
-					setRGBLed( SPIcommand-1, SPIbuffer);
+				if (SPIRec_command)
+					setRGBLed( SPIRec_command-1, SPIRec_buffer);
 				/*else NOP: do nothing */
 				break;
 			case 0b01000000:
 				/* set a led */
-				setLedTMx8(SPIcommand);
+				setLedTMx8(SPIRec_command);
 				break;
 			case 0b10000000:
 				/* set the brightness and turn on*/
-				setBrightnessTMx(SPIcommand);
+				setBrightnessTMx(SPIRec_command);
 				break;
 			default:    /* 0b11xxxxxx */
-				if ( !(SPIcommand & 0b00100000 ) )
+				if ( !(SPIRec_command & 0b00100000 ) )
 				{
 					/* set the display */
-					setDisplayTMx(SPIcommand, SPIbuffer);
+					setDisplayTMx(SPIRec_command, SPIRec_buffer);
 				}
-				else if ((SPIcommand & 0b00011000) == 0)
+				else if ((SPIRec_command & 0b00011000) == 0)
 				{
 					/* turn off the display */
-					turnOffTMx(SPIcommand);
+					turnOffTMx(SPIRec_command);
 				}
-				else if ((SPIcommand & 0b00011000) == 8)
+				else if ((SPIRec_command & 0b00011000) == 8)
 				{
 					/* clear the display */
-					clearTMx(SPIcommand);
+					clearTMx(SPIRec_command);
 				}
 		}
 	}
 
 	/* ===== Send (prepare to send next) byte ====== */
-
-	/* increase cycle and data pointer */
-	SPItoSend_cycle++;
-	toSendBuffer++;
-	/* check if it's the end of the buffer */
-	if (SPItoSend_cycle==SPItoSend_nbBytes)
+	if (SPISend_cycle == (SPISend_header>>4))
 	{
-		/* re-init the buffer to the beginning of SPItoSend_data */
-		toSendBuffer = ((uint8_t*) &SPItoSend_data);
-		SPItoSend_cycle=0;
-		/* initialize header (nothing to send) */
-		SPItoSend_data.header = 0;
-		SPItoSend_nbBytes = 1;
+		/* end of the cycle; start over */
+		SPISend_cycle = 0;
+		SPISend_header = 0;
+		SPDR = 0;
 	}
-	/* skip the next byte if more than one byte (+header) is to sent */
-	else if (SPItoSend_cycle==1 && (SPItoSend_nbBytes>2) )
+	else
 	{
-		toSendBuffer++; /* we skip the next byte that is not to send in that mode */
+		/* otherwise continue to send data */
+		SPDR = SPISend_data[SPISend_cycle];
+		SPISend_cycle++;
 	}
-	/* finaly, copy the next byte to SPDR */
-	SPDR = *toSendBuffer;
-
-
 
 }
+
+
+/* get the data from the TMx8 and update SPIsend data accordingly */
+void updateDataTMx8(uint8_t nTM)
+{
+	uint8_t data;
+	if (getDataTMx8(0, &data))
+	{
+		/* copy the data in the right place (header is 1 if Pot has changed, 0 otherwise) */
+		SPISend_data[SPISend_header>>2] = data;
+		/* TMx8 data has changed */
+		SPISend_header |= 0b00001000;
+	}
+}
+
 
 
 /* Timer 1 interrupt function (when TIMER1==OCR1A) */
 ISR (TIMER1_COMPA_vect  )
 {
 	static uint8_t cycle=0;
+	/* initialize SPI header */
+	SPISend_header = cycle&3;
+	/* run specific task (wrt the cycle)*/
 	if ((cycle&3) == 0)
 	{
-		/* run capture ADC0 and TM1638[0] */
-		getDataTMx8(0);
+		/* acquire ADC3 and TM1638[0] */
+		//updateADC(3);
+		updateDataTMx8(0);
+
 	}
 	else if ((cycle&3) == 1)
 	{
-		/* run capture ADC1 and TM1638[1] */
-		//getDataTMx8(1);
+		/* acquire  ADC4 and TM1638[1] */
+		//updateADC(4);
+		//updateDataTMx8(1);
 	}
 	else if ((cycle&3) == 2)
 	{
-		/* run capture ADC2 and TM1638[2] */
-		//getDataTMx8(2);
+		/* run capture ADC5 and TM1638[2] */
+		//updateADC(4);
+		//updateDataTMx8(2);
 	}
 	else
-	{   /* end capture ADC2 */
+	{   /* run capture ADC22 */
 		/* blinking cycle */
 		if ((cycle&15) == 3)
 		{
@@ -199,7 +167,27 @@ ISR (TIMER1_COMPA_vect  )
 			}
 		}
 	}
+	/* update SPI header and SPDR (next byte to be sent)*/
+	SPISend_header &= 0b11001111;
+	SPISend_header |= NB_BYTES[SPISend_header>>2];
+	SPDR = SPISend_header;
 
+		/* debug */
+	if ((cycle&3) == 0){
+	TM1638_sendData(0,  NUMBER_FONT[SPISend_header/100], 32);
+	TM1638_sendData(2,  NUMBER_FONT[(SPISend_header%100)/10], 32);
+	TM1638_sendData(4,  NUMBER_FONT[SPISend_header%10], 32);
+	}
+
+
+
+	/* pulse the Raspberry Pi if something has changed */
+	if (SPISend_header&0b00001100)
+	{
+		PORTC |= 1;
+		_delay_us(10);
+		PORTC &= ~1;
+	}
 	/* next cycle */
 	cycle++;
 }
@@ -209,15 +197,15 @@ int main(void)
 {
 	/* configure inputs/outputs */
 	DDRB = 0b11010011;       /* PB0, PB1, PB4, PB6 and PB7 are outputs */
-	DDRC = 0b10111000;       /* PC3, PC4, PC5 and PC7 are outputs */
-	DDRD = 0b11110000;      /* PD4, PD5, PD6 and PD7 are outputs */
+	DDRC = 0b10000001;       /* PC0 and PC7 are outputs */
+	DDRD = 0b11100111;      /* PD0, PD1, PD2, PD5, PD6 and PD7 are outputs */
 
 	/* configure the USI */
 	SPCR |= (1<<SPIE) | (1<<SPE);
 	SPDR = 0;   /* next byte to send */
 
 	/* turn off the RGB leds */
-	_delay_ms(100);
+	_delay_ms(10);
 	updateRGB();
 
 	/* blink LED C7 (debug LED) to tell we are alive */
@@ -237,17 +225,6 @@ int main(void)
 
 
 	SPDR = 0;
-
-/*	SPItoSend_data.header = 0b00110000;
-	SPItoSend_nbBytes = 4;
-	SPItoSend_data.OnlyOneByte = 38;*/
-	SPItoSend_data.TMx8data[0] = 100;
-	SPItoSend_data.TMx8data[1] = 101;
-	SPItoSend_data.TMx8data[2] = 102;
-	SPItoSend_data.ADCdata[0] = 127;
-	SPItoSend_data.ADCdata[1] = 132;
-	SPItoSend_data.ADCdata[2] = 135;
-	SPItoSend_data.IOdata = 42;
 
 	/* enable interrupts and wait */
 	sei();

@@ -24,4 +24,4 @@ function showBack(layers)
 }
 
 
-showBack(app.activeDocument.layers)
+showBack(app.activeDocument.layers);

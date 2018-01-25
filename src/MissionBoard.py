@@ -31,7 +31,7 @@ class MissionBoard:
 		# open SPI connection
 		self._spi = SpiDev()
 		self._spi.open(0,0)
-		self._spi.max_speed_hz = 122000
+		self._spi.max_speed_hz = 100000 #122000
 
 		# prepare the asyncio loop and the queues
 		self._loop = asyncio.get_event_loop()

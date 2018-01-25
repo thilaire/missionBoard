@@ -17,7 +17,7 @@ MB = MissionBoard()
 
 # Panel 1: start/mode
 #MB.addRotary3(['P1_ROT3', 'gameMode'], TMindex=1, line=2, pins=[2,3])
-
+MB.add('P1_LED','OnOff', TMindex=4, index=1)
 # Panel 2: displays
 MB.add('P2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', '', 'gate2',
 	'alarm', 'landing', ''], pos=1)
@@ -66,10 +66,11 @@ MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unho
 #MB.addSwitch3(['P9_SW4'])
 
 
-MB.add('P0_PB','',gpio=9)
+MB.add('P0_PB','',gpio=24)
 @onChange(MB.PB_)
 async def Something(self):
 	print ("Something changed!!")
+	MB.sendSPI([0,0,0,0,0,0,0])
 
 
 
@@ -90,6 +91,9 @@ async def GoChange(self):
 #MB.runCheck()
 async def debug():
 
+
+	MB.LED_OnOff = True
+	MB.RGB_Go = RED,FAST
 
 	while True:
 		com = await ainput(">>>")
