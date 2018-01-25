@@ -40,7 +40,7 @@ MB.add('P4_LED', 'manual', TMindex=4, index=0)
 #MB.addPotentiometer(['P4_POT_0', 'speed'], AN=0)
 
 # Panel 5: flight mode
-MB.add('P5_SW3', 'mode', values=['takeoff','orbit','landing'], TMindex=4, pins=[2,3])
+MB.add('P5_SW3', 'mode', values=['landing','orbit','takeoff'], TMindex=4, pins=[2,3])
 MB.add('P5_SW2', 'autoPilot', values=['manual','auto'], TMindex=4, pin=4)
 
 # Panel 6: lift-off
@@ -90,6 +90,19 @@ async def GoChange(self):
 		MB.RGB_Go = BLACK
 		MB.PB_Go.state = 1
 
+
+@onChange(MB.SW3_mode)
+async def changeMode(self):
+	print(self.valueName)
+	MB.RGB_landing = BLACK
+	MB.RGB_takeoff = BLACK
+	MB.RGB_orbit = BLACK
+	if self == 'orbit':
+		MB.RGB_orbit = GREEN
+	elif self == 'takeoff':
+		MB.RGB_takeoff = GREEN
+	else:
+		MB.RGB_landing = GREEN
 
 
 # run tests!
