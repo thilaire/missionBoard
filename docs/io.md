@@ -134,17 +134,16 @@ The TM1638 IC has three input lines, but we only used the K3 line (the original 
 
 #### TM Board #1
 
-| Line | Connected to | Functionality   |
-|:----:|:------------:|:---------------:|
-| K3   |              |  Laser color    |
-| K3   |  `P1_SW3:2`  |  Game mode      | 
-| K3   |  `P1_SW3:1`  |  Game mode      | 
-| K3   |  `P5_SW3:2`  | flight mode     | 
-| K3   |  `P5_SW3:1`  | flight mode     | 
-| K3   |  `P5_SW2`    |  autopilot      | 
-| K3   |  `P9_SW3:2`  |  COM2           | 
-| K3   |  `P9_SW3:1`  |  COM1           | 
-
+| Bit | Connected to | Functionality   |
+|:---:|:------------:|:---------------:|
+| 0   |  `P1_SW3:2`  |  Game mode      | 
+| 1   |  `P1_SW3:1`  |  Game mode      | 
+| 2   |  `P5_SW3:2`  | flight mode     | 
+| 3   |  `P5_SW3:1`  | flight mode     | 
+| 4   |  `P5_SW2`    |  autopilot      | 
+| 5   |  `P9_SW3:2`  |  COM2           | 
+| 6   |  `P9_SW3:1`  |  COM1           | 
+| 7   |              |  Laser color    |
 
 
 #### TM Board #2

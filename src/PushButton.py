@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
 
 class PB(Element):
 	"""
-	Seven-Segment display
+	Push Button class
 	"""
 	def __init__(self, keyname, name, gpio):
 		super(PB, self).__init__(keyname, name)

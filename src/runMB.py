@@ -10,28 +10,28 @@ from aioconsole import ainput
 import logging
 
 from MissionBoard import MissionBoard, onChange
-from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW, BLACK
+from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW, BLACK, BLUE
 
 
 # create the main object and add the different buttons/displays for each panel
 MB = MissionBoard()
 
-logger = logging.getLogger()
-logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+#logger = logging.getLogger()
+#logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
 
 # Panel 1: start/mode
-#MB.addRotary3(['P1_ROT3', 'gameMode'], TMindex=1, line=2, pins=[2,3])
+#MB.add(['P1_SW3', 'gameMode'], TMindex=4, pins=[0,1])
 MB.add('P1_LED','OnOff', TMindex=4, index=1)
+
 # Panel 2: displays
 MB.add('P2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', '', 'gate2',
 	'alarm', 'landing', ''], pos=1)
-
 MB.add('P3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 # Panel 3: laser
-#MB.add(['P3_SW2_0', 'LaserArmed'], TMindex=1, line=3, pin=7)
-#MB.add(['P3_SW2_1', 'LaserColor'], TMindex=1, line=3, pin=8)
+#MB.add(['P3_SW_0', 'LaserArmed'], TMindex=1, line=3, pin=7)
+MB.add('P3_SW2_1', 'LaserColor', values=['blue','red'], TMindex=4, pin=7)
 
 # Panel 4: pilot
 MB.add('P4_LED', 'manual', TMindex=4, index=0)
@@ -40,8 +40,8 @@ MB.add('P4_LED', 'manual', TMindex=4, index=0)
 #MB.addPotentiometer(['P4_POT_0', 'speed'], AN=0)
 
 # Panel 5: flight mode
-#MB.addRotary3(['P5_SW_3POS', 'mode'], TMindex=1, line=1, pins=[4,5])
-#MB.addSwitch2(['P5_SW2', 'automaticPilot'], TMindex=1, line=1, pin=12)
+#MB.add(['P5_SW3', 'mode'], TMindex=4, pins=[2,3])
+MB.add('P5_SW2', 'autoPilot', values=['auto','manual'], TMindex=4, pin=4)
 
 # Panel 6: lift-off
 #MB.addSwitch2(['P6_SW2_1', 'phase1'], TMindex=1, line=1, pin=12)
@@ -64,14 +64,19 @@ MB.add('P8_PB_5', 'OxygenPump', gpio=3)
 MB.add('P8_PB_6', 'Laser', gpio=2)
 MB.add('P8_PB_7', 'LandingGear', gpio=15)
 MB.add('P8_PB_8', 'Go', gpio=22)
-MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'unhook', 'oxygenPump', 'laser',
-	'landingGear', 'Go'], pos=13)
+MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'landingGear',  'laser', 'oxygenPump',
+	'unhook', 'Go'], pos=13)
 
 # Panel 9: audio
-#MB.addSwitch3(['P9_SW4'])
+#MB.add('P9_SW4', 'Com', TMindex=4, pins=[5,6])
 
 
-
+@onChange(MB.SW2_LaserColor)
+async def lc(self):
+	if self == 'red':
+		MB.RGB_laser = RED, FAST
+	else:
+		MB.RGB_laser = BLUE,FAST
 
 
 MB.PB_Go.state=0

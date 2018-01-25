@@ -3,19 +3,22 @@
 from re import compile
 from spidev import SpiDev
 import RPi.GPIO as GPIO
-
-from Element import Element
-from LED import LED
-from DISP import DISP
-from PushButton import PB
-from RGB import RGB
 import asyncio
 import types
 import logging
 
-# list of possible elements
-dictOfElements = {x.__name__: x for x in Element.__subclasses__()}
 
+# import UI elements (Leds, Buttons, Switches, etc.)
+from Element import Element
+from LED import LED
+from Display import DISP
+from PushButton import PB
+from RGB import RGB
+from Switches import SW2
+
+# list of possible elements
+#dictOfElements = {x.__name__: x for x in Element.__subclasses__()} # SW2 is not a subclass of Element
+dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2}
 
 # simple regex for Pxx_YYY_zzz or Pxx_YYY
 regElement = compile("P(\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
@@ -120,15 +123,26 @@ class MissionBoard:
 		while True:
 			# wait for data
 			data = await self._SPIqueue.get()
-			# process the item
+			# send the 1st byte
 			SPIlogger.debug("Send %s", str(data[0]))
-			header = self._spi.xfer([data.pop(0)])
+			header, = self._spi.xfer([data.pop(0)])
 			SPIlogger.debug("Receive Header= %s", str(header))
-			data.extend([0] * ((header[0]>>4) - len(data)))
+			# add more byte if the AVR respond and want to send data
+			data.extend([0] * ((header>>4) - len(data)))
 			if data:
 				SPIlogger.debug("Send %s", str(data))
 				recv = self._spi.xfer(data)
 				SPIlogger.debug("Receive data %s", str(recv))
+
+				# manage the data sent back
+				if header&4:
+					# some potentiometer data
+					pass
+				if header&8:
+					TMval = recv[(header>>4)-1]
+					index = header&3
+					SPIlogger.debug("TM %d, value=%d",index,TMval)
+					SW2.checkChanges(index, TMval)
 
 
 	async def _manageEvents(self):

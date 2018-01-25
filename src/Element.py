@@ -9,13 +9,13 @@ class Element:
 	each element has a name and a keyname
 	"""
 
-	_all = []   # list of all the created elements
+	_allElements = []   # list of all the created elements
 	_MB = None
 
 	def __init__(self, keyname, name ):
 		self._keyname = keyname
 		self._name = name
-		self._all.append(self)
+		self._allElements.append(self)
 
 
 	def __str__(self):
@@ -25,7 +25,7 @@ class Element:
 	@classmethod
 	def getAll(cls):
 		"""Returns the list of all the elements"""
-		return cls._all
+		return cls._allElements
 
 	@classmethod
 	def setMB(cls, MB):

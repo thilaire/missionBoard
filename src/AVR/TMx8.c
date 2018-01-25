@@ -69,11 +69,6 @@ uint8_t getDataTMx8(uint8_t nTM, uint8_t* data)
 	/* close the connection */
 	setTM1638_Stb();
 
-		TM1638_sendData(8,  NUMBER_FONT[*data/100], 32);
-	TM1638_sendData(10,  NUMBER_FONT[(*data%100)/10], 32);
-	TM1638_sendData(12,  NUMBER_FONT[*data%10], 32);
-
-
 	/* check if K3 has changed	and update SPItoSend datas */
 	if (*data != TMx8Input[nTM])
 	{

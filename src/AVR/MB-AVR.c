@@ -172,15 +172,6 @@ ISR (TIMER1_COMPA_vect  )
 	SPISend_header |= NB_BYTES[SPISend_header>>2];
 	SPDR = SPISend_header;
 
-		/* debug */
-	if ((cycle&3) == 0){
-	TM1638_sendData(0,  NUMBER_FONT[SPISend_header/100], 32);
-	TM1638_sendData(2,  NUMBER_FONT[(SPISend_header%100)/10], 32);
-	TM1638_sendData(4,  NUMBER_FONT[SPISend_header%10], 32);
-	}
-
-
-
 	/* pulse the Raspberry Pi if something has changed */
 	if (SPISend_header&0b00001100)
 	{
