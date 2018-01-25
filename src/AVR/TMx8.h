@@ -22,5 +22,6 @@ void setBrightnessTMx(uint8_t SPIcommand);
 void turnOffTMx(uint8_t SPIcommand);
 void clearTMx(uint8_t SPIcommand);
 void setupTMx(uint8_t brightness);
+void switchDataTMx();
 
 #endif

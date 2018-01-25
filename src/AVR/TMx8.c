@@ -179,3 +179,13 @@ void setupTMx(uint8_t brightness)
 {
 	TM1638_setup(brightness);
 }
+
+/* when the RPi ask for all the data
+we simply change the value stored in TMx8Input */
+void switchDataTMx()
+{
+	for( uint8_t i=0; i<NB_TMx8; i++)
+	{
+		TMx8Input[i] = ~TMx8Input[i];   /* switch the bits */
+	}
+}

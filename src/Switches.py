@@ -39,7 +39,7 @@ class Switch(Element):
 	async def onChange(self):
 		"""onChange method
 		to be filled for each switch"""
-		print("onChange "+str(self))
+		print("onChange <"+str(self)+"> = "+str(self.valueName))
 
 
 	@classmethod
@@ -58,6 +58,9 @@ class Switch(Element):
 
 		cls._values[TMindex] = value
 
+	@property
+	def valueName(self):
+		return self._valueNames[self.value]
 
 
 class SW2(Switch):
@@ -65,7 +68,7 @@ class SW2(Switch):
 	2-position switches
 	"""
 
-	def __init__(self, keyname, name, values, TMindex, pin):
+	def __init__(self, keyname, name, TMindex, pin, values=['off','on'],):
 		# init super class
 		super(SW2, self).__init__(keyname, name, TMindex, [pin])
 		self._pin = pin
@@ -80,6 +83,34 @@ class SW2(Switch):
 		"""Compare to string in _values"""
 		# check if we can compare
 		if other not in self._valueNames:
-			raise ValueError("This SW2 can only be compared to ",str(self._values))
+			raise ValueError("The SW2 %s can only be compared to ", str(self), str(self._values))
 		# return comparison
 		return self._valueNames[(self._values[self._TMindex] >> self._pin) & 1] == other
+
+
+
+class SW3(Switch):
+	"""
+	3-position switches
+	"""
+
+	def __init__(self, keyname, name, values, TMindex, pins):
+		# init super class
+		super(SW3, self).__init__(keyname, name, TMindex, pins)
+		self._pins = pins
+		self._valueNames = values
+
+	@property
+	def value(self):
+		"""Get the value"""
+		val = self._values[self._TMindex] & (1<<self._pins[0] | 1<<self._pins[1])
+		return 0 if val == 0 else (1 if val == 1<<self._pins[0] else 2)
+
+
+	def __eq__(self, other):
+		"""Compare to string in _values"""
+		# check if we can compare
+		if other not in self._valueNames:
+			raise ValueError("The SW3 %s can only be compared to ", str(self), str(self._values))
+		# return comparison
+		return self._valueNames[self.value] == other

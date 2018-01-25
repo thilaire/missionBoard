@@ -62,9 +62,11 @@ ISR (SPI_STC_vect)
 		switch (SPIRec_command & 0b11000000)
 		{
 			case 0:
-				/* set RGB color */
 				if (SPIRec_command)
+				{
+					/* set RGB color */
 					setRGBLed( SPIRec_command-1, SPIRec_buffer);
+				}
 				/*else NOP: do nothing */
 				break;
 			case 0b01000000:
@@ -91,6 +93,13 @@ ISR (SPI_STC_vect)
 					/* clear the display */
 					clearTMx(SPIRec_command);
 				}
+				else if (SPIRec_command == 0b11110000)
+				{
+					/* ask for the AVR datas (TMx8 and potentiometers) */
+					switchDataTMx();
+					//resetDataPot();
+				}
+
 		}
 	}
 

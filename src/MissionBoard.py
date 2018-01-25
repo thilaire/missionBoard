@@ -14,11 +14,11 @@ from LED import LED
 from Display import DISP
 from PushButton import PB
 from RGB import RGB
-from Switches import SW2
+from Switches import SW2, SW3
 
 # list of possible elements
 #dictOfElements = {x.__name__: x for x in Element.__subclasses__()} # SW2 is not a subclass of Element
-dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2}
+dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2, 'SW3': SW3}
 
 # simple regex for Pxx_YYY_zzz or Pxx_YYY
 regElement = compile("P(\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
@@ -168,6 +168,12 @@ class MissionBoard:
 		"""
 		self._loop.call_soon_threadsafe(self._EventQueue.put_nowait, obj)
 
+
+	def askATdata(self):
+		"""
+		ask the ATtiny to send its data
+		"""
+		self.sendSPI([0b11110000])
 
 
 

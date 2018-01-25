@@ -16,12 +16,12 @@ from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW, BLACK, BLUE
 # create the main object and add the different buttons/displays for each panel
 MB = MissionBoard()
 
-#logger = logging.getLogger()
+logger = logging.getLogger()
 #logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
 
 # Panel 1: start/mode
-#MB.add(['P1_SW3', 'gameMode'], TMindex=4, pins=[0,1])
+MB.add('P1_SW3', 'gameMode', values=['computer', 'spaceship','games'], TMindex=4, pins=[0,1])
 MB.add('P1_LED','OnOff', TMindex=4, index=1)
 
 # Panel 2: displays
@@ -30,7 +30,7 @@ MB.add('P2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'aut
 MB.add('P3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 # Panel 3: laser
-#MB.add(['P3_SW_0', 'LaserArmed'], TMindex=1, line=3, pin=7)
+#MB.add('P3_SW2_0', 'Laser', values=['disarmed','armed'], TMindex=8, pin=0)
 MB.add('P3_SW2_1', 'LaserColor', values=['blue','red'], TMindex=4, pin=7)
 
 # Panel 4: pilot
@@ -40,13 +40,13 @@ MB.add('P4_LED', 'manual', TMindex=4, index=0)
 #MB.addPotentiometer(['P4_POT_0', 'speed'], AN=0)
 
 # Panel 5: flight mode
-#MB.add(['P5_SW3', 'mode'], TMindex=4, pins=[2,3])
-MB.add('P5_SW2', 'autoPilot', values=['auto','manual'], TMindex=4, pin=4)
+MB.add('P5_SW3', 'mode', values=['takeoff','orbit','landing'], TMindex=4, pins=[2,3])
+MB.add('P5_SW2', 'autoPilot', values=['manual','auto'], TMindex=4, pin=4)
 
 # Panel 6: lift-off
-#MB.addSwitch2(['P6_SW2_1', 'phase1'], TMindex=1, line=1, pin=12)
-#MB.addSwitch2(['P6_SW2_2', 'phase2'], TMindex=1, line=1, pin=13)
-#MB.addSwitch2(['P6_SW2_3', 'phase3'], TMindex=1, line=1, pin=14)
+#MB.add('P6_SW2_1', 'phase1', TMindex=8, pin=1)
+#MB.add('P6_SW2_2', 'phase2', TMindex=8, pin=2)
+#MB.add('P6_SW2_3', 'phase3', TMindex=8, pin=3)
 
 # Panel 7: Joystick
 MB.add('P7_PB_UP', 'Up', gpio=7)
@@ -68,7 +68,7 @@ MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'land
 	'unhook', 'Go'], pos=13)
 
 # Panel 9: audio
-#MB.add('P9_SW4', 'Com', TMindex=4, pins=[5,6])
+MB.add('P9_SW3', 'Com', values=['Off','COM1','COM2'], TMindex=4, pins=[5,6])
 
 
 @onChange(MB.SW2_LaserColor)
@@ -97,8 +97,10 @@ async def GoChange(self):
 async def debug():
 
 
-	MB.LED_OnOff = True
-	MB.RGB_Go = RED,FAST
+	MB.askATdata()
+
+	#MB.LED_OnOff = True
+	#MB.RGB_Go = RED,FAST
 
 	while True:
 		com = await ainput(">>>")
