@@ -40,10 +40,11 @@ def bitRotation(b, shift):
 
 class RGB(Element):
 
-	def __init__(self, keyname, name, pos):
+	def __init__(self, keyname, name, pos, inverted=[]):
+		# inverted contain a list of pos, for RGB led those Red and Green are inverted (sometimes happen for my WS2812 clones)
 		super(RGB, self).__init__(keyname, name)
 		self._pos = pos
-
+		self._inverted = pos in inverted
 
 	def runCheck(self):
 		pass
@@ -67,5 +68,14 @@ class RGB(Element):
 			raise ValueError("Value is not a int nor a length of size 2 or 3")
 
 		# convert it to list of bytes, and send it
+		if self._inverted:
+			color = (color & 0x0000FF) | ((color & 0x00ff00) << 8) | ((color & 0xFF0000)>>8)
 		data = [self._pos,] + list(blink.to_bytes(2, byteorder='big')) + list(color.to_bytes(3, byteorder='big'))
 		self._MB.sendSPI(data)
+
+	@classmethod
+	def turnOff(cls):
+		"""Turn off all the RGB leds"""
+		for e in cls._allElements:
+			if isinstance(e,cls):
+				e.__set__(e, BLACK)   # turn off the led

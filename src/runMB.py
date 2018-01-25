@@ -10,7 +10,7 @@ from aioconsole import ainput
 import logging
 
 from MissionBoard import MissionBoard, onChange
-from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW, BLACK, BLUE
+from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW, BLACK, BLUE, RGB
 
 
 # create the main object and add the different buttons/displays for each panel
@@ -26,7 +26,7 @@ MB.add('P1_LED','OnOff', TMindex=4, index=1)
 
 # Panel 2: displays
 MB.add('P2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', '', 'gate2',
-	'alarm', 'landing', ''], pos=1)
+	'landing','alarm', ''], pos=1, inverted=[5])
 MB.add('P3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 # Panel 3: laser
@@ -65,7 +65,7 @@ MB.add('P8_PB_6', 'Laser', gpio=2)
 MB.add('P8_PB_7', 'LandingGear', gpio=15)
 MB.add('P8_PB_8', 'Go', gpio=22)
 MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'landingGear',  'laser', 'oxygenPump',
-	'unhook', 'Go'], pos=13)
+	'unhook', 'Go'], pos=13, inverted=[18,19])
 
 # Panel 9: audio
 MB.add('P9_SW3', 'Com', values=['Off','COM1','COM2'], TMindex=4, pins=[5,6])
@@ -96,7 +96,7 @@ async def GoChange(self):
 #MB.runCheck()
 async def debug():
 
-
+	RGB.turnOff()
 	MB.askATdata()
 
 	#MB.LED_OnOff = True
