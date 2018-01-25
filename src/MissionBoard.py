@@ -11,6 +11,7 @@ from PushButton import PB
 from RGB import RGB
 import asyncio
 import types
+import logging
 
 # list of possible elements
 dictOfElements = {x.__name__: x for x in Element.__subclasses__()}
@@ -19,6 +20,8 @@ dictOfElements = {x.__name__: x for x in Element.__subclasses__()}
 # simple regex for Pxx_YYY_zzz or Pxx_YYY
 regElement = compile("P(\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
 
+logger = logging.getLogger()
+SPIlogger = logging.getLogger('SPI')
 
 class MissionBoard:
 	"""
@@ -40,6 +43,7 @@ class MissionBoard:
 		self._EventQueue = asyncio.Queue(loop=self._loop)
 
 		# take the IO24 into consideration when AVR wants to communicate
+		GPIO.setwarnings(False)
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 		GPIO.add_event_detect(24, GPIO.BOTH, callback=lambda x:self._loop.call_soon_threadsafe(self._SPIqueue.put_nowait, [0]))      # send 0 into SPIQueue in a threadsafe way, see addEvent
@@ -87,6 +91,7 @@ class MissionBoard:
 				raise ValueError("An element with the same name (%s) already exists", name)
 			# add this as an attribute
 			setattr(self.__class__, elementType+'_'+name, dictOfElements[elementType](keyname, name, **args))
+			logger.debug("Add `%s_%s` to MissionBoard",elementType,name)
 		else:
 			if 'pos' not in args:
 				args['pos'] = 0
@@ -97,12 +102,13 @@ class MissionBoard:
 				# add this as an attribute
 				setattr(self.__class__, elementType+'_'+n, dictOfElements[elementType](keyname, n, **args ))
 				args['pos'] += 1
+				logger.debug("Add `%s_%s` to MissionBoard", elementType, n)
 
 
 
 	def sendSPI(self, data):
 		"""Simply add the data in the queue"""
-		print("sendSPI: send " + str(data))
+		SPIlogger.debug("send %s", str(data))
 		self._SPIqueue.put_nowait(data)
 
 
@@ -115,14 +121,14 @@ class MissionBoard:
 			# wait for data
 			data = await self._SPIqueue.get()
 			# process the item
-			print("Send "+str(data[0]))
+			SPIlogger.debug("Send %s", str(data[0]))
 			header = self._spi.xfer([data.pop(0)])
-			print("Receive Header=" + str(header))
+			SPIlogger.debug("Receive Header= %s", str(header))
 			data.extend([0] * ((header[0]>>4) - len(data)))
 			if data:
-				print("Send "+str(data))
+				SPIlogger.debug("Send %s", str(data))
 				recv = self._spi.xfer(data)
-				print("Receive data"+ str(recv))
+				SPIlogger.debug("Receive data %s", str(recv))
 
 
 	async def _manageEvents(self):
@@ -134,7 +140,7 @@ class MissionBoard:
 			# wait for event
 			event = await self._EventQueue.get()
 			# process the event
-			print("Event "+str(event))
+			logger.debug("Event %s",str(event))
 			await event.onChange()
 
 

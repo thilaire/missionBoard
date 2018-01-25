@@ -7,6 +7,7 @@ Define the different callbacks
 from time import sleep
 import asyncio
 from aioconsole import ainput
+import logging
 
 from MissionBoard import MissionBoard, onChange
 from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW, BLACK
@@ -14,6 +15,10 @@ from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW, BLACK
 
 # create the main object and add the different buttons/displays for each panel
 MB = MissionBoard()
+
+logger = logging.getLogger()
+logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+
 
 # Panel 1: start/mode
 #MB.addRotary3(['P1_ROT3', 'gameMode'], TMindex=1, line=2, pins=[2,3])
