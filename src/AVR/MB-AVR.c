@@ -185,7 +185,7 @@ ISR (TIMER1_COMPA_vect  )
 	if (SPISend_header&0b00001100)
 	{
 		PORTC |= 1;
-		_delay_us(10);
+		//_delay_us(1);
 		PORTC &= ~1;
 	}
 	/* next cycle */

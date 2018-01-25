@@ -47,14 +47,19 @@ class Switch(Element):
 		# get the bit that have changed
 		diff = value ^ cls._values[TMindex]
 		# check for each bit that differ
+		lswitch = []    # list of switches that have changed
 		for i in range(8):
 			if diff&1:
 				# get the corresponding switch
 				switch = cls._all.get((TMindex,i))
 				if switch:
-					# and call its onChange method (through Event Queue)
-					cls._MB.addEvent(switch)
+					# add it the list of switches that have changed (if it is not yet in)
+					if switch not in lswitch:
+						lswitch.append(switch)
 			diff >>= 1
+		# call onChange method (through Event Queue) for each switch
+		for sw in lswitch:
+			cls._MB.addEvent(sw)
 
 		cls._values[TMindex] = value
 
@@ -82,11 +87,13 @@ class SW2(Switch):
 	def __eq__(self, other):
 		"""Compare to string in _values"""
 		# check if we can compare
-		if other not in self._valueNames:
-			raise ValueError("The SW2 %s can only be compared to ", str(self), str(self._values))
-		# return comparison
-		return self._valueNames[(self._values[self._TMindex] >> self._pin) & 1] == other
-
+		if isinstance(other, str):
+			if other not in self._valueNames:
+				raise ValueError("The SW2 %s can only be compared to ", str(self), str(self._values))
+			# return comparison
+			return self._valueNames[(self._values[self._TMindex] >> self._pin) & 1] == other
+		else:
+			return self is other
 
 
 class SW3(Switch):
@@ -110,7 +117,10 @@ class SW3(Switch):
 	def __eq__(self, other):
 		"""Compare to string in _values"""
 		# check if we can compare
-		if other not in self._valueNames:
-			raise ValueError("The SW3 %s can only be compared to ", str(self), str(self._values))
-		# return comparison
-		return self._valueNames[self.value] == other
+		if isinstance(other, str):
+			if other not in self._valueNames:
+				raise ValueError("The SW3 %s can only be compared to ", str(self), str(self._values))
+			# return comparison
+			return self._valueNames[self.value] == other
+		else:
+			return self is other

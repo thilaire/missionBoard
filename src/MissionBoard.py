@@ -49,7 +49,7 @@ class MissionBoard:
 		GPIO.setwarnings(False)
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.add_event_detect(24, GPIO.BOTH, callback=lambda x:self._loop.call_soon_threadsafe(self._SPIqueue.put_nowait, [0]))      # send 0 into SPIQueue in a threadsafe way, see addEvent
+		GPIO.add_event_detect(24, GPIO.RISING, callback=lambda x:self._loop.call_soon_threadsafe(self._SPIqueue.put_nowait, [0]))      # send 0 into SPIQueue in a threadsafe way, see addEvent
 
 
 	def runCheck(self):
