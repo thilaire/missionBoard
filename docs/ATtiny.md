@@ -159,25 +159,25 @@ For that purpose, I need to prepare some periodic tasks:
 - polling to get data from the TM1638
 - make the RGB LED blink
 - polling to get data from the matrix keyboard (if I add it, one day)
-- update the display (TM1637 and TM1638) if needed
 
-I need to read the inputs (switches, not push button) at leat 10 times a second (rought approximation), and each "task" take between few cycles (read the matrix keyboard or run the ADC) and less than a millisecond (pilot the RGB leds or talk with the TMs). So I have decided to set a period of 15.625ms (1/64 of a second), and to count in which cycle we are (with the 8-bit variable `ncycle`):
-- when `(ncycle&3) == 0`: (every 62.5ms) acquire ADC3, read `8TM1` (1st TM1638)
-- when `(ncycle&3) == 1`: (every 62.5ms) acquire ADC4, read `8TM2` (2nd TM1638)
-- when `(ncycle&3) == 2`: (every 62.5ms) acquire ADC5, read `8TM3` (3rd TM1638)
-- when `(ncycle&3) == 3`: (every 62.5ms) acquire ADC2 and check if the switches connected to PC2 (analog sum)  have changed 
-- when `(ncyccle&15) == 15`: (every 250ms) update the RGB leds if necessary (according to blinking)
 
-So TIME1 is configured to generate interruption every 15625 ticks, with a prescaler of 1/8 (Frequency of the ATtiny: 8MHz, see this [AVR timer calculator](http://eleccelerator.com/avr-timer-calculator/)):
+I need to read the inputs (switches, not push button) at leat 10 times a second (rought approximation), and each "task" take between few cycles (run the ADC) and less than a millisecond (pilot the RGB leds or talk with the TMs). So I have decided to set a period of 3.90625ms (1/256 of a second), and to count in which cycle we are (with the 8-bit variable `ncycle`):
+- when `(ncycle&3) == 0`: (every 1.5625ms) acquire ADC3, read `8TM1` (1st TM1638)
+- when `(ncycle&3) == 1`: (every 1.5625ms) acquire ADC4, read `8TM2` (2nd TM1638)
+- when `(ncycle&3) == 2`: (every 1.5625ms) acquire ADC5, read `8TM3` (3rd TM1638)
+- when `(ncycle&3) == 3`: (every 1.5625ms) acquire ADC2 and check if the switches connected to PC2 (analog sum)  have changed 
+- when `(ncyccle&63) == 63`: (every 250ms) update the RGB leds if necessary (according to blinking)
+
+So TIME1 is configured to generate interruption every 31250 ticks, with a prescaler of 1/1 (Frequency of the ATtiny: 8MHz, see this [AVR timer calculator](http://eleccelerator.com/avr-timer-calculator/)):
 
 ```C
-	TCCR1B = (1U<<CS11) | (1U<<WGM12);     /* prescaler = 1/8 and Clear Timer on Compare match (CTC) T*/
+	TCCR1B = (1U<<CS10) | (1U<<WGM12);     /* prescaler = 1/1 and Clear Timer on Compare match (CTC) T*/
 	TCCR1C = (1U<<FOC1A);    /* channel A */
-	OCR1A = 15625;              /* 15625 ticks @ 1MHz -> 15.625ms */
+	OCR1A = 31250;              /* 31250 ticks @ 1MHz -> 3.90625ms (1/256 s) */
 	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
 ```
 
-For the RGB Leds, the 4 MSB of `ncycle` (so `ncycle>>4`) indicates in which blinking cycle we are. So, for each RGB Led, a 16-bit word encodes the blinking scheme (each bit indicates if the LED is on/off in the corresponding blinking cycle). 
+For the RGB Leds, we need another variable `blinkCycle` to count the blink cycle (the 2 MSB of `ncycle` required to get 250ms are not enough). Four bits is enough, it gives 16 different cycles. So, for each RGB Led, a 16-bit word encodes the blinking scheme (each bit indicates if the LED is on/off in the corresponding blinking cycle). 
 See the [APA106 documentation](APA106.md) for the blinking details (how to encode blink pattern, how to compute when to send data, and when it is not necessary, etc.)
 
 

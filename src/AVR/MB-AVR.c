@@ -136,10 +136,34 @@ void updateDataTMx8(uint8_t nTM)
 
 
 
+void getPotentiometer()
+{
+	ADMUX = 0b01100101;
+	ADCSRB = 0;
+	DIDR0 = 0B11000011;
+	ADCSRA = 0B11000100;
+	ADCSRA = 0B11000100;
+
+	_delay_ms(1);
+
+	uint8_t val = ADCH;
+
+	TM1638_sendData(0, NUMBER_FONT[val/100], 32);
+	TM1638_sendData(2, NUMBER_FONT[(val%100)/10], 32);
+	TM1638_sendData(4, NUMBER_FONT[val%10], 32);
+
+}
+
+
+
+
+
 /* Timer 1 interrupt function (when TIMER1==OCR1A) */
 ISR (TIMER1_COMPA_vect  )
 {
 	static uint8_t cycle=0;
+	static uint8_t blinkCycle = 0;
+
 	/* initialize SPI header */
 	SPISend_header = cycle&3;
 	/* run specific task (wrt the cycle)*/
@@ -147,6 +171,7 @@ ISR (TIMER1_COMPA_vect  )
 	{
 		/* acquire ADC3 and TM1638[0] */
 		//updateADC(3);
+		getPotentiometer();
 		updateDataTMx8(0);
 
 	}
@@ -162,18 +187,21 @@ ISR (TIMER1_COMPA_vect  )
 		//updateADC(4);
 		//updateDataTMx8(2);
 	}
-	else
+	else    /* (cycle&3) == 3 */
 	{   /* run capture ADC22 */
+
+
 		/* blinking cycle */
-		if ((cycle&15) == 3)
+		if ((cycle&63) == 63)
 		{
 			/* check if we need to send data to the led (something has changed since previous cycle ?) */
-			if (RGBshouldBeUpdated(cycle>>4))
+			if (RGBshouldBeUpdated(blinkCycle))
 			{
 				/* prepare the buffer */
-				fillRGBBuffer(cycle>>4);
+				fillRGBBuffer(blinkCycle);
 				updateRGB();
 			}
+			blinkCycle = (blinkCycle+1) & 15;   /* only the 4 LSB */
 		}
 	}
 	/* update SPI header and SPDR (next byte to be sent)*/
@@ -215,9 +243,9 @@ int main(void)
 
 	/* configure timer1, 16bits mode, Prescaler=1/8
 	interrupt after 15625 ticks (compare for channel A) */
-	TCCR1B = (1U<<CS11) | (1U<<WGM12);     /* prescaler = 1/8 and Clear Timer on Compare match (CTC) T*/
+	TCCR1B = (1U<<CS10) | (1U<<WGM12);     /* prescaler = 1/8 and Clear Timer on Compare match (CTC) T*/
 	TCCR1C = (1U<<FOC1A);    /* channel A */
-	OCR1A = 15625;              /* 15625 ticks @ 1MHz -> 15.625ms */
+	OCR1A = 31250;              /* 15625 ticks @ 1MHz -> 15.625ms */
 	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
 
 	/* setup the TMx8 and TMx7 boards */
