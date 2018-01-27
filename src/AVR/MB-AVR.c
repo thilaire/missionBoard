@@ -11,7 +11,7 @@
 #include <string.h>
 #include "RGB.h"
 #include "TMx8.h"
-
+#include "ADC.h"
 
 
 //debug
@@ -96,8 +96,9 @@ ISR (SPI_STC_vect)
 				else if (SPIRec_command == 0b11110000)
 				{
 					/* ask for the AVR datas (TMx8 and potentiometers) */
+					/* we reset the data, so that they will be send again in the next polling cycles */
 					switchDataTMx();
-					//resetDataPot();
+					switchDataADC();
 				}
 
 		}
@@ -125,7 +126,7 @@ ISR (SPI_STC_vect)
 void updateDataTMx8(uint8_t nTM)
 {
 	uint8_t data;
-	if (getDataTMx8(0, &data))
+	if (getDataTMx8(nTM, &data))
 	{
 		/* copy the data in the right place (header is 1 if Pot has changed, 0 otherwise) */
 		SPISend_data[SPISend_header>>2] = data;
@@ -135,23 +136,24 @@ void updateDataTMx8(uint8_t nTM)
 }
 
 
-
-void getPotentiometer()
+/* get the data from the ADC and update SPIsend data accordingly */
+void updateADC(uint8_t cycle)
 {
-	ADMUX = 0b01100101;
-	ADCSRB = 0;
-	DIDR0 = 0B11000011;
-	ADCSRA = 0B11000100;
-	ADCSRA = 0B11000100;
+	uint8_t data;
+	if (getADC(cycle, &data))
+	{
+		/* copy the data in the first byte */
+		SPISend_data[0] = data;
+		/* ADC data has changed */
+		SPISend_header |= 0b00000100;
+	}
 
-	_delay_ms(1);
-
-	uint8_t val = ADCH;
-
-	TM1638_sendData(0, NUMBER_FONT[val/100], 32);
-	TM1638_sendData(2, NUMBER_FONT[(val%100)/10], 32);
-	TM1638_sendData(4, NUMBER_FONT[val%10], 32);
-
+	if (cycle == 2)
+	{
+	TM1638_sendData(0, NUMBER_FONT[data/100], 32);
+	TM1638_sendData(2, NUMBER_FONT[(data%100)/10], 32);
+	TM1638_sendData(4, NUMBER_FONT[data%10], 32);
+	}
 }
 
 
@@ -167,29 +169,9 @@ ISR (TIMER1_COMPA_vect  )
 	/* initialize SPI header */
 	SPISend_header = cycle&3;
 	/* run specific task (wrt the cycle)*/
-	if ((cycle&3) == 0)
-	{
-		/* acquire ADC3 and TM1638[0] */
-		//updateADC(3);
-		getPotentiometer();
-		updateDataTMx8(0);
-
-	}
-	else if ((cycle&3) == 1)
-	{
-		/* acquire  ADC4 and TM1638[1] */
-		//updateADC(4);
-		//updateDataTMx8(1);
-	}
-	else if ((cycle&3) == 2)
-	{
-		/* run capture ADC5 and TM1638[2] */
-		//updateADC(4);
-		//updateDataTMx8(2);
-	}
-	else    /* (cycle&3) == 3 */
+	if ((cycle&3) == 3)
 	{   /* run capture ADC22 */
-
+		runADC(0);  /* run ADC for the next cycle */
 
 		/* blinking cycle */
 		if ((cycle&63) == 63)
@@ -204,6 +186,16 @@ ISR (TIMER1_COMPA_vect  )
 			blinkCycle = (blinkCycle+1) & 15;   /* only the 4 LSB */
 		}
 	}
+	else
+	{
+		/* acquire Potentiometer */
+		updateADC(cycle&3);
+		/* acquire data from TMx8 */
+		updateDataTMx8(cycle&3);
+		/* run ADC for the next cycle */
+		runADC((cycle&3)+1);
+	}
+
 	/* update SPI header and SPDR (next byte to be sent)*/
 	SPISend_header &= 0b11001111;
 	SPISend_header |= NB_BYTES[SPISend_header>>2];
@@ -250,7 +242,7 @@ int main(void)
 
 	/* setup the TMx8 and TMx7 boards */
 	setupTMx(1);
-
+	initADC();
 
 	SPDR = 0;
 

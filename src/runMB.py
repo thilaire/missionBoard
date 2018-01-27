@@ -17,7 +17,7 @@ from RGB import RED, YELLOW, GREEN, OLIVE, FAST, SLOW, BLACK, BLUE, RGB
 MB = MissionBoard()
 
 logger = logging.getLogger()
-#logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
 
 # Panel 1: start/mode
@@ -35,9 +35,9 @@ MB.add('P3_SW2_1', 'LaserColor', values=['blue','red'], TMindex=4, pin=7)
 
 # Panel 4: pilot
 MB.add('P4_LED', 'manual', TMindex=4, index=0)
-#MB.addPotentiometer(['P4_POT_0', 'roll'], AN=1)
-#MB.addPotentiometer(['P4_POT_1', 'yaw'], AN=2)
-#MB.addPotentiometer(['P4_POT_0', 'speed'], AN=0)
+MB.add('P4_POT_0', 'roll', index=0)
+MB.add('P4_POT_1', 'yaw', index=1)
+MB.add('P4_POT_0', 'speed', index=2)
 
 # Panel 5: flight mode
 MB.add('P5_SW3', 'mode', values=['landing','orbit','takeoff'], TMindex=4, pins=[2,3])

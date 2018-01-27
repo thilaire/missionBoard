@@ -6,8 +6,8 @@
 * Licence: GPL v3
 */
 
-
 #include <avr/io.h>
+#include <stdint.h>
 #include <util/delay.h>
 
 #include "TMx8.h"

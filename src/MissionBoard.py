@@ -14,11 +14,12 @@ from LED import LED
 from Display import DISP
 from PushButton import PB
 from RGB import RGB
-from Switches import SW2, SW3
+from Switches import Switch, SW2, SW3
+from POT import POT
 
 # list of possible elements
 #dictOfElements = {x.__name__: x for x in Element.__subclasses__()} # SW2 is not a subclass of Element
-dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2, 'SW3': SW3}
+dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2, 'SW3': SW3, 'POT': POT}
 
 # simple regex for Pxx_YYY_zzz or Pxx_YYY
 regElement = compile("P(\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
@@ -136,13 +137,15 @@ class MissionBoard:
 
 				# manage the data sent back
 				if header&4:
-					# some potentiometer data
-					pass
+					Potval = recv[0]
+					index = header&3
+					SPIlogger.debug("Pot %d, value=%d",index,Potval)
+					POT.checkChanges(index, Potval)
 				if header&8:
 					TMval = recv[(header>>4)-1]
 					index = header&3
 					SPIlogger.debug("TM %d, value=%d",index,TMval)
-					SW2.checkChanges(index, TMval)
+					Switch.checkChanges(index, TMval)
 
 
 	async def _manageEvents(self):
