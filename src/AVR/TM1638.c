@@ -1,10 +1,24 @@
-/*
-* Author: T. HILAIRE
-*
-* low-level driver for TM1638 chip
-*
-* Licence: GPL v3
-*/
+/*----------------------------------------------------------------------------
+
+                          *========================*
+                          |                        |
+                          | Project MissionBoard   |
+                          |                        |
+                          *========================*
+
+
+ Authors: T. HILAIRE
+ Licence: GPL v3
+
+ File: TM1638.c
+       low-level driver for the TM1638 chip
+       - basic function to driver the TM1638 chip
+       - used by the high-level driver (see TMx8.c)
+
+
+Copyright 2017-2018 T. Hilaire
+
+----------------------------------------------------------------------------*/
 
 #include <avr/io.h>
 #include <util/delay.h>

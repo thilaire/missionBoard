@@ -1,16 +1,30 @@
-/*
-* Author: T. HILAIRE
-*
-* low-level driver for TM1638 chip
-*
-* Licence: GPL v3
-*/
+/*----------------------------------------------------------------------------
+
+                          *========================*
+                          |                        |
+                          | Project MissionBoard   |
+                          |                        |
+                          *========================*
+
+
+ Authors: T. HILAIRE
+ Licence: GPL v3
+
+ File: TM1638.c
+       low-level driver for the TM1638 chip
+       - basic function to driver the TM1638 chip
+       - used by the high-level driver (see TMx8.c)
+
+
+Copyright 2017-2018 T. Hilaire
+
+----------------------------------------------------------------------------*/
 
 #ifndef _TM1638_H_
 #define _TM1638_H_
 
 #define BIT(x) (0x01 << (x))
-/* TODO: utiliser la macro un peu partout dans le code */
+/* TODO: use it everywhere in the code ? */
 
 /* Constants to define the Ports for DIO (Data IO), CLK (Clock) and STBs (Enable pins) */
 #define TM1638_DIO_PORT      PORTB

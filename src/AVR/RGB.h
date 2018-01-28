@@ -1,10 +1,25 @@
-/*
-* Author: T. HILAIRE
-*
-* driver for the RGB leds and the SPI protocol used
-*
-* Licence: GPL v3
-*/
+/*----------------------------------------------------------------------------
+
+                          *========================*
+                          |                        |
+                          | Project MissionBoard   |
+                          |                        |
+                          *========================*
+
+
+ Authors: T. HILAIRE
+ Licence: GPL v3
+
+ File: RGB.h
+       utilities function for the RGB leds
+       - use the light_ws2812 library
+       - manage the blink of the LED (according to a 16-bit pattern)
+
+
+Copyright 2017-2018 T. Hilaire
+
+----------------------------------------------------------------------------*/
+
 
 
 #ifndef _RGB_H_

@@ -1,10 +1,26 @@
-/*
-* Author: T. HILAIRE
-*
-* driver for TM1638 board and the SPI protocol used
-*
-* Licence: GPL v3
-*/
+/*----------------------------------------------------------------------------
+
+                          *========================*
+                          |                        |
+                          | Project MissionBoard   |
+                          |                        |
+                          *========================*
+
+
+ Authors: T. HILAIRE
+ Licence: GPL v3
+
+ File: TMx8.c
+       high-level driver for the TM1638 boards
+       - manage messages from the SPI
+       - get data from the TMx8 and put it in the right order
+       - based on the low-level driver (see TM1638.c)
+
+
+Copyright 2017-2018 T. Hilaire
+
+----------------------------------------------------------------------------*/
+
 
 #include <avr/io.h>
 #include <stdint.h>
@@ -12,7 +28,7 @@
 
 #include "TMx8.h"
 #include "TM1638.h"
-#include "MB-AVR.h"
+
 
 /* debug */
 const uint8_t NUMBER_FONT[] = {

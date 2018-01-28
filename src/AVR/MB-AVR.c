@@ -1,8 +1,28 @@
-/*
-* Author: T. HILAIRE
-*
-* Licence: GPL v3
-*/
+/*----------------------------------------------------------------------------
+
+                          *========================*
+                          |                        |
+                          | Project MissionBoard   |
+                          |                        |
+                          *========================*
+
+
+ Authors: T. HILAIRE
+ Licence: GPL v3
+
+ File: MB-AVR.c
+       Main file of the AVR code
+       - SPI interrupt
+       - Timer interrupt (for the polling)
+
+       configured for an ATtiny88 (see the doc for the IOs)
+       running at 8Mhz
+       Fuses: E=07, H=DF, L=EE
+
+Copyright 2017-2018 T. Hilaire
+
+----------------------------------------------------------------------------*/
+
 
 #include <util/delay.h>
 #include <avr/io.h>
@@ -170,9 +190,7 @@ ISR (TIMER1_COMPA_vect  )
 	SPISend_header = cycle&3;
 	/* run specific task (wrt the cycle)*/
 	if ((cycle&3) == 3)
-	{   /* run capture ADC22 */
-		runADC(0);  /* run ADC for the next cycle */
-
+	{
 		/* blinking cycle */
 		if ((cycle&63) == 63)
 		{
@@ -185,6 +203,8 @@ ISR (TIMER1_COMPA_vect  )
 			}
 			blinkCycle = (blinkCycle+1) & 15;   /* only the 4 LSB */
 		}
+		/* run capture ADC22 */
+		runADC(0);  /* run ADC for the next cycle */
 	}
 	else
 	{

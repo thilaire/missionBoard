@@ -1,10 +1,24 @@
-/*
-* Author: T. HILAIRE
-*
-* driver for TM1638 board and the SPI protocol used
-*
-* Licence: GPL v3
-*/
+/*----------------------------------------------------------------------------
+
+                          *========================*
+                          |                        |
+                          | Project MissionBoard   |
+                          |                        |
+                          *========================*
+
+
+ Authors: T. HILAIRE
+ Licence: GPL v3
+
+ File: ADC.h
+       utilities function for the ADC
+       - run ADC, acquire data and check if it has changed
+
+
+Copyright 2017-2018 T. Hilaire
+
+----------------------------------------------------------------------------*/
+
 
 
 #ifndef _ADC_H_
