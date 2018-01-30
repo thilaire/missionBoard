@@ -170,7 +170,18 @@ void updateADC(uint8_t cycle)
 {
 	uint8_t data;
 
-	if (getADCtoto(cycle, &data))
+
+	if (cycle==3)   /* switches on analog input*/
+	{
+		if (getADCSwitches(&data))
+		{
+			/* copy the data in the first byte */
+			SPISend_data[0] = data;
+			/* ADC data has changed */
+			SPISend_header |= 0b00001000;
+		}
+	}
+	else if (getADC(cycle, &data))  /* regular potentiometer */
 	{
 		/* copy the data in the first byte */
 		SPISend_data[0] = data;
@@ -197,6 +208,9 @@ ISR (TIMER1_COMPA_vect  )
 	/* run specific task (wrt the cycle)*/
 	if ((cycle&3) == 3)
 	{
+		/* acquire ADC2 (4 switches on analog input)*/
+		updateADC(cycle&3);
+
 		/* blinking cycle */
 		if ((cycle&63) == 63)
 		{

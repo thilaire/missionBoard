@@ -26,8 +26,9 @@ Copyright 2017-2018 T. Hilaire
 
 
 void initADC();
-uint8_t getADCtoto(uint8_t cycle, uint8_t* data);
+uint8_t getADC(uint8_t cycle, uint8_t* data);
 void runADC(uint8_t cycle);
 void switchDataADC();
+uint8_t getADCSwitches(uint8_t* data);
 
 #endif

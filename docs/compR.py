@@ -32,6 +32,7 @@ for i in range(16):
 # then draw the voltage wrt to the 4 bits
 plt.plot(range(16),V,'*-')
 plt.show()
+print([hex(int(x*256/Varef)) for x in V])
 
 # draw the difference (in number) after 8-bit Analog-Digital Conversion
 xdiff = [256/Varef*(V[n]-V[n-1]) for n in range(1,len(V))]

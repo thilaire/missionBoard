@@ -115,5 +115,4 @@ void turnOffRGB()
 {
 	memset(RGBleds, 0, sizeof(struct sRGB_LED)*NB_RGB);
 	RGBledsHasChanged = 1;
-	TM1638_sendData(14, 255, 32);
 }
