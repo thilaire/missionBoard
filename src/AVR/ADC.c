@@ -36,25 +36,38 @@ void initADC()
 }
 
 /* get the previously run ADC, and update the SPI */
-uint8_t getADC(uint8_t cycle, uint8_t* data)
+uint8_t getADCtoto(uint8_t cycle, uint8_t* data)
 {
-	*data = ADCH;   /* the value is in ADCH */
+	/* the value is in ADCH */
+	*data = ADCH;
+
 	/* compute the difference */
 	int8_t diff = Pot[cycle] - *data;
-	Pot[cycle] = *data;
-
-	if ((diff>3) || (diff<-3))
+	if (diff>5 || diff<-5)
 	{
+		Pot[cycle] = *data;
 		return 1;
 	}
-	else return 0;   /* differ from 0 or 1 */
+	else
+		return 0;
+	//return  !((diff==0 || diff==1 || diff==2));
 }
 
 /* run the ADC (to be aquire in the next cycle */
 void runADC(uint8_t cycle)
 {
 	/* select the ADC: 5-cycle gives the PIN of the ADC */
-	ADMUX = 0b01100000 | ((5-cycle)&3);
+	uint8_t adc=0;
+
+	switch(cycle)
+	{
+		case 0: adc=5; break;
+		case 1: adc=4; break;
+		case 2: adc=3; break;
+	}
+
+
+	ADMUX = 0b01100000 | adc;
 	/* run it! */
 	ADCSRA = 0b11000100;
 }

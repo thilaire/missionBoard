@@ -73,6 +73,7 @@ MB.add('P9_SW3', 'Com', values=['Off','COM1','COM2'], TMindex=4, pins=[5,6])
 
 @onChange(MB.SW2_LaserColor)
 async def lc(self):
+	logger.debug('%s = %s',str(self),self.valueName)
 	if self == 'red':
 		MB.RGB_laser = RED, FAST
 	else:
@@ -82,18 +83,18 @@ async def lc(self):
 MB.PB_Go.state=0
 @onChange(MB.PB_Go)
 async def GoChange(self):
-	print("GoChange !!")
-	if MB.PB_Go.state==1:
+	logger.debug('%s state=%d',str(self),self.state)
+	if self.state==1:
 		MB.RGB_Go = RED, FAST
-		MB.PB_Go.state = 0
+		self.state = 0
 	else:
 		MB.RGB_Go = BLACK
-		MB.PB_Go.state = 1
+		self.state = 1
 
 
 @onChange(MB.SW3_mode)
 async def changeMode(self):
-	print(self.valueName)
+	logger.debug('%s = %s',str(self),self.valueName)
 	MB.RGB_landing = BLACK
 	MB.RGB_takeoff = BLACK
 	MB.RGB_orbit = BLACK
@@ -111,6 +112,7 @@ async def debug():
 
 	RGB.turnOff()
 	MB.askATdata()
+	MB.DISP_counter.clear()
 
 	#MB.LED_OnOff = True
 	#MB.RGB_Go = RED,FAST

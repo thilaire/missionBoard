@@ -2,6 +2,8 @@
 
 from Element import Element
 
+import logging
+logger = logging.getLogger()
 
 class Switch(Element):
 	"""
@@ -39,7 +41,7 @@ class Switch(Element):
 	async def onChange(self):
 		"""onChange method
 		to be filled for each switch"""
-		print("onChange <"+str(self)+"> = "+str(self.valueName))
+		logger.debug("onChange %s = %s",str(self),str(self.valueName))
 
 
 	@classmethod
