@@ -76,6 +76,4 @@ class RGB(Element):
 	@classmethod
 	def turnOff(cls):
 		"""Turn off all the RGB leds"""
-		for e in cls._allElements:
-			if isinstance(e,cls):
-				e.__set__(e, BLACK)   # turn off the led
+		cls._MB.sendSPI([0b00011111])

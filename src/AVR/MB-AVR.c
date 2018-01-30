@@ -69,7 +69,7 @@ ISR (SPI_STC_vect)
 			SPIRec_nbBytes = 4;     /* set the 7-segment display, 4-byte mode */
 		else if ((SPIRec_command & 0xF0) == 0b11010000)
 			SPIRec_nbBytes = 8;     /* set the 7-segment display, 8-byte mode */
-		else if ( ((SPIRec_command & 0xE0) == 0) && (SPIRec_command!=0) )
+		else if ( ((SPIRec_command & 0xE0) == 0) && (SPIRec_command!=0) && (SPIRec_command!=31) )
 			SPIRec_nbBytes = 5;     /* set RGB Led */
 		else
 			SPIRec_nbBytes = 0;     /* other command requires no extra bytes */
@@ -84,8 +84,15 @@ ISR (SPI_STC_vect)
 			case 0:
 				if (SPIRec_command)
 				{
-					/* set RGB color */
-					setRGBLed( SPIRec_command-1, SPIRec_buffer);
+					if (SPIRec_command == 0b00011111)
+					{
+						turnOffRGB();
+					}
+					else
+					{
+						/* set RGB color */
+						setRGBLed( SPIRec_command-1, SPIRec_buffer);
+					}
 				}
 				/*else NOP: do nothing */
 				break;
@@ -103,6 +110,13 @@ ISR (SPI_STC_vect)
 					/* set the display */
 					setDisplayTMx(SPIRec_command, SPIRec_buffer);
 				}
+				else if (SPIRec_command == 0b11110000)
+				{
+					/* ask for the AVR datas (TMx8 and potentiometers) */
+					/* we reset the data, so that they will be send again in the next polling cycles */
+					switchDataTMx();
+					switchDataADC();
+				}
 				else if ((SPIRec_command & 0b00011000) == 0)
 				{
 					/* turn off the display */
@@ -113,13 +127,7 @@ ISR (SPI_STC_vect)
 					/* clear the display */
 					clearTMx(SPIRec_command);
 				}
-				else if (SPIRec_command == 0b11110000)
-				{
-					/* ask for the AVR datas (TMx8 and potentiometers) */
-					/* we reset the data, so that they will be send again in the next polling cycles */
-					switchDataTMx();
-					switchDataADC();
-				}
+
 
 		}
 	}
@@ -153,6 +161,7 @@ void updateDataTMx8(uint8_t nTM)
 		/* TMx8 data has changed */
 		SPISend_header |= 0b00001000;
 	}
+
 }
 
 
@@ -160,7 +169,8 @@ void updateDataTMx8(uint8_t nTM)
 void updateADC(uint8_t cycle)
 {
 	uint8_t data;
-	if (getADC(cycle, &data))
+
+	if (getADCtoto(cycle, &data))
 	{
 		/* copy the data in the first byte */
 		SPISend_data[0] = data;
@@ -168,12 +178,8 @@ void updateADC(uint8_t cycle)
 		SPISend_header |= 0b00000100;
 	}
 
-	if (cycle == 2)
-	{
-	TM1638_sendData(0, NUMBER_FONT[data/100], 32);
-	TM1638_sendData(2, NUMBER_FONT[(data%100)/10], 32);
-	TM1638_sendData(4, NUMBER_FONT[data%10], 32);
-	}
+	TM1638_sendData(4*cycle, NUMBER_FONT[data/16], 32);
+	TM1638_sendData(4*cycle+2, NUMBER_FONT[data%16], 32);
 }
 
 
@@ -255,14 +261,16 @@ int main(void)
 
 	/* configure timer1, 16bits mode, Prescaler=1/8
 	interrupt after 15625 ticks (compare for channel A) */
-	TCCR1B = (1U<<CS10) | (1U<<WGM12);     /* prescaler = 1/8 and Clear Timer on Compare match (CTC) T*/
+	TCCR1B = (1U<<CS11) | (1U<<WGM12);     /* prescaler = 1/8 and Clear Timer on Compare match (CTC) T*/
 	TCCR1C = (1U<<FOC1A);    /* channel A */
-	OCR1A = 31250;              /* 15625 ticks @ 1MHz -> 15.625ms */
+	OCR1A = 15625;//31250;              /* 15625 ticks @ 1MHz -> 15.625ms */
 	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
 
 	/* setup the TMx8 and TMx7 boards */
 	setupTMx(1);
 	initADC();
+	runADC(0);
+
 
 	SPDR = 0;
 

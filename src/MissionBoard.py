@@ -8,6 +8,12 @@ import types
 import logging
 
 
+
+#import uvloop
+#asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+
+
 # import UI elements (Leds, Buttons, Switches, etc.)
 from Element import Element
 from LED import LED
@@ -50,7 +56,13 @@ class MissionBoard:
 		GPIO.setwarnings(False)
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.add_event_detect(24, GPIO.RISING, callback=lambda x:self._loop.call_soon_threadsafe(self._SPIqueue.put_nowait, [0]))      # send 0 into SPIQueue in a threadsafe way, see addEvent
+
+		def sendZeroSpi(x):
+			logger.debug('IO24 Rising!')
+			self._loop.call_soon_threadsafe(self._SPIqueue.put_nowait, [0])
+
+
+		GPIO.add_event_detect(24, GPIO.RISING, callback=sendZeroSpi)      # send 0 into SPIQueue in a threadsafe way, see addEvent
 
 
 	def runCheck(self):

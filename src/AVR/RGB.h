@@ -30,5 +30,6 @@ void setRGBLed(uint8_t nLed, uint8_t* buffer);
 void fillRGBBuffer( uint8_t bcycle);
 void updateRGB();
 uint8_t RGBshouldBeUpdated( uint8_t blinkCycle);
+void turnOffRGB();
 
 #endif
