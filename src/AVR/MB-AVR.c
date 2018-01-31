@@ -47,8 +47,7 @@ const uint8_t NB_BYTES[4] = { 0b00000000, 0b00010000, 0b00010000, 0b00100000};
 
 
 /* SPI interrupt function */
-ISR (SPI_STC_vect)
-{
+ISR (SPI_STC_vect) {
 	/* SPI receive data */
 	static uint8_t SPIRec_cycle = 0;     /* counts the cycles */
 	static uint8_t SPIRec_command;      /* 1st byte received (indicates which command, and how many other bytes will follow */
@@ -60,8 +59,7 @@ ISR (SPI_STC_vect)
 	/* copy the data (1st data in SPIRec_command, the others in SPIRec_buffer) */
 	if (SPIRec_cycle)
 		SPIRec_buffer[ SPIRec_cycle-1 ] = SPDR;
-	else
-	{
+	else {
 		/* copy the header*/
 		SPIRec_command = SPDR;
 		/* compute how many bytes we will next receive */
@@ -76,20 +74,15 @@ ISR (SPI_STC_vect)
 	}
 	SPIRec_cycle++;
 	/* check if the end of the data transfer */
-	if (SPIRec_cycle > SPIRec_nbBytes)
-	{
+	if (SPIRec_cycle > SPIRec_nbBytes) {
 		SPIRec_cycle = 0;
-		switch (SPIRec_command & 0b11000000)
-		{
+		switch (SPIRec_command & 0b11000000) {
 			case 0:
-				if (SPIRec_command)
-				{
-					if (SPIRec_command == 0b00011111)
-					{
+				if (SPIRec_command) {
+					if (SPIRec_command == 0b00011111) {
 						turnOffRGB();
 					}
-					else
-					{
+					else {
 						/* set RGB color */
 						setRGBLed( SPIRec_command-1, SPIRec_buffer);
 					}
@@ -105,25 +98,21 @@ ISR (SPI_STC_vect)
 				setBrightnessTMx(SPIRec_command);
 				break;
 			default:    /* 0b11xxxxxx */
-				if ( !(SPIRec_command & 0b00100000 ) )
-				{
+				if ( !(SPIRec_command & 0b00100000 ) ) {
 					/* set the display */
 					setDisplayTMx(SPIRec_command, SPIRec_buffer);
 				}
-				else if (SPIRec_command == 0b11110000)
-				{
+				else if (SPIRec_command == 0b11110000) {
 					/* ask for the AVR datas (TMx8 and potentiometers) */
 					/* we reset the data, so that they will be send again in the next polling cycles */
 					switchDataTMx();
 					switchDataADC();
 				}
-				else if ((SPIRec_command & 0b00011000) == 0)
-				{
+				else if ((SPIRec_command & 0b00011000) == 0) {
 					/* turn off the display */
 					turnOffTMx(SPIRec_command);
 				}
-				else if ((SPIRec_command & 0b00011000) == 8)
-				{
+				else if ((SPIRec_command & 0b00011000) == 8) {
 					/* clear the display */
 					clearTMx(SPIRec_command);
 				}
@@ -133,15 +122,13 @@ ISR (SPI_STC_vect)
 	}
 
 	/* ===== Send (prepare to send next) byte ====== */
-	if (SPISend_cycle >= (SPISend_header>>4))
-	{
+	if (SPISend_cycle >= (SPISend_header>>4)) {
 		/* end of the cycle; start over */
 		SPISend_cycle = 0;
 		SPISend_header = 0;
 		SPDR = 0;
 	}
-	else
-	{
+	else {
 		/* otherwise continue to send data */
 		SPDR = SPISend_data[SPISend_cycle];
 		SPISend_cycle++;
@@ -151,37 +138,30 @@ ISR (SPI_STC_vect)
 
 
 /* get the data from the TMx8 and update SPIsend data accordingly */
-void updateDataTMx8(uint8_t nTM)
-{
+void updateDataTMx8(uint8_t nTM) {
 	uint8_t data;
-	if (getDataTMx8(nTM, &data))
-	{
+	if (getDataTMx8(nTM, &data)) {
 		/* copy the data in the right place (header is 1 if Pot has changed, 0 otherwise) */
 		SPISend_data[SPISend_header>>2] = data;
 		/* TMx8 data has changed */
 		SPISend_header |= 0b00001000;
 	}
-
 }
 
 
 /* get the data from the ADC and update SPIsend data accordingly */
-void updateADC(uint8_t cycle)
-{
+void updateADC(uint8_t cycle) {
 	uint8_t data;
 
-	if (cycle==3)   /* switches on analog input*/
-	{
-		if (getADCSwitches(&data))
-		{
+	if (cycle==3) {  /* switches on analog input*/
+		if (getADCSwitches(&data)) {
 			/* copy the data in the first byte */
 			SPISend_data[0] = data;
 			/* ADC data has changed */
 			SPISend_header |= 0b00001000;
 		}
 	}
-	else if (getADC(cycle, &data))  /* regular potentiometer */
-	{
+	else if (getADC(cycle, &data)) { /* regular potentiometer */
 		/* copy the data in the first byte */
 		SPISend_data[0] = data;
 		/* ADC data has changed */
@@ -194,25 +174,21 @@ void updateADC(uint8_t cycle)
 
 
 /* Timer 1 interrupt function (when TIMER1==OCR1A) */
-ISR (TIMER1_COMPA_vect  )
-{
+ISR (TIMER1_COMPA_vect  ) {
 	static uint8_t cycle=0;
 	static uint8_t blinkCycle = 0;
 
 	/* initialize SPI header */
 	SPISend_header = cycle&3;
 	/* run specific task (wrt the cycle)*/
-	if ((cycle&3) == 3)
-	{
+	if ((cycle&3) == 3) {
 		/* acquire ADC2 (4 switches on analog input)*/
 		updateADC(cycle&3);
 
 		/* blinking cycle */
-		if ((cycle&63) == 63)
-		{
+		if ((cycle&63) == 63) {
 			/* check if we need to send data to the led (something has changed since previous cycle ?) */
-			if (RGBshouldBeUpdated(blinkCycle))
-			{
+			if (RGBshouldBeUpdated(blinkCycle)) {
 				/* prepare the buffer */
 				fillRGBBuffer(blinkCycle);
 				updateRGB();
@@ -222,8 +198,7 @@ ISR (TIMER1_COMPA_vect  )
 		/* run capture ADC22 */
 		runADC(0);  /* run ADC for the next cycle */
 	}
-	else
-	{
+	else {
 		/* acquire Potentiometer */
 		updateADC(cycle&3);
 		/* acquire data from TMx8 */
@@ -238,8 +213,7 @@ ISR (TIMER1_COMPA_vect  )
 	SPDR = SPISend_header;
 
 	/* pulse the Raspberry Pi if something has changed */
-	if (SPISend_header&0b00001100)
-	{
+	if (SPISend_header&0b00001100) {
 		PORTC |= 1;
 		//_delay_us(1);
 		PORTC &= ~1;
@@ -249,8 +223,7 @@ ISR (TIMER1_COMPA_vect  )
 }
 
 
-int main(void)
-{
+int main(void) {
 	/* configure inputs/outputs */
 	DDRB = 0b11010011;       /* PB0, PB1, PB4, PB6 and PB7 are outputs */
 	DDRC = 0b10000001;       /* PC0 and PC7 are outputs */
