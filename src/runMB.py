@@ -30,7 +30,7 @@ MB.add('P2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'aut
 MB.add('P3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 # Panel 3: laser
-#MB.add('P3_SW2_0', 'Laser', values=['disarmed','armed'], TMindex=8, pin=0)
+MB.add('P3_SW2_0', 'Laser', values=['disarmed','armed'], TMindex=7, pin=0)
 MB.add('P3_SW2_1', 'LaserColor', values=['blue','red'], TMindex=4, pin=7)
 
 # Panel 4: pilot
@@ -44,9 +44,9 @@ MB.add('P5_SW3', 'mode', values=['landing','orbit','takeoff'], TMindex=4, pins=[
 MB.add('P5_SW2', 'autoPilot', values=['manual','auto'], TMindex=4, pin=4)
 
 # Panel 6: lift-off
-#MB.add('P6_SW2_1', 'phase1', TMindex=8, pin=1)
-#MB.add('P6_SW2_2', 'phase2', TMindex=8, pin=2)
-#MB.add('P6_SW2_3', 'phase3', TMindex=8, pin=3)
+MB.add('P6_SW2_1', 'phase1', TMindex=7, pin=3)
+MB.add('P6_SW2_2', 'phase2', TMindex=7, pin=1)
+MB.add('P6_SW2_3', 'phase3', TMindex=7, pin=2)
 
 # Panel 7: Joystick
 MB.add('P7_PB_UP', 'Up', gpio=7)
@@ -74,10 +74,18 @@ MB.add('P9_SW3', 'Com', values=['Off','COM1','COM2'], TMindex=4, pins=[5,6])
 @onChange(MB.SW2_LaserColor)
 async def lc(self):
 	logger.debug('%s = %s',str(self),self.valueName)
-	if self == 'red':
-		MB.RGB_laser = RED, FAST
+	if MB.SW2_Laser == 'armed':
+		MB.RGB_laser = (RED if self == 'red' else BLUE), FAST
+
+
+@onChange(MB.SW2_Laser)
+async def lcc(self):
+	logger.debug('%s = %s',str(self),self.valueName)
+	if self == 'armed':
+		MB.RGB_laser = (RED if MB.SW2_LaserColor == 'red' else BLUE), FAST
 	else:
-		MB.RGB_laser = BLUE,FAST
+		MB.RGB_laser = BLACK
+
 
 
 MB.PB_Go.state=0

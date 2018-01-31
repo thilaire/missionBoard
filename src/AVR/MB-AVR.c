@@ -170,7 +170,6 @@ void updateADC(uint8_t cycle)
 {
 	uint8_t data;
 
-
 	if (cycle==3)   /* switches on analog input*/
 	{
 		if (getADCSwitches(&data))
@@ -188,9 +187,6 @@ void updateADC(uint8_t cycle)
 		/* ADC data has changed */
 		SPISend_header |= 0b00000100;
 	}
-
-	TM1638_sendData(4*cycle, NUMBER_FONT[data/16], 32);
-	TM1638_sendData(4*cycle+2, NUMBER_FONT[data%16], 32);
 }
 
 

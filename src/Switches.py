@@ -11,7 +11,7 @@ class Switch(Element):
 	"""
 
 	_all = {}     # keep track of the SW object, according to their (TMindex,pin)
-	_values = {0: 0, 1: 0, 2: 0}    # keep track of the values
+	_values = {0: 0, 1: 0, 2: 0, 3: 0}    # keep track of the values
 
 	def __init__(self, keyname, name, TMindex, pins):
 		# init super class
