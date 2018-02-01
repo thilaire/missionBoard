@@ -1,7 +1,8 @@
 # Functionnalities
 
-This is the list of the functionalities I wanted for the *Mission Board*
-Once defined, it allows me to know the buttons, switches, displays, ... I need, to decide how to pilot them (see TM1638) and to define the software (its behavior):
+This is the list of the functionalities I wanted for the *Mission Board*.
+
+Once defined, it allows me to list all the buttons, switches, displays, ... I need, to decide how to pilot them (see [TM1638](TM1638.md) and [inputs/outputs list](io.md)) and to define the software (its behavior):
 
 - Start:
   - [Start/Mode](#start-power-mode)
@@ -35,18 +36,18 @@ Once defined, it allows me to know the buttons, switches, displays, ... I need, 
 
 
 ## Start, power, mode
-Start the Raspberry Pi
+Swith on/off the wallet (need to be careful and not switch off directly the raspberry pi)
 - a switch with a key
-- a green led (directly powered by the 5V?)
-- rotative switch, with 3 positions : spaceship, game and computer
+- a green led to tell it's on (directly powered by the 5V?)
+- a rotative switch, with 3 positions : spaceship, game and computer
   - spaceship: main mode to pilot the ship
-  - game to run RetroPie
-  - computer to switch to the linux desktop (required mouse and keyboard)
+  - game to run RetroPie/recalbox
+  - computer to switch to the linux desktop (mouse and keyboard required)
 + a plug jack for the power (in the wallet frame)
 
 
 ## Oxygen
-This is about the oxygen gas in the spaceship
+This is about the oxygen gas in the spaceship.
 - a bargraph indicating the level of oxygen
 - an "oxygen pump" pushbutton (with led):
   - activate the pump during 10s (sound + blue led during that time + oxygen level rising in the same time)
@@ -92,7 +93,7 @@ Run the water pump (toilets)
 ## Laser
 - a missile switch to arm the laser
 - a 2-position switch to choose the laser color (blue/red)
-- a push-button with led to fire
+- a push-button (with led)
   - led goes to blinking red or blue when armed
   - goes to red/blue and makes sound when fired
   - cannot be used anymore in the next two seconds (led goes to orange?)
@@ -119,15 +120,20 @@ Turn on/off the lignts in the spaceship
 - green leds associated (on when the swith is on, except when there is an eletric problem, see [Electricity](#electricity))
 
 
-## Position, speed
-Three groups of four seven-segment displays
-- two for the *position* (position and altitude)
-- one for the speed
-Of course, the position will be non-sense values (my kids are too young to understand, and I do not have enough displays to put the 6-axis position)
+## Attitude, Position, speed
+Three 4-digit 7-segment display, and two 8-digit 7-segment display
+- 8-digit display for the *position*
+- 8-digit display for the *altitude*
+- 4-digit display for the *speed*
+- 4-digit display for the *pitch*
+- 4-digit display for the *yaw*
+Of course, the position/attitude will be non-sense values (my kids do not care, and I do not have enough displays to put the 6-axis position; and not enough time to build an accurate model!)
+The altitude and speed will be related to the mode (orbit, landing, takeoff) and the power (see [manual command](#manual command)).
+*roll* is missing, but I can't put everything (not enough input, not enough output; I had to make choices)
 
 
 ## Countdown, time
-Height seven-segment displays (two groups of four side-by-side).
+8-digit 7-segment display
 Two functions:
 - countdown for the takeoff (count down 20s when it starts, with 1/100th of seconds, blink when reach zero if the go-button has not been pressed)
 - then display time from takeoff (minuts, seconds, 1/10th seconds - reset when landing)
@@ -136,7 +142,7 @@ Two functions:
 ## Fuel
 Manage the fuel
 - two bargraphs: fuel in spaceship rocket, fuel in the space rocket (or in rocket #1 and rocket #2)
-- 3-position switch: pump fuel spaceship on / pumps off / pump fuel rocket on (only defore takeoff)
+- 3-position switch: pump fuel spaceship on / pumps off / pump fuel rocket on (only before takeoff)
 - when one of the pump is on, play sound and increase the associated bargraph level. Stop when the fuel tank is full
 
 The fuel of the space rocket decrease quickly after takeoff (1min?). The fuel of the spaceship varies with the power of the rocket (slider in [pilot](#pilot). The bargraphs blink when the fuel is too low
@@ -163,7 +169,7 @@ The led will turn on when a breakdown is detected (simulated), in addition to th
 
 
 ## Engines
-- led (display panel) for the overspeed (when the speed is too large or >50 during landing)
+- led (display panel) for the overspeed (when the speed is too high or >50 during landing)
 - push button to turn on the engines of the rocket
 - push button to turn on the engines of the spaceship
 - inline potentiometer for the engine power
