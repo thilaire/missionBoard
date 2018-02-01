@@ -2,7 +2,7 @@
 
 ## Bottom panels
 
-The panels have been designed from the [functionalities](functionalities.md) and [material list](bom.md).
+The panels have been designed from the [functionalities](../functionalities.md) and [material list](../bom.md).
 
 Adobe Illustrator has been used to design the two faces of the panels, and anticipate the footprint of every component.
 The illustrator file (and details) can be found [here](illustrator.md).
