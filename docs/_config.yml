@@ -1,3 +1,6 @@
-remote_theme: samanyougarg/hanuman
+remote_theme: "hanuman"
+
+plugins:
+  - jekyll-remote-theme
 
 #theme: jekyll-theme-slate
