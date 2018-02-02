@@ -1,1 +1,2 @@
-theme: jekyll-theme-slate
+remote_theme: daviddarnes/alembic
+#theme: jekyll-theme-slate
