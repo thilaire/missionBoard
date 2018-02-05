@@ -1,4 +1,6 @@
-remote_theme: aksakalli/jekyll-doc-theme
+remote_theme: ttskch/jekyll-ttskch-theme
+
+
 
 plugins:
   - jekyll-remote-theme
