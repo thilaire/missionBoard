@@ -1,3 +1,12 @@
+---
+image:
+  feature: ../../photos/IMG_2699.jpg
+  #credit: T. Hilaire
+  #creditlink: http://mademistakes.com #url to their site or licensing
+
+
+---
+
 # What is *MissionBoard* ?
 
 It's a simple DIY project I made for my kids: it consists in a wallet with a lot of buttons and some electronics (Raspberry Pi) to let them play and have fun playing and piloting a spaceship.
