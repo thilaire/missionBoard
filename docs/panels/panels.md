@@ -1,6 +1,5 @@
 # Design the panels
 
-## Bottom panels
 
 The panels have been designed from the [functionalities](../functionalities.md) and [material list](../bom.md).
 
@@ -10,7 +9,7 @@ The illustrator file (and details) can be found [here](illustrator.md).
 
 # bottom panels
 
-1. [Start/mode](1-start/1.md)
+1. [Start/mode](B1-start/B1.md)
 2. [Displays](2-displays/2.md)
 3. [Laser](3-laser/3.md)
 4. [Pilot](4-pilot/4.md)
@@ -22,3 +21,13 @@ The illustrator file (and details) can be found [here](illustrator.md).
 
 
 # top panels
+
+1. [Hole joystick](T1-hole/T1.md)
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
