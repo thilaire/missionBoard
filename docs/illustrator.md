@@ -14,6 +14,8 @@ To print the labels, only the `label` layers are shown. To print the backside, o
 The `back` layers should be printed with vertical reflection.
 
 The `labels` and `back` layers can be found in the [back.pdf](../design/back.pdf) and [label.pdf](../design/label.pdf) files. You can edit them, and change them according to your language (and of course the name of your kids, since I put the name of mine!). If you need (if you can't edit the files), feel free to contact me, and I will send you new files (in your language, or with new names). 
+Print them with 100% scale (and vertical reflection for the back !).
+
 
 ## scripts
 To hide/show the different layers, I have wrote four small javascript scripts for Illustrator.
