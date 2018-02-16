@@ -8,6 +8,8 @@ The illustrator file (and details) can be found [here](illustrator.md).
 
 # top panels
 
+The top panels are named `T1` to `T9`.
+
 1. [Hole joystick](T1-hole/T1.md)
 2. [Position displays](T2-position/T2.md)
 3. [Speaker](T3-speaker/T3.md)
@@ -19,6 +21,8 @@ The illustrator file (and details) can be found [here](illustrator.md).
 9. [Keyboard](T9-keyboard/T9.md)
 
 # bottom panels
+
+The top panels are named `B1` to `B9`.
 
 1. [Start/mode](B1-start/B1.md)
 2. [Displays](B2-displays/B2.md)
