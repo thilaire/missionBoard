@@ -1,0 +1,11 @@
+  main:
+  - title: "Home"
+    url: /
+  - title: "Panels"
+    url: /panels/panels
+  - title: "Input-Output"
+    url: /io/
+  - title: "ATtiny"
+    url: /ATtiny/
+  - title: "Raspberry Pi"
+    url: /RPi/
