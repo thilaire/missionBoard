@@ -7,7 +7,7 @@ From the [functionalities](functionalities.md), we can deduce the bill of materi
 
 ### Electronic devices
 - 4 Bargraphs (for the oxygen, rocket fuel and spaceship levels)
-- 7 blocks of four 7-segment displays  (2 for the countdown, speed, position, altitude, pitch and roll). See [doc on the TM1637 and TM1638](TM1638.md) for details.
+- 7 blocks of four 7-segment displays  (2 for the countdown, speed, position, altitude, pitch and roll). See [doc on the TM1637 and TM1638](TM163x.md) for details.
 - some leds (start (green), manual command (green), lights (green x2), electricity (green x2), turbo (blue x2)). 
 - 20 multicolor (RGB) leds (1 per push button + leds in panel display (oxygen, doors x2, electricity, automatic pilot, alarm, takeoff, orbit, landing, overspeed). See [this](APA106.md) for details.
 - 4 10k\omega potentiometers (one online for the engine power, and 3 rotary for the audio, pitch and roll)
