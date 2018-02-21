@@ -8,7 +8,7 @@ More precisely, the push-buttons are connected to the Raspberry Pi, the switches
 ## Signal naming convention
 
 The following tables regroup all the IO connectiviy. I have choose to name signals as following `xxx_yyyzz` where:
-- `xxx` is the board name or panel number, like `RPi` (raspberry Pi), `8TM` (TM1638), `7TM` (TM1637) or `P9` (`P` for *panel*)
+- `xxx` is the board name or panel number, like `RPi` (raspberry Pi), `8TMx` (TM1638 numbered x), `7TMx` (TM1637 numbered x) or `Tx`/`Bx` (`T` for top panel, `B` for bottom panel)
 - `yyy` is the button/signal/io name (like `GPIO12` or `LED`)
 - `zz` is the number (may be empty if not necessary)
 
@@ -21,7 +21,7 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 - `LED`: led (classical one-color led)
 - `RGB`: RGB LED
 - `BAR`: bargraph
-- `SSD`: Seven-segment display (block of four)
+- `DISP`: Seven-segment display (block of four)
 
 ## Raspberry Pi
 
@@ -30,13 +30,13 @@ For buttons and displays, the common valyes for `yyy` are (some are possible):
 | RPi Pin number             | Name       | IO  | Connected to            |   | Connected to            | IO  | Name       | RPi Pin number                |
 |:---------------------------|:----------:|:---:|:-----------------------:|:-:|:-----------------------:|:---:|:----------:|------------------------------:|
 | 01 (3.3v)                  |            |     |                         |   |                         |     |            |                       (5v) 02 |
-| 03 (**GPIO02**, SDA1, I2C) | `RPi_IO2`  | In  | `P8_PB_`                |   |                         |     |            |                       (5v) 04 |
-| 05 (**GPIO03**, SCL1, I2C) | `RPi_IO3`  | In  | `P8_PB_`                |   |                         |     |            |                      (GND) 06 |
-| 07 (**GPIO04**, GPIO_GCLK) | `RPi_IO4`  | In  | `P8_PB_`                |   | `P8_PB_`                | In  | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
-| 09 (GND)                   |            |     |                         |   | `P8_PB_`                |     | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
-| 11 (**GPIO17**, GPIO_GEN0) | `RPi_IO17` | In  | `P8_PB_`                |   | `P8_PB_`                | In  | `RPi_IO18` |    (GPIO_GEN1, **GPIO18**) 12 |
-| 13 (**GPIO27**, GPIO_GEN2) | `RPi_IO27` | In  | `P8_PB_`                |   |                         |     |            |                      (GND) 14 |
-| 15 (**GPIO22**, GPIO_GEN3) | `RPi_IO22` | In  | `P8_PB_`                |   |   x                     |     | `RPi_IO23` |    (GPIO_GEN4, **GPIO23**) 16 |
+| 03 (**GPIO02**, SDA1, I2C) | `RPi_IO2`  | In  | `B8_PB_6` (laser)       |   |                         |     |            |                       (5v) 04 |
+| 05 (**GPIO03**, SCL1, I2C) | `RPi_IO3`  | In  | `B8_PB_5` (oxygen)      |   |                         |     |            |                      (GND) 06 |
+| 07 (**GPIO04**, GPIO_GCLK) | `RPi_IO4`  | In  | `B8_PB_0` (rocket E.)   |   | `B8_PB_4` (unhook)      | In  | `RPi_IO14` |         (TXD0, **GPIO14**) 08 |
+| 09 (GND)                   |            |     |                         |   | `B8_PB_7` (langing gear)|     | `RPi_IO15` |         (RXD0, **GPIO15**) 10 |
+| 11 (**GPIO17**, GPIO_GEN0) | `RPi_IO17` | In  | `B8_PB_3` (brake)       |   | `B8_PB_1` (spaceship E.)| In  | `RPi_IO18` |    (GPIO_GEN1, **GPIO18**) 12 |
+| 13 (**GPIO27**, GPIO_GEN2) | `RPi_IO27` | In  | `B8_PB_2` (parachute)   |   |                         |     |            |                      (GND) 14 |
+| 15 (**GPIO22**, GPIO_GEN3) | `RPi_IO22` | In  | `B8_PB_8` (go)          |   |   x                     |     | `RPi_IO23` |    (GPIO_GEN4, **GPIO23**) 16 |
 | 17 (3.3v)                  |            |     |                         |   | `AT_PC0` (new data)     | In  | `RPi_IO24` |    (GPIO_GEN5, **GPIO24**) 18 |
 | 19 (**GPIO10**, SPI_MOSI)  | `RPi_MOSI` | Out | `AT_MOSI` (SPI)         |   |                         |     |            |                      (GND) 20 |
 | 21 (**GPIO09**, SPI_MISO)  | `RPi_MISO` | In  | `AT_MISO` (SPI)         |   | `AT_RESET` (Reset AT)   | Out | `RPi_IO25` |    (GPIO_GEN6, **GPIO25**) 22 |
@@ -78,7 +78,7 @@ x: still available
 | 02 (**PD0**)             | `AT_PD0`   | Out |  `7TM1_CLK`    |   | `P4_POT_1`    | Ana | `AT_ADC4`  |   (ADC4, SDA, **PC4**) 27 |
 | 03 (**PD1**)             | `AT_PD1`   | Out |  `7TM2_CLK`    |   | `P4_POT_0`    | Ana | `AT_ADC3`  |   (ADC3, SCL, **PC3**) 26 |
 | 04 (**PD2**, INT0)       | `AT_PD2`   | Out |  `7TM3_CLK`    |   | `P36_SW`      | Ana | `AT_PC2`   |        (ADC2, **PC2**) 25 |
-| 05 (**PD3**, INT1)       | `AT_PD3`   | ??  |     ???        |   | `P1_SW`?      | In  | `AT_PC1`   |        (ADC1, **PC1**) 24 |
+| 05 (**PD3**, INT1)       | `AT_PD3`   | Out |  `8TM4_STB`    |   | `P1_SW`?      | In  | `AT_PC1`   |        (ADC1, **PC1**) 24 |
 | 06 (**PD4**, T0)         | `AT_PD4`   | ??  |      ???       |   | `RPi_IO24`    | Out | `AT_PC0`   |        (ADC0, **PC0**) 23 |
 | 07 (VCC)                 |            |     |    3.3V        |   |     GND       |     |            |                  (GND) 22 |
 | 08 (GND)                 |            |     |     GND        |   | `AT_LED`,???  | Out | `AT_PC7`   |              (**PC7**) 21 |
