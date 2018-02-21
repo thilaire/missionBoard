@@ -20,55 +20,55 @@ logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
 
-# Panel 1: start/mode
-MB.add('P1_SW3', 'gameMode', values=['computer', 'spaceship','games'], TMindex=4, pins=[0,1])
-MB.add('P1_LED','OnOff', TMindex=4, index=1)
+# Panel B1: start/mode
+MB.add('B1_SW3', 'gameMode', values=['computer', 'spaceship','games'], TMindex=4, pins=[0,1])
+MB.add('B1_LED','OnOff', TMindex=4, index=1)
 
-# Panel 2: displays
-MB.add('P2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', '', 'gate2',
+# Panel B2: displays
+MB.add('B2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', '', 'gate2',
 	'landing','alarm', ''], pos=1, inverted=[5])
-MB.add('P3_DISP', 'counter', TMindex=4, block=0, size=8)
+MB.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
 
-# Panel 3: laser
-MB.add('P3_SW2_0', 'Laser', values=['disarmed','armed'], TMindex=7, pin=0)
-MB.add('P3_SW2_1', 'LaserColor', values=['blue','red'], TMindex=4, pin=7)
+# Panel B3: laser
+MB.add('B3_SW2_0', 'Laser', values=['disarmed','armed'], TMindex=7, pin=0)
+MB.add('B3_SW2_1', 'LaserColor', values=['blue','red'], TMindex=4, pin=7)
 
-# Panel 4: pilot
-MB.add('P4_LED', 'manual', TMindex=4, index=0)
-MB.add('P4_POT_0', 'roll', index=0)
-MB.add('P4_POT_1', 'yaw', index=1)
-MB.add('P4_POT_0', 'speed', index=2)
+# Panel B4: pilot
+MB.add('B4_LED', 'manual', TMindex=4, index=0)
+MB.add('B4_POT_0', 'roll', index=0)
+MB.add('B4_POT_1', 'yaw', index=1)
+MB.add('B4_POT_0', 'speed', index=2)
 
-# Panel 5: flight mode
-MB.add('P5_SW3', 'mode', values=['landing','orbit','takeoff'], TMindex=4, pins=[2,3])
-MB.add('P5_SW2', 'autoPilot', values=['manual','auto'], TMindex=4, pin=4)
+# Panel B5: flight mode
+MB.add('B5_SW3', 'mode', values=['landing','orbit','takeoff'], TMindex=4, pins=[2,3])
+MB.add('B5_SW2', 'autoPilot', values=['manual','auto'], TMindex=4, pin=4)
 
-# Panel 6: lift-off
-MB.add('P6_SW2_1', 'phase1', TMindex=7, pin=3)
-MB.add('P6_SW2_2', 'phase2', TMindex=7, pin=1)
-MB.add('P6_SW2_3', 'phase3', TMindex=7, pin=2)
+# Panel B6: lift-off
+MB.add('B6_SW2_1', 'phase1', TMindex=7, pin=3)
+MB.add('B6_SW2_2', 'phase2', TMindex=7, pin=1)
+MB.add('B6_SW2_3', 'phase3', TMindex=7, pin=2)
 
-# Panel 7: Joystick
-MB.add('P7_PB_UP', 'Up', gpio=7)
-MB.add('P7_PB_DOWN', 'Down', gpio=5)
-MB.add('P7_PB_LEFT', 'Left', gpio=12)
-MB.add('P7_PB_RIGHT', 'Right', gpio=6)
+# Panel B7: Joystick
+MB.add('B7_PB_UP', 'Up', gpio=7)
+MB.add('B7_PB_DOWN', 'Down', gpio=5)
+MB.add('B7_PB_LEFT', 'Left', gpio=12)
+MB.add('B7_PB_RIGHT', 'Right', gpio=6)
 
-# Panel 8: commands
-MB.add('P8_PB_0', 'RocketEngine', gpio=4)
-MB.add('P8_PB_1', 'SpaceshipEngine', gpio=18)
-MB.add('P8_PB_2', 'Parachute', gpio=27)
-MB.add('P8_PB_3', 'Brake', gpio=17)
-MB.add('P8_PB_4', 'Unhook', gpio=14)
-MB.add('P8_PB_5', 'OxygenPump', gpio=3)
-MB.add('P8_PB_6', 'Laser', gpio=2)
-MB.add('P8_PB_7', 'LandingGear', gpio=15)
-MB.add('P8_PB_8', 'Go', gpio=22)
-MB.add('P8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'landingGear',  'laser', 'oxygenPump',
+# Panel B8: commands
+MB.add('B8_PB_0', 'RocketEngine', gpio=4)
+MB.add('B8_PB_1', 'SpaceshipEngine', gpio=18)
+MB.add('B8_PB_2', 'Parachute', gpio=27)
+MB.add('B8_PB_3', 'Brake', gpio=17)
+MB.add('B8_PB_4', 'Unhook', gpio=14)
+MB.add('B8_PB_5', 'OxygenPump', gpio=3)
+MB.add('B8_PB_6', 'Laser', gpio=2)
+MB.add('B8_PB_7', 'LandingGear', gpio=15)
+MB.add('B8_PB_8', 'Go', gpio=22)
+MB.add('B8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'landingGear',  'laser', 'oxygenPump',
 	'unhook', 'Go'], pos=13, inverted=[18,19])
 
-# Panel 9: audio
-MB.add('P9_SW3', 'Com', values=['Off','COM1','COM2'], TMindex=4, pins=[5,6])
+# Panel B9: audio
+MB.add('B9_SW3', 'Com', values=['Off','COM1','COM2'], TMindex=4, pins=[5,6])
 
 
 @onChange(MB.SW2_LaserColor)
