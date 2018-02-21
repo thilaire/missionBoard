@@ -1,11 +1,44 @@
-  main:
+main:
   - title: "Home"
     url: /
   - title: "Panels"
     url: /panels/panels
-  - title: "Input-Output"
-    url: /io/
+  - title: "Connections"
+    url: /io
   - title: "ATtiny"
-    url: /ATtiny/
+    url: /ATtiny
   - title: "Raspberry Pi"
-    url: /RPi/
+    url: /RPi
+  - title: "TM1637/8"
+    url: /TM163x
+
+
+docs:
+  - title: "Home"
+    url: /
+  - title: "Design"
+    children:
+      - title: "Panels"
+        url: /panels/panels
+      - title: "Functionalities"
+        url: /functionalities"
+      - title: "Design Files"
+        url: /illustrator
+  - title: "Components"
+    children:
+      - title: "Bill of materials"
+        url: /bom
+      - title: "Connections"
+        url: /io
+      - title: "ATtiny"
+        url: /ATtiny
+      - title: "Raspberry Pi"
+        url: /RPi
+      - title: "TM1637/8"
+        url: /TM163x
+      - title: "RGB Leds"
+        url: /APA106
+  - title: "Misc"
+    children:
+      - title: "ADC"
+        url: /multiple-inputs

@@ -170,14 +170,14 @@ compress_html:
 
 # Defaults
 defaults:
-  # _posts
+  # _pages
   - scope:
       path: ""
-      type: posts
+      type: pages
     values:
-      layout: "splash"
-      author_profile: true
-      read_time: true
+      layout: "single"
       comments: false # true
       share: true
       related: true
+      sidebar:
+        nav: "docs"
