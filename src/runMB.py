@@ -34,11 +34,29 @@ MB.add('T4_DISP', 'direction', TMindex=7, block=0, size=4)
 MB.add('T6_LVL_1', 'fuel_rocket', TMindex=7, number=0)
 MB.add('T6_LVL_2', 'fuel_spaceship', TMindex=7, number=1)
 MB.add('T6_LVL_3', 'oxygen', TMindex=7, number=2)
-MB.add('T6_DISP','levels', TMindex=7, block=1, size=4)
 
-MB.add('B2_DISP_1','test1', TMindex=4, block=0, size=4)
-MB.add('B2_DISP_2','test2', TMindex=4, block=1, size=4)
+# Panel T7: buttons 1
+MB.add('T7_SW2_1', 'turbo_gas', TMindex=6, pin=0)
+MB.add('T7_LED_1', 'turbo_gas', TMindex=5, pin=0)
+MB.add('T7_SW2_2', 'turbo_boost', TMindex=6, pin=1)
+MB.add('T7_LED_2', 'turbo_boost', TMindex=5, pin=1)
+MB.add('T7_SW3', 'doors', values=['door1','closed','door2'], TMindex=5, pins=[0,1])
 
+# Panel T8: buttons 2
+MB.add('T8_SW2_1', 'light_cabin', TMindex=6, pin=2)
+MB.add('T8_LED_1', 'light_cabin', TMindex=5, pin=2)
+MB.add('T8_SW2_2', 'light_outside', TMindex=6, pin=3)
+MB.add('T8_LED_2', 'light_outside', TMindex=5, pin=3)
+MB.add('T8_SW2_2', 'computer', values=['main', 'backup'], TMindex=6, pin=4)
+MB.add('T8_SW2_3', 'solar', TMindex=6, pin=5)
+MB.add('T8_LED_3', 'solar', TMindex=5, pin=4)
+MB.add('T8_SW2_4', 'battery', TMindex=6, pin=6)
+MB.add('T8_LED_4', 'battery', TMindex=5, pin=5)
+MB.add('T8_SW2_5', 'fuel_cell', TMindex=6, pin=7)
+MB.add('T8_LED_5', 'fuel_cell', TMindex=5, pin=6)
+
+# Panel T9: keyboard
+#TODO:
 
 # Panel B1: start/mode
 MB.add('B1_SW3', 'gameMode', values=['computer', 'spaceship','games'], TMindex=4, pins=[0,1])
