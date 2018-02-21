@@ -152,20 +152,19 @@ this is already included in the Makefile provided.
 
 ## Polling and timing
 
-The ATtiny need to do some polling to detect some changes in the switches/potentiometers, through the TM1638 boards. I also wanted to make the RGB LEDs (and the LCD displays?) blinking.
+The ATtiny need to do some polling to detect some changes in the switches/potentiometers, through the TM1638 boards. I also wanted to make the RGB LEDs (and the LED displays?) blinking.
 
 For that purpose, I need to prepare some periodic tasks:
 - polling of the analog inputs (potentiometers)
 - polling to get data from the TM1638
 - make the RGB LED blink
-- polling to get data from the matrix keyboard (if I add it, one day)
 
 
 I need to read the inputs (switches, not push button) at leat 10 times a second (rought approximation), and each "task" take between few cycles (run the ADC) and less than a millisecond (pilot the RGB leds or talk with the TMs). So I have decided to set a period of 3.90625ms (1/256 of a second), and to count in which cycle we are (with the 8-bit variable `ncycle`):
 - when `(ncycle&3) == 0`: (every 15.625ms) acquire ADC3, read `8TM1` (1st TM1638)
 - when `(ncycle&3) == 1`: (every 15.625ms) acquire ADC4, read `8TM2` (2nd TM1638)
 - when `(ncycle&3) == 2`: (every 15.625ms) acquire ADC5, read `8TM3` (3rd TM1638)
-- when `(ncycle&3) == 3`: (every 15.625ms) acquire ADC2 and check if the switches connected to PC2 (analog sum)  have changed 
+- when `(ncycle&3) == 3`: (every 15.625ms) acquire ADC2 (and check if the switches connected to ADC2 have changed), read `8TM4` (4th TM1638)  
 - when `(ncyccle&63) == 63`: (every 250ms) update the RGB leds if necessary (according to blinking)
 
 So TIME1 is configured to generate interruption every 31250 ticks, with a prescaler of 1/1 (Frequency of the ATtiny: 8MHz, see this [AVR timer calculator](http://eleccelerator.com/avr-timer-calculator/)):
@@ -224,6 +223,8 @@ The following table sums up the commands:
 |`0`|`0`|`1`|`x`|`x`|`x`|`x`|`x`| not used yet | 0 |
 |`0`|`0`|`0`|`1`|`1`|`x`|`x`|`x`| not used yet | 0 |
 |-|-|-|-|-|-|-|-|-|-|
+
+
 
 to add:
 - acknowledgment for "turn off the RPi" command
