@@ -1,11 +1,3 @@
----
-image:
-  feature: ../../photos/IMG_2699.jpg
-  #credit: T. Hilaire
-  #creditlink: http://mademistakes.com #url to their site or licensing
-
-
----
 
 # What is *MissionBoard* ?
 
