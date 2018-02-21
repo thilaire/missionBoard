@@ -26,7 +26,7 @@ Copyright 2017-2018 T. Hilaire
 #define _TMx8_H_
 
 
-#define NB_TMx8 3
+#define NB_TMx8 4
 #define NB_TMx7 3
 
 

@@ -227,7 +227,7 @@ int main(void) {
 	/* configure inputs/outputs */
 	DDRB = 0b11010011;       /* PB0, PB1, PB4, PB6 and PB7 are outputs */
 	DDRC = 0b10000001;       /* PC0 and PC7 are outputs */
-	DDRD = 0b11100111;      /* PD0, PD1, PD2, PD5, PD6 and PD7 are outputs */
+	DDRD = 0b11111111;      /* PD0 to PD7 are outputs */
 
 	/* configure the USI */
 	SPCR |= (1<<SPIE) | (1<<SPE);

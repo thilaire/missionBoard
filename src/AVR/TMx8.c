@@ -56,7 +56,7 @@ const uint8_t NUMBER_FONT[] = {
 
 uint8_t TMxDisplay[4*NB_TMx7+8*NB_TMx8] = {0};    /* display data of the TM1637 and TM1638 */
 
-const uint8_t TM1638_STB_PINMASK[3] = { BIT(TM1638_STB_PIN0), BIT(TM1638_STB_PIN1), BIT(TM1638_STB_PIN2)};  /* STB0, STB1 and STB2 are on PD5, PD6 and PD7 respectively */
+const uint8_t TM1638_STB_PINMASK[NB_TMx8] = { BIT(TM1638_STB_PIN0), BIT(TM1638_STB_PIN1), BIT(TM1638_STB_PIN2), BIT(TM1638_STB_PIN3)};  /* STB0, STB1 and STB2 are on PD5, PD6 and PD7 respectively */
 
 uint8_t TMx8Input[NB_TMx8] = {0};       /* data from the line input K3*/
 
@@ -121,6 +121,7 @@ void setDisplayTMx(uint8_t SPIcommand, uint8_t* SPIbuffer)
 			if (SPIcommand & (1<<2))
 			{
 				/* send to TM1638 */
+				//TM1638_sendData(pos<<1, *SPIbuffer, 0b1111000);
 				TM1638_sendData(pos<<1, *SPIbuffer, TM1638_STB_PINMASK[SPIcommand&3]);
 			}
 			else

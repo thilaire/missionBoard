@@ -20,6 +20,26 @@ logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
 
+
+# Panel T2: position
+MB.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
+MB.add('T2_DISP_2', 'position', TMindex=5, block=0, size=8)
+
+
+# Panel T4: attitude
+MB.add('T4_DISP', 'direction', TMindex=7, block=0, size=4)
+
+
+# Panel T6: levels
+MB.add('T6_LVL_1', 'fuel_rocket', TMindex=7, number=0)
+MB.add('T6_LVL_2', 'fuel_spaceship', TMindex=7, number=1)
+MB.add('T6_LVL_3', 'oxygen', TMindex=7, number=2)
+MB.add('T6_DISP','levels', TMindex=7, block=1, size=4)
+
+MB.add('B2_DISP_1','test1', TMindex=4, block=0, size=4)
+MB.add('B2_DISP_2','test2', TMindex=4, block=1, size=4)
+
+
 # Panel B1: start/mode
 MB.add('B1_SW3', 'gameMode', values=['computer', 'spaceship','games'], TMindex=4, pins=[0,1])
 MB.add('B1_LED','OnOff', TMindex=4, index=1)
@@ -69,6 +89,10 @@ MB.add('B8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'land
 
 # Panel B9: audio
 MB.add('B9_SW3', 'Com', values=['Off','COM1','COM2'], TMindex=4, pins=[5,6])
+
+
+
+
 
 
 @onChange(MB.SW2_LaserColor)

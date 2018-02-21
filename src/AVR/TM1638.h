@@ -38,11 +38,12 @@ Copyright 2017-2018 T. Hilaire
 
 #define TM1638_STB_PORT      PORTD
 #define TM1638_STB_DDR       DDRD
-#define TM1638_STB_MASK_PIN  0b11100000
+
 #define TM1638_STB_PIN0      5
 #define TM1638_STB_PIN1      6
 #define TM1638_STB_PIN2      7
-
+#define TM1638_STB_PIN3      3
+#define TM1638_STB_MASK_PIN  BIT(TM1638_STB_PIN0) | BIT(TM1638_STB_PIN1) | BIT(TM1638_STB_PIN2) | BIT(TM1638_STB_PIN3)
 
 /* intern bit manipulation macros */
 /* check if they correspond to asm set_bit / clear_bit ? */

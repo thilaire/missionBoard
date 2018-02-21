@@ -58,3 +58,40 @@ class DISP(Element):
 	def clear( self ):
 		"""Clear the display"""
 		self._MB.sendSPI([0b11101000 | self._TMindex])
+
+
+maskLevel = [48, 12, 3]
+
+class LVL(Element):
+	"""
+	Levels (on 7-segment display)
+	"""
+
+	_values = [0, 0, 0, 0]    # keep track of the values sent to the TMx8
+
+	def __init__(self, keyname, name, TMindex, number):
+		super(LVL, self).__init__(keyname, name)
+		self._TMindex = TMindex & 7
+		self._number = number & 3
+
+	def runCheck ( self ):
+		"""
+		prints '0.0.0.0' to '9.9.9.9' to test the SSD
+		"""
+		pass
+
+
+	def __set__(self, instance, value):
+		# bound the value
+		if value > 10:
+			value = 10
+		if value < 0:
+			value = 0
+		# build the bytes to send
+		byte = (1 << value) - 1
+		self._values[self._number] = byte >> 2  # all the bytes up to
+		self._values[3] = ( (byte&3) << (2*(2-self._number)) ) | ( self._values[3] & (~(3<<(2*(2-self._number)))) )
+
+		# send the command and the list of values
+		command = 0b11001000 | self._TMindex
+		self._MB.sendSPI([command,] + self._values)
