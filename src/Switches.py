@@ -75,7 +75,7 @@ class SW2(Switch):
 	2-position switches
 	"""
 
-	def __init__(self, keyname, name, TMindex, pin, values=['off','on'],):
+	def __init__(self, keyname, name, TMindex, pin, values=['off','on']):
 		# init super class
 		super(SW2, self).__init__(keyname, name, TMindex, [pin])
 		self._pin = pin
