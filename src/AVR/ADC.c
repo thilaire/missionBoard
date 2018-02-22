@@ -94,6 +94,8 @@ uint8_t getADCSwitches(uint8_t* data)
 		uint8_t sh22 = sh + (sh>>2) + (sh>>3);  /* shift*22*/
 		*data = sh22>>4;     /* shift*22/256 */
 	}
+	/* we want these 4 bits on the MSB */
+	*data <<= 4;
 	/* check if something has changed */
 	if (ADCswitches != *data)
 	{

@@ -70,7 +70,7 @@ MB.add('B2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'aut
 MB.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 # Panel B3: laser
-MB.add('B3_SW2_0', 'Laser', values=['disarmed','armed'], TMindex=7, pin=0)
+MB.add('B3_SW2_0', 'Laser', values=['disarmed','armed'], TMindex=7, pin=4)
 MB.add('B3_SW2_1', 'LaserColor', values=['blue','red'], TMindex=4, pin=7)
 
 # Panel B4: pilot
@@ -84,9 +84,9 @@ MB.add('B5_SW3', 'mode', values=['landing','orbit','takeoff'], TMindex=4, pins=[
 MB.add('B5_SW2', 'autoPilot', values=['manual','auto'], TMindex=4, pin=4)
 
 # Panel B6: lift-off
-MB.add('B6_SW2_1', 'phase1', TMindex=7, pin=3)
-MB.add('B6_SW2_2', 'phase2', TMindex=7, pin=1)
-MB.add('B6_SW2_3', 'phase3', TMindex=7, pin=2)
+MB.add('B6_SW2_1', 'phase1', TMindex=7, pin=7)
+MB.add('B6_SW2_2', 'phase2', TMindex=7, pin=5)
+MB.add('B6_SW2_3', 'phase3', TMindex=7, pin=6)
 
 # Panel B7: Joystick
 MB.add('B7_PB_UP', 'Up', gpio=7)

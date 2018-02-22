@@ -180,31 +180,23 @@ ISR (TIMER1_COMPA_vect  ) {
 
 	/* initialize SPI header */
 	SPISend_header = cycle&3;
-	/* run specific task (wrt the cycle)*/
-	if ((cycle&3) == 3) {
-		/* acquire ADC2 (4 switches on analog input)*/
-		updateADC(cycle&3);
 
-		/* blinking cycle */
-		if ((cycle&63) == 63) {
-			/* check if we need to send data to the led (something has changed since previous cycle ?) */
-			if (RGBshouldBeUpdated(blinkCycle)) {
-				/* prepare the buffer */
-				fillRGBBuffer(blinkCycle);
-				updateRGB();
-			}
-			blinkCycle = (blinkCycle+1) & 15;   /* only the 4 LSB */
+	/* acquire Potentiometer */
+	updateADC(cycle&3);
+	/* acquire data from TMx8 */
+	updateDataTMx8(cycle&3);
+	/* run ADC for the next cycle */
+	runADC((cycle+1)&3);
+
+	/* run blinking cycle */
+	if ((cycle&63) == 63) {
+		/* check if we need to send data to the led (something has changed since previous cycle ?) */
+		if (RGBshouldBeUpdated(blinkCycle)) {
+			/* prepare the buffer */
+			fillRGBBuffer(blinkCycle);
+			updateRGB();
 		}
-		/* run capture ADC22 */
-		runADC(0);  /* run ADC for the next cycle */
-	}
-	else {
-		/* acquire Potentiometer */
-		updateADC(cycle&3);
-		/* acquire data from TMx8 */
-		updateDataTMx8(cycle&3);
-		/* run ADC for the next cycle */
-		runADC((cycle&3)+1);
+		blinkCycle = (blinkCycle+1) & 15;   /* only the 4 LSB */
 	}
 
 	/* update SPI header and SPDR (next byte to be sent)*/
