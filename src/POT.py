@@ -48,6 +48,7 @@ class POT(Element):
 			Pot = cls._all[index]
 		except:
 			print("INDEX="+str(index))
+			return  #TODO: should not happen, do something ?
 		# assign its new value
 		Pot._value = value
 		# call onChange method (through Event Queue) for each switch

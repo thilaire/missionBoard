@@ -41,8 +41,8 @@ MB.add('T7_SW3_2', 'fuel_pump', values=['off','spaceship','rocket'], TMindex=5, 
 MB.add('T7_SW2_1', 'turbo_gas', TMindex=6, pin=7)
 MB.add('T7_LED_1', 'turbo_gas', TMindex=5, index=0)
 MB.add('T7_SW2_2', 'turbo_boost', TMindex=6, pin=6)
-MB.add('T7_LED_2', 'turbo_boost', TMindex=5, index=1)
-MB.add('T7_SW3', 'doors', values=['closed','door1','door2'], TMindex=5, pins=[0,1])
+MB.add('T7_LED_2', 'turbo_boost', TMindex=5, index=7)
+MB.add('T7_SW3', 'gates', values=['closed','gate1','gate2'], TMindex=5, pins=[0,1])
 
 # Panel T8: buttons 2
 MB.add('T8_SW2_1', 'light_cabin', TMindex=6, pin=5)
@@ -111,9 +111,30 @@ MB.add('B8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'land
 MB.add('B9_SW3', 'Com', values=['Off','COM1','COM2'], TMindex=4, pins=[5,6])
 
 
+@onChange(MB.SW2_turbo_gas)
+async def turbo_gas(self):
+		MB.LED_turbo_gas = self.value
 
+@onChange(MB.SW2_turbo_boost)
+async def turbo_boost(self):
+		MB.LED_turbo_boost = self.value
 
+@onChange(MB.SW2_light_cabin)
+async def light_cabin(self):
+		MB.LED_light_cabin = self.value
+@onChange(MB.SW2_light_outside)
+async def light_outside(self):
+		MB.LED_light_outside = self.value
 
+@onChange(MB.SW2_solar)
+async def solar(self):
+		MB.LED_solar = self.value
+@onChange(MB.SW2_battery)
+async def battery(self):
+		MB.LED_battery = self.value
+@onChange(MB.SW2_fuel_cell)
+async def fuel_cell(self):
+		MB.LED_fuel_cell = self.value
 
 @onChange(MB.SW2_LaserColor)
 async def lc(self):
@@ -129,6 +150,17 @@ async def lcc(self):
 		MB.RGB_laser = (RED if MB.SW2_LaserColor == 'red' else BLUE), FAST
 	else:
 		MB.RGB_laser = BLACK
+
+@onChange(MB.SW3_gates)
+async def gates(self):
+	logger.debug('%s = %s', str(self), self.valueName)
+	MB.RGB_gate1 = BLACK
+	MB.RGB_gate2 = BLACK
+	if self == 'gate1':
+		MB.RGB_gate1 = YELLOW
+	elif self == 'gate2':
+		MB.RGB_gate2 = YELLOW
+
 
 
 
