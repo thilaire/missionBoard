@@ -131,13 +131,13 @@ The following input/output connections can be changed directly in the `runMB.py`
 | #4       | 7      | `B4_LED`     |  autopilot           |
 | #4       | 6      | `B1_LED`     |  on/off              |
 | #5       | 0      | `T7_LED_1`   |  turbo gas           |
-| #5       | 1      | `T7_LED_2`   |  turbo boost         |
-| #5       | 2      |              |                      |
-| #5       | 3      |              |                      |
-| #5       | 4      |              |                      |
-| #5       | 5      |              |                      |
-| #5       | 6      |              |                      |
-| #5       | 7      |              |                      |
+| #5       | 1      |              |                      |
+| #5       | 2      | `T8_LED_1`   |  light cabin         |
+| #5       | 3      | `T8_LED_2`   | light outisde        |
+| #5       | 4      | `T8_LED_3`   | solar                |
+| #5       | 5      | `T8_LED_4`   | battery              |
+| #5       | 6      | `T8_LED_5`   | fuel cell            |
+| #5       | 7      | `T7_LED_2`   |  turbo boost         |
 
 
 ### Inputs
@@ -163,12 +163,12 @@ The TM1638 IC has three input lines, but we only used the K3 line (the original 
 |  #5     | 5   | `T6_SW3_2:2` |  fuel pump      |
 |  #5     | 6   |              |                 |
 |  #5     | 7   |              |                 |
-|  #6     | 0   |              |                 |  
-|  #6     | 1   |              |                 |  
-|  #6     | 2   |              |                 |  
-|  #6     | 3   |              |                 |  
-|  #6     | 4   |              |                 |  
-|  #6     | 5   |              |                 |  
+|  #6     | 0   | `T8_SW2_5`   | fuel cell       |  
+|  #6     | 1   | `T8_SW2_4`   | battery         |  
+|  #6     | 2   | `T8_SW2_3`   | solar           |  
+|  #6     | 3   | `T8_SW2_6`   |  gates          |  
+|  #6     | 4   | `T8_SW2_2`   |  light outside  |  
+|  #6     | 5   | `T8_SW2_1`   |  light cabin    |  
 |  #6     | 6   | `T7_SW2_2`   |  turbo boost    |  
 |  #6     | 7   | `T7_SW2_1`   |  turbo gas      |  
 |  #7     | 0   |              |                 |  

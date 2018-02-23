@@ -52,13 +52,13 @@ MB.add('T8_SW2_1', 'light_cabin', TMindex=6, pin=5)
 MB.add('T8_LED_1', 'light_cabin', TMindex=5, index=2)
 MB.add('T8_SW2_2', 'light_outside', TMindex=6, pin=4)
 MB.add('T8_LED_2', 'light_outside', TMindex=5, index=3)
-MB.add('T8_SW2_2', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
 MB.add('T8_SW2_3', 'solar', TMindex=6, pin=2)
 MB.add('T8_LED_3', 'solar', TMindex=5, index=4)
 MB.add('T8_SW2_4', 'battery', TMindex=6, pin=1)
 MB.add('T8_LED_4', 'battery', TMindex=5, index=5)
 MB.add('T8_SW2_5', 'fuel_cell', TMindex=6, pin=0)
 MB.add('T8_LED_5', 'fuel_cell', TMindex=5, index=6)
+MB.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
 
 # Panel T9: keyboard
 #TODO:
