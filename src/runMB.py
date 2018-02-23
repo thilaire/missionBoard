@@ -38,7 +38,7 @@ MB.add('T6_LVL_1', 'fuel_rocket', TMindex=7, number=0)
 MB.add('T6_LVL_2', 'fuel_spaceship', TMindex=7, number=1)
 MB.add('T6_LVL_3', 'oxygen', TMindex=7, number=2)
 MB.add('T6_SW3_1', 'water_pump', values=['off','toilets','bathroom'], TMindex=5, pins=[3,2])
-MB.add('T7_SW3_2', 'fuel_pump', values=['off','spaceship','rocket'], TMindex=5, pins=[4,5])
+MB.add('T6_SW3_2', 'fuel_pump', values=['off','spaceship','rocket'], TMindex=5, pins=[4,5])
 
 # Panel T7: buttons 1
 MB.add('T7_SW2_1', 'turbo_gas', TMindex=6, pin=7)
