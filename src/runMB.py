@@ -23,11 +23,14 @@ logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)
 
 # Panel T2: position
 MB.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
-MB.add('T2_DISP_2', 'position', TMindex=5, block=0, size=8)
+#MB.add('T2_DISP_2', 'speed', TMindex=1, size=4)
+MB.add('T2_DISP_3', 'position', TMindex=5, block=0, size=8)
 
 
 # Panel T4: attitude
-MB.add('T4_DISP', 'direction', TMindex=7, block=0, size=4)
+#MB.add('T2_DISP_1', 'roll', TMindex=2, size=4)
+#MB.add('T2_DISP_2', 'yaw', TMindex=3, size=4)
+MB.add('T4_DISP_3', 'direction', TMindex=7, block=0, size=4)
 
 
 # Panel T6: levels

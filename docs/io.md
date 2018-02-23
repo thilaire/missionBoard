@@ -104,17 +104,18 @@ To be added:
 
 
 ## TM1638 boards
-The four TM1638s share the same clock (`8TM_CLK`) and data I/O (`8TM_DIO`), to save some GPIO. Only their STB (`8TM4_STB` to `8TM7_STB`) is different:
-- the TM1638 Board #5 is used for the IOs of the bottom panels (toggle switch buttons, leds and counter)
-- the TM Board #4 is used for
-- the TM Board #6 is used for
-- the TM Board #7 is used for
+The four TM1638s share the same clock (`8TM_CLK`) and data I/O (`8TM_DIO`), to save some GPIO. Only their STB (`8TM4_STB` to `8TM7_STB`) are different:
+- the TM1638 Board #5 is used for the counter and the IOs of the bottom panels (toggle switch buttons, leds and counter)
+- the TM Board #4 is used for the altitude display, the 2-position switch buttons and the LEDs of the top panel
+- the TM Board #6 is used for the position display and the 3-position switch buttons of the top panel
+- the TM Board #7 is used for the direction display, the level bargraphes and the keyboard
 
 | Pin description   | Name       | Connected to |
 |:------------------|:----------:|:------------:|
-| STB (TM board #1) | `8TM1_STB` | `AT_PD5`     |
-| STB (TM board #2) | `8TM2_STB` | `AT_PD6`     |
-| STB (TM board #3) | `8TM3_STB` | `AT_PD7`     |
+| STB (TM board #4) | `8TM4_STB` | `AT_PD3`     |
+| STB (TM board #5) | `8TM5_STB` | `AT_PD5`     |
+| STB (TM board #6) | `8TM6_STB` | `AT_PD6`     |
+| STB (TM board #7) | `8TM7_STB` | `AT_PD7`     |
 | CLK (Clock input) | `8TM_CLK`  | `AT_PB7`     |
 | DIO (Data I/O)    | `8TM_DIO`  | `AT_PB6`     |
 
@@ -123,9 +124,10 @@ The four TM1638s share the same clock (`8TM_CLK`) and data I/O (`8TM_DIO`), to s
 
 ### Outputs
 
-| TM Board | Output | Connected to |
-|:--------:|:------:|:------------:|
-| #1       | 8      | `P4_LED`     |
+| TM Board | Output | Connected to | description          |
+|:--------:|:------:|:------------:|:--------------------:|
+| #4       | 7      | `P4_LED`     |
+| #4       | 6      | `P1_LED`     |
 
 
 
@@ -134,33 +136,42 @@ The four TM1638s share the same clock (`8TM_CLK`) and data I/O (`8TM_DIO`), to s
 The TM1638 IC has three input lines, but we only used the K3 line (the original line  used on the board).   
 
 
-#### TM Board #1
+| TM Board| Bit | Connected to | Functionality   |
+|:-------:|:---:|:------------:|:---------------:|
+|  #4     | 0   |  `P1_SW3:2`  |  Game mode      | 
+|  #4     | 1   |  `P1_SW3:1`  |  Game mode      | 
+|  #4     | 2   |  `P5_SW3:2`  | flight mode     | 
+|  #4     | 3   |  `P5_SW3:1`  | flight mode     | 
+|  #4     | 4   |  `P5_SW2`    |  autopilot      | 
+|  #4     | 5   |  `P9_SW3:2`  |  COM2           | 
+|  #4     | 6   |  `P9_SW3:1`  |  COM1           | 
+|  #4     | 7   |              |  Laser color    |
+|  #5     | 0   |              |                 |
+|  #5     | 1   |              |                 |
+|  #5     | 2   |              |                 |
+|  #5     | 3   |              |                 |
+|  #5     | 4   |              |                 |
+|  #5     | 5   |              |                 |
+|  #5     | 6   |              |                 |
+|  #5     | 7   |              |                 |
+|  #6     | 0   |              |                 |  
+|  #6     | 1   |              |                 |  
+|  #6     | 2   |              |                 |  
+|  #6     | 3   |              |                 |  
+|  #6     | 4   |              |                 |  
+|  #6     | 5   |              |                 |  
+|  #6     | 6   |              |                 |  
+|  #6     | 7   |              |                 |  
+|  #7     | 0   |              |                 |  
+|  #7     | 1   |              |                 |  
+|  #7     | 2   |              |                 |  
+|  #7     | 3   |              |                 |  
+|  #7     | 4   |              |                 |  
+|  #7     | 5   |              |                 |  
+|  #7     | 6   |              |                 |  
+|  #7     | 7   |              |                 |  
 
-| Bit | Connected to | Functionality   |
-|:---:|:------------:|:---------------:|
-| 0   |  `P1_SW3:2`  |  Game mode      | 
-| 1   |  `P1_SW3:1`  |  Game mode      | 
-| 2   |  `P5_SW3:2`  | flight mode     | 
-| 3   |  `P5_SW3:1`  | flight mode     | 
-| 4   |  `P5_SW2`    |  autopilot      | 
-| 5   |  `P9_SW3:2`  |  COM2           | 
-| 6   |  `P9_SW3:1`  |  COM1           | 
-| 7   |              |  Laser color    |
 
-
-#### TM Board #2
-
-
-| Input   | Connected to |
-|:-------:|:------------:|
-| 1       |              |
-| 2       |              |
-| 3       |              |
-| 4       |              |
-| 5       |              |
-| 6       |              |
-| 7       |              |
-| 8       |              |
 
 
 ## TM1637 boards
