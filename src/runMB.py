@@ -73,8 +73,8 @@ MB.add('B2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'aut
 MB.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 # Panel B3: laser
-MB.add('B3_SW2_0', 'Laser', values=['disarmed','armed'], TMindex=7, pin=4)
-MB.add('B3_SW2_1', 'LaserColor', values=['blue','red'], TMindex=4, pin=7)
+MB.add('B3_SW2_0', 'laser', values=['disarmed','armed'], TMindex=7, pin=4)
+MB.add('B3_SW2_1', 'laserColor', values=['blue','red'], TMindex=4, pin=7)
 
 # Panel B4: pilot
 MB.add('B4_LED', 'manual', TMindex=4, index=0)
@@ -139,18 +139,18 @@ async def battery(self):
 async def fuel_cell(self):
 		MB.LED_fuel_cell = self.value
 
-@onChange(MB.SW2_LaserColor)
+@onChange(MB.SW2_laserColor)
 async def lc(self):
 	logger.debug('%s = %s',str(self),self.valueName)
-	if MB.SW2_Laser == 'armed':
+	if MB.SW2_laser == 'armed':
 		MB.RGB_laser = (RED if self == 'red' else BLUE), FAST
 
 
-@onChange(MB.SW2_Laser)
+@onChange(MB.SW2_laser)
 async def lcc(self):
 	logger.debug('%s = %s',str(self),self.valueName)
 	if self == 'armed':
-		MB.RGB_laser = (RED if MB.SW2_LaserColor == 'red' else BLUE), FAST
+		MB.RGB_laser = (RED if MB.SW2_laserColor == 'red' else BLUE), FAST
 	else:
 		MB.RGB_laser = BLACK
 

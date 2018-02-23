@@ -128,8 +128,8 @@ The following input/output connections can be changed directly in the `runMB.py`
 
 | TM Board | Output | Connected to | description          |
 |:--------:|:------:|:------------:|:--------------------:|
-| #4       | 7      | `B4_LED`     |  autopilot           |
-| #4       | 6      | `B1_LED`     |  on/off              |
+| #4       | 0      | `B4_LED`     |  autopilot           |
+| #4       | 1      | `B1_LED`     |  on/off              |
 | #5       | 0      | `T7_LED_1`   |  turbo gas           |
 | #5       | 1      |              |                      |
 | #5       | 2      | `T8_LED_1`   |  light cabin         |
@@ -175,10 +175,12 @@ The TM1638 IC has three input lines, but we only used the K3 line (the original 
 |  #7     | 1   | `T9_KB:2`    | Keyboard, line 2|  
 |  #7     | 2   | `T9_KB:3`    | Keyboard, line 3|  
 |  #7     | 3   | `T9_KB:4`    | Keyboard, line 4|  
-|  #7     | 4   |              |                 |  
-|  #7     | 5   |              |                 |  
-|  #7     | 6   |              |                 |  
-|  #7     | 7   |              |                 |  
+|  #7     | 4   |              | do not use      |  
+|  #7     | 5   |              | do not use      | 
+|  #7     | 6   |              | do not use      |  
+|  #7     | 7   |              | do not use      |  
+
+(the 4 switches `B3_SW2_1`, `B6_SW2_1`, `B6_SW2_2` and `B6_SW2_3` are connected to the ATtiny through the ADC (see [this](multiple-inputs.md))), and appear to the RPi as connected to pins 4 to 7 of the TM #7).
 
 
 ### TM Board #7
