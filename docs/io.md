@@ -60,12 +60,12 @@ x: still available
 
 | RPi USB | Connected to                  |
 |:-------:|:-----------------------------:|
-| #1      | LCD touchscreen `P14_LCD_USB` |
+| #1      | LCD touchscreen `T5_LCD_USB` |
 | #2      |                               |
-| #3      | USB connector `P9_USB_0`      |
-| #4      | USB connector `P9_USB_1`      |
+| #3      | USB connector `B9_USB_0`      |
+| #4      | USB connector `B9_USB_1`      |
 
-- HDMI: to the LCD touchscreen `P14_LCD_USB`
+- HDMI: to the LCD touchscreen `T5_LCD_HDMI`
 
 - 3.5 Jack sound: not yet connected  
 
@@ -121,13 +121,15 @@ The four TM1638s share the same clock (`8TM_CLK`) and data I/O (`8TM_DIO`), to s
 
 
 
+The following input/output connections can be changed directly in the `runMB.py` file. This corresponds to my setting, but you can re-arrange the connection as you want (just need to change it in the code)
+
 
 ### Outputs
 
 | TM Board | Output | Connected to | description          |
 |:--------:|:------:|:------------:|:--------------------:|
-| #4       | 7      | `P4_LED`     |
-| #4       | 6      | `P1_LED`     |
+| #4       | 7      | `B4_LED`     |
+| #4       | 6      | `B1_LED`     |
 
 
 
@@ -138,20 +140,20 @@ The TM1638 IC has three input lines, but we only used the K3 line (the original 
 
 | TM Board| Bit | Connected to | Functionality   |
 |:-------:|:---:|:------------:|:---------------:|
-|  #4     | 0   |  `P1_SW3:2`  |  Game mode      | 
-|  #4     | 1   |  `P1_SW3:1`  |  Game mode      | 
-|  #4     | 2   |  `P5_SW3:2`  | flight mode     | 
-|  #4     | 3   |  `P5_SW3:1`  | flight mode     | 
-|  #4     | 4   |  `P5_SW2`    |  autopilot      | 
-|  #4     | 5   |  `P9_SW3:2`  |  COM2           | 
-|  #4     | 6   |  `P9_SW3:1`  |  COM1           | 
-|  #4     | 7   |              |  Laser color    |
+|  #4     | 0   |  `B1_SW3:2`  |  Game mode      | 
+|  #4     | 1   |  `B1_SW3:1`  |  Game mode      | 
+|  #4     | 2   |  `B5_SW3:2`  | flight mode     | 
+|  #4     | 3   |  `B5_SW3:1`  | flight mode     | 
+|  #4     | 4   |  `B5_SW2`    |  autopilot      | 
+|  #4     | 5   |  `B9_SW3:2`  |  COM2           | 
+|  #4     | 6   |  `B9_SW3:1`  |  COM1           | 
+|  #4     | 7   |  `B4_SW2`    |  Laser color    |
 |  #5     | 0   |              |                 |
 |  #5     | 1   |              |                 |
-|  #5     | 2   |              |                 |
-|  #5     | 3   |              |                 |
-|  #5     | 4   |              |                 |
-|  #5     | 5   |              |                 |
+|  #5     | 2   | `T6_SW3_1:1` |  water pump     |
+|  #5     | 3   | `T6_SW3_1:2` |  water pump     |
+|  #5     | 4   | `T6_SW3_2:1` |  fuel pump      |
+|  #5     | 5   | `T6_SW3_2:2` |  fuel pump      |
 |  #5     | 6   |              |                 |
 |  #5     | 7   |              |                 |
 |  #6     | 0   |              |                 |  
@@ -172,6 +174,8 @@ The TM1638 IC has three input lines, but we only used the K3 line (the original 
 |  #7     | 7   |              |                 |  
 
 
+### TM Board #7
+The last TM1638 board has been "sacrified" to drive the bargraphes and the keyboard. Its second 7-segment display block has been unsoldered, and the bargraphes directly sold on its output (see [panel 6](panels/T6-levels/T6.md)).
 
 
 ## TM1637 boards
