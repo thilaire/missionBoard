@@ -171,10 +171,10 @@ The TM1638 IC has three input lines, but we only used the K3 line (the original 
 |  #6     | 5   | `T8_SW2_1`   |  light cabin    |  
 |  #6     | 6   | `T7_SW2_2`   |  turbo boost    |  
 |  #6     | 7   | `T7_SW2_1`   |  turbo gas      |  
-|  #7     | 0   |              |                 |  
-|  #7     | 1   |              |                 |  
-|  #7     | 2   |              |                 |  
-|  #7     | 3   |              |                 |  
+|  #7     | 0   | `T9_KB:1`    | Keyboard, line 1|  
+|  #7     | 1   | `T9_KB:2`    | Keyboard, line 2|  
+|  #7     | 2   | `T9_KB:3`    | Keyboard, line 3|  
+|  #7     | 3   | `T9_KB:4`    | Keyboard, line 4|  
 |  #7     | 4   |              |                 |  
 |  #7     | 5   |              |                 |  
 |  #7     | 6   |              |                 |  
