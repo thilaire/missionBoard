@@ -20,7 +20,6 @@ Copyright 2017-2018 T. Hilaire
 
 ----------------------------------------------------------------------------*/
 
-#include <avr/io.h>
 #include <util/delay.h>
 #include "TM1638.h"
 

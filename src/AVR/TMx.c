@@ -26,7 +26,7 @@ Copyright 2017-2018 T. Hilaire
 #include <stdint.h>
 #include <util/delay.h>
 
-#include "TMx8.h"
+#include "TMx.h"
 #include "TM1638.h"
 
 

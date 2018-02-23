@@ -13,7 +13,7 @@
  File: TM1638.c
        low-level driver for the TM1638 chip
        - basic function to driver the TM1638 chip
-       - used by the high-level driver (see TMx8.c)
+       - used by the high-level driver (see TMx.c)
 
 
 Copyright 2017-2018 T. Hilaire
@@ -22,6 +22,10 @@ Copyright 2017-2018 T. Hilaire
 
 #ifndef _TM1638_H_
 #define _TM1638_H_
+
+#include <avr/io.h>
+
+
 
 #define BIT(x) (0x01 << (x))
 /* TODO: use it everywhere in the code ? */
