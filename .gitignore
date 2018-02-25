@@ -258,3 +258,4 @@ src/AVR/MB-AVR.o
 src/AVR/light_ws2812.o
 src/AVR/test_led.o
 src/MissionBoard.pyc
+/docs/_site/
