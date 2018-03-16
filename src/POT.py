@@ -10,35 +10,14 @@ class POT(Element):
 
 	_all = {}   # list of potentiometers
 
-	def __init__(self, keyname, name, index):
+	def __init__(self, keyname, name, index, onChange=None):
 		# init super class
-		super(POT, self).__init__(keyname, name)
+		super(POT, self).__init__(keyname, name, onChange)
 		# register in the dictionnary of switches
 		self._all[index] = self
 		self._index = index
 		self._value = 0
 
-	def runCheck(self):
-		"""
-		check the push button
-		"""
-		# input('Checking PushButton %s' % str(self.name))
-		#
-		# print('%s is %s' % 'on' if self else 'off')     # WORK ????
-		# v = self._value
-		# while (v != self._value):
-		# 	sleep(5e-2)
-		#
-		# # PB is now low/high
-		# print('%s is %s' % 'on' if self else 'off')  # WORK ????
-		# print('Done')
-		pass
-
-
-	async def onChange(self):
-		"""onChange method
-		to be filled for each switch"""
-		print("onChange <"+str(self)+"> = "+str(self.value))
 
 
 	@classmethod

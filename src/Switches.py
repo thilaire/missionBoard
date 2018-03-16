@@ -13,35 +13,13 @@ class Switch(Element):
 	_all = {}     # keep track of the SW object, according to their (TMindex,pin)
 	_values = {0: 0, 1: 0, 2: 0, 3: 0}    # keep track of the values
 
-	def __init__(self, keyname, name, TMindex, pins):
+	def __init__(self, keyname, name, TMindex, pins, onChange=None):
 		# init super class
-		super(Switch, self).__init__(keyname, name)
+		super(Switch, self).__init__(keyname, name, onChange)
 		# register in the dictionnary of switches
 		for pin in pins:
 			self._all[(TMindex-4,pin)] = self       # TMindex-4 because TMx7 doesn't count, here
 		self._TMindex = TMindex-4
-
-	def runCheck(self):
-		"""
-		check the push button
-		"""
-		# input('Checking PushButton %s' % str(self.name))
-		#
-		# print('%s is %s' % 'on' if self else 'off')     # WORK ????
-		# v = self._value
-		# while (v != self._value):
-		# 	sleep(5e-2)
-		#
-		# # PB is now low/high
-		# print('%s is %s' % 'on' if self else 'off')  # WORK ????
-		# print('Done')
-		pass
-
-
-	async def onChange(self):
-		"""onChange method
-		to be filled for each switch"""
-		logger.debug("onChange %s = %s",str(self),str(self.valueName))
 
 
 	@classmethod
@@ -75,9 +53,9 @@ class SW2(Switch):
 	2-position switches
 	"""
 
-	def __init__(self, keyname, name, TMindex, pin, values=['off','on']):
+	def __init__(self, keyname, name, TMindex, pin, values=['off','on'], onChange=None):
 		# init super class
-		super(SW2, self).__init__(keyname, name, TMindex, [pin])
+		super(SW2, self).__init__(keyname, name, TMindex, [pin], onChange)
 		self._pin = pin
 		self._valueNames = values
 
@@ -103,9 +81,9 @@ class SW3(Switch):
 	3-position switches
 	"""
 
-	def __init__(self, keyname, name, values, TMindex, pins):
+	def __init__(self, keyname, name, values, TMindex, pins, onChange=None):
 		# init super class
-		super(SW3, self).__init__(keyname, name, TMindex, pins)
+		super(SW3, self).__init__(keyname, name, TMindex, pins, onChange)
 		self._pins = pins
 		self._valueNames = values
 

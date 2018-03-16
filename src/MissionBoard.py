@@ -1,201 +1,307 @@
 # coding=utf-8
 
-from re import compile
-from spidev import SpiDev
-import RPi.GPIO as GPIO
+"""
+Describe how the different buttons/displays are connected
+Define the different callbacks
+"""
+from time import sleep
 import asyncio
-import types
+from aioconsole import ainput
 import logging
 
+from ElementManager import ElementManager
+from RGB import RED, YELLOW, GREEN, ORANGE, FAST, SLOW, BLACK, BLUE, RGB
 
-
-#import uvloop
-#asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-
-
-
-# import UI elements (Leds, Buttons, Switches, etc.)
-from Element import Element
-from LED import LED
-from Display import DISP, LVL
-from PushButton import PB
-from RGB import RGB
-from Switches import Switch, SW2, SW3
-from POT import POT
-
-# list of possible elements
-#dictOfElements = {x.__name__: x for x in Element.__subclasses__()} # SW2 is not a subclass of Element
-dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2, 'SW3': SW3, 'POT': POT, 'LVL': LVL}
-
-# simple regex for Pxx_YYY_zzz or Pxx_YYY where P is `T` or `B`
-regElement = compile("[TB](\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
-
+# logger
 logger = logging.getLogger()
-SPIlogger = logging.getLogger('SPI')
+logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
-class MissionBoard:
-	"""
-	Main object (contains interfaces to buttons, displays, callbacks, etc.)
-	"""
+# some const
+BEFORE_LANDING = 1
+
+
+
+
+class MissionBoard(ElementManager):
 
 	def __init__(self):
-		# save itself to ELement
-		Element.setMB(self)
 
-		# open SPI connection
-		self._spi = SpiDev()
-		self._spi.open(0,0)
-		self._spi.max_speed_hz = 100000 #122000
+		# Panel T2: position
+		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
+		#self.add('T2_DISP_2', 'speed', TMindex=1, size=4)
+		self.add('T2_DISP_3', 'position', TMindex=5, block=0, size=8)
+		self._altitude = 0
+		self._position = 0
+		self._speed = 0
 
-		# prepare the asyncio loop and the queues
-		self._loop = asyncio.get_event_loop()
-		self._SPIqueue = asyncio.Queue(loop=self._loop)
-		self._EventQueue = asyncio.Queue(loop=self._loop)
+		# Panel T4: attitude
+		#self.add('T2_DISP_1', 'roll', TMindex=2, size=4)
+		#self.add('T2_DISP_2', 'yaw', TMindex=3, size=4)
+		self.add('T4_DISP_3', 'direction', TMindex=7, block=0, size=4)
 
-		# take the IO24 into consideration when AVR wants to communicate
-		GPIO.setwarnings(False)
-		GPIO.setmode(GPIO.BCM)
-		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		# Panel T6: levels
+		self.add('T6_LVL_1', 'fuel_rocket', TMindex=7, number=0)
+		self.add('T6_LVL_2', 'fuel_spaceship', TMindex=7, number=1)
+		self.add('T6_LVL_3', 'oxygen', TMindex=7, number=2)
+		self.add('T6_SW3_1', 'water_pump', values=['off','toilets','bathroom'], TMindex=5, pins=[3,2])
+		self.add('T6_SW3_2', 'fuel_pump', values=['off','spaceship','rocket'], TMindex=5, pins=[4,5])
 
-		def sendZeroSpi(x):
-			logger.debug('IO24 Rising!')
-			self._loop.call_soon_threadsafe(self._SPIqueue.put_nowait, [0])
+		# Panel T7: buttons 1
+		self.add('T7_SW2_1', 'turbo_gas', TMindex=6, pin=7, onChange=self.turbo)
+		self.add('T7_LED_1', 'turbo_gas', TMindex=5, index=0)
+		self.add('T7_SW2_2', 'turbo_boost', TMindex=6, pin=6, onChange=self.turbo)
+		self.add('T7_LED_2', 'turbo_boost', TMindex=5, index=7)
+		self.add('T7_SW3', 'gates', values=['closed','gate1','gate2'], TMindex=5, pins=[0,1], onChange=self.gates)
+
+		# Panel T8: buttons 2
+		self.add('T8_SW2_1', 'light_cabin', TMindex=6, pin=5, onChange=self.light)
+		self.add('T8_LED_1', 'light_cabin', TMindex=5, index=2)
+		self.add('T8_SW2_2', 'light_outside', TMindex=6, pin=4, onChange=self.light)
+		self.add('T8_LED_2', 'light_outside', TMindex=5, index=3)
+		self.add('T8_SW2_3', 'solar', TMindex=6, pin=2)
+		self.add('T8_LED_3', 'solar', TMindex=5, index=4)
+		self.add('T8_SW2_4', 'battery', TMindex=6, pin=1)
+		self.add('T8_LED_4', 'battery', TMindex=5, index=5)
+		self.add('T8_SW2_5', 'fuel_cell', TMindex=6, pin=0)
+		self.add('T8_LED_5', 'fuel_cell', TMindex=5, index=6)
+		self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
+
+		# Panel T9: keyboard
+		#TODO:
+
+		# Panel B1: start/mode
+		self.add('B1_SW3', 'gameMode', values=['computer', 'spaceship','games'], TMindex=4, pins=[0,1])
+		self.add('B1_LED','OnOff', TMindex=4, index=1)
+
+		# Panel B2: displays
+		self.add('B2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', '', 'gate2',
+			'landing','alarm', ''], pos=1, inverted=[5])
+		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
+
+		# Panel B3: laser
+		self.add('B3_SW2_0', 'laser', values=['disarmed','armed'], TMindex=7, pin=4, onChange=self.laser)
+		self.add('B3_SW2_1', 'laserColor', values=['blue','red'], TMindex=4, pin=7, onChange=self.laser)
+
+		# Panel B4: pilot
+		self.add('B4_LED', 'manual', TMindex=4, index=0)
+		self.add('B4_POT_0', 'roll', index=0)
+		self.add('B4_POT_1', 'yaw', index=1)
+		self.add('B4_POT_0', 'speed', index=2)
+
+		# Panel B5: flight mode
+		self.add('B5_SW3', 'mode', values=['landing','orbit','takeoff'], TMindex=4, pins=[2,3])
+		self.add('B5_SW2', 'autoPilot', values=['manual','auto'], TMindex=4, pin=4)
+
+		# Panel B6: lift-off
+		self.add('B6_SW2_1', 'phase1', TMindex=7, pin=7)
+		self.add('B6_SW2_2', 'phase2', TMindex=7, pin=5)
+		self.add('B6_SW2_3', 'phase3', TMindex=7, pin=6)
+
+		# Panel B7: Joystick
+		self.add('B7_PB_UP', 'Up', gpio=7)
+		self.add('B7_PB_DOWN', 'Down', gpio=5)
+		self.add('B7_PB_LEFT', 'Left', gpio=12)
+		self.add('B7_PB_RIGHT', 'Right', gpio=6)
+
+		# Panel B8: commands
+		self.add('B8_PB_0', 'RocketEngine', gpio=4)
+		self.add('B8_PB_1', 'SpaceshipEngine', gpio=18)
+		self.add('B8_PB_2', 'Parachute', gpio=27)
+		self.add('B8_PB_3', 'Brake', gpio=17)
+		self.add('B8_PB_4', 'Unhook', gpio=14)
+		self.add('B8_PB_5', 'OxygenPump', gpio=3)
+		self.add('B8_PB_6', 'Laser', gpio=2)
+		self.add('B8_PB_7', 'LandingGear', gpio=15)
+		self.add('B8_PB_8', 'Go', gpio=22)
+		self.add('B8_RGB', ['rocketEngine', 'spaceshipEngine', 'parachute', 'brake', 'landingGear',  'laser', 'oxygenPump',
+			'unhook', 'Go'], pos=13, inverted=[18,19])
+
+		# Panel B9: audio
+		self.add('B9_SW3', 'Com', values=['Off','COM1','COM2'], TMindex=4, pins=[5,6])
 
 
-		GPIO.add_event_detect(24, GPIO.RISING, callback=sendZeroSpi)      # send 0 into SPIQueue in a threadsafe way, see addEvent
+		# intern variables
 
-
-	def runCheck(self):
-		"""
-		check the system, item per item
-		"""
-		for e in Element.getAll():
-			e.runCheck()
-
-
-	def run(self, fct):
-		"""
-		Main loop (manage the different queues)
-		"""
-		self._loop.run_until_complete(asyncio.gather(self._proceedSPIQueue(), self._manageEvents(), fct()))
-		# should never happened
-		self._loop.close()
+		self._state = BEFORE_LANDING    # intern variables for the "states"
+		self._electricity = 0           # amount of available electricity: 0->none, 1->low level, ..., 3 and more -> good
 
 
 
-	def add(self, keyname, name, **args):
-		"""
-		Declares a new element
-		Parameters:
-			- keyname: name following the IO convention (ie 'Px_yyy_zzz')
-				-> the element type (LED, PB, etc.) is determined from the keyname
-			- name: name of the element
-			- args: arguments used to determine the elements (TMindex, etc.)
-		"""
-		# get the element Type
-		m = regElement.search(keyname)
-		if not m:
-			raise ValueError("The keyname %s doesn't follow the pattern `Pxx_YYY_zzz` or `Pxx_YYY`", keyname)
-		elementType = m.group(2)    # panel, elementType, number = m.group(1,2,4)
-		if elementType not in dictOfElements:
-			raise ValueError("The name of the element does not correspond to an existing type")
-		# create the object and add it has an attribute
-		# (of the class, we have a singleton here; and it's the way to do with Python)
-		if isinstance(name, str):
-			# check the name
-			if hasattr(self, name):
-				raise ValueError("An element with the same name (%s) already exists", name)
-			# add this as an attribute
-			setattr(self.__class__, elementType+'_'+name, dictOfElements[elementType](keyname, name, **args))
-			logger.debug("Add `%s_%s` to MissionBoard",elementType,name)
-		else:
-			if 'pos' not in args:
-				args['pos'] = 0
-			for n in name:
-				# check the name
-				if hasattr(self, n):
-					raise ValueError("An element with the same name (%s) already exists", name)
-				# add this as an attribute
-				setattr(self.__class__, elementType+'_'+n, dictOfElements[elementType](keyname, n, **args ))
-				args['pos'] += 1
-				logger.debug("Add `%s_%s` to MissionBoard", elementType, n)
+	# altitude
+	@property
+	def altitude(self):
+		"""get the altitude"""
+		return self._altitude
+
+	@altitude.setter
+	def altitude(self, alt):
+		"""set the altitude, and display it"""
+		if self._altitude != int(alt):
+			self.DISP_altitude = "%8d"%alt
+		self._altitude = int(alt)
+
+	# speed
+	@property
+	def speed(self):
+		"""get the speed"""
+		return self._speed
+
+	@speed.setter
+	def speed(self, sp):
+		"""set the speed and display it"""
+		if "%06.2d"%self._speed != "%06.2d"%sp:
+			self.DISP_speed = "%06.2d"%sp
+		self._altitude = sp
+
+	# position
+	@property
+	def position(self):
+		"""get the position"""
+		return self._position
+
+	@position.setter
+	def position(self, sp):
+		"set the position and display it"
+		# send the position to the display
+		if "%04.4d"%self._position != "%04.4d"%sp:
+			self.DISP_position = "%04.4d"%sp
+		self._altitude = sp
 
 
 
-	def sendSPI(self, data):
-		"""Simply add the data in the queue"""
-		SPIlogger.debug("send %s", str(data))
-		self._SPIqueue.put_nowait(data)
 
+	async def start(self):
+		"""start !"""
 
-	async def _proceedSPIQueue(self):
-		"""
-		Infinite loop to send every message in the SPI queue to the ATtiny through the SPI
-		(a way to send one message at once)
-		"""
+		RGB.turnOff()
+		self.askATdata()
+		self.DISP_counter.clear()
+
+		# self.LED_OnOff = True
+		# self.RGB_Go = RED,FAST
+
 		while True:
-			# wait for data
-			data = await self._SPIqueue.get()
-			# send the 1st byte
-			SPIlogger.debug("Send %s", str(data[0]))
-			header, = self._spi.xfer([data.pop(0)])
-			SPIlogger.debug("Receive Header= %s", str(header))
-			# add more byte if the AVR respond and want to send data
-			data.extend([0] * ((header>>4) - len(data)))
-			if data:
-				SPIlogger.debug("Send %s", str(data))
-				recv = self._spi.xfer(data)
-				SPIlogger.debug("Receive data %s", str(recv))
-
-				# manage the data sent back
-				if header&4:
-					Potval = recv[0]
-					index = header&3
-					SPIlogger.debug("Pot %d, value=%d",index,Potval)
-					POT.checkChanges(index, Potval)
-				if header&8:
-					TMval = recv[(header>>4)-1]
-					index = header&3
-					SPIlogger.debug("TM %d, value=%d",index,TMval)
-					Switch.checkChanges(index, TMval)
-
-
-	async def _manageEvents(self):
-		"""
-		Infinite loop to manage the events in the Event Queue
-		(the queue contains directly the PB objects)
-		"""
-		while True:
-			# wait for event
-			event = await self._EventQueue.get()
-			# process the event
-			logger.debug("Event %s",str(event))
-			await event.onChange()
-
-
-	def addEvent(self, obj):
-		"""Simply add the object in the Event Queue
-		the put_nowait is done in the same thread as the loop with call_soon_threadsafe
-		addEvent is called by a RPi.GIPIO callback, that is in another thread, see
-		https://raspberrypi.stackexchange.com/questions/54514/implement-a-gpio-function-with-a-callback-calling-a-asyncio-method
-		and
-		https://stackoverflow.com/questions/32889527/is-there-a-way-to-use-asyncio-queue-in-multiple-threads
-		"""
-		self._loop.call_soon_threadsafe(self._EventQueue.put_nowait, obj)
-
-
-	def askATdata(self):
-		"""
-		ask the ATtiny to send its data
-		"""
-		self.sendSPI([0b11110000])
+			com = await ainput(">>>")
+			try:
+				exec(com)
+			except Exception as e:
+				print(e)
 
 
 
-# decorator onChange !
-def onChange(obj):
-	def fc_wrapper(func):
-		# see https://stackoverflow.com/questions/972/adding-a-method-to-an-existing-object-instance
-		# for solutions to "Add a Method to an Existing Object Instance"
-		setattr(obj, 'onChange', types.MethodType(func, obj))
-	return fc_wrapper
+	async def laser(self, btn):
+		"""Manage changes for the laser switches (SW2_laser and SW2_laserColor)"""
+		if self._electricity>0:
+			if btn == 'armed':
+				self.RGB_laser = (RED if self.SW2_laserColor == 'red' else BLUE), FAST
+			else:
+				self.RGB_laser = BLACK
+
+
+	async def gates(self, btn):
+		"""Manage changes for the gate switch"""
+		if self._electricity>0:
+			if self == 'gate1':
+				MB.RGB_gate1 = YELLOW   # we come from 'closed', so RGB_gate2 is supposed to be BLACK
+			elif self == 'gate2':
+				MB.RGB_gate2 = YELLOW   # we come from 'closed', so RGB_gate1 is supposed to be BLACK
+			else:
+				MB.RGB_gate1 = BLACK
+				MB.RGB_gate2 = BLACK
+
+
+	async def turbo(self, btn):
+		"""Manage changes for the turbo switches"""
+		# adjust the LEDs according to the switches
+		if btn is self.SW2_turbo_gas:
+			self.LED_turbo_gas = btn.value
+		if btn is self.SW2_turbo_boost:
+			self.LED_turbo_boost = btn.value
+
+
+	async def light(self, btn):
+		"""Manage changes for the light switches"""
+		# adjust the LEDs according to the switches
+		if btn is self.SW2_light_cabin:
+			self.LED_light_cabin = btn.value
+		if btn is self.SW2_light_outside:
+			self.LED_light_outside = btn.value
+
+
+	async def electricity(self, btn):
+		"""Manage changes for the electricity switches"""
+		# adjust the LEDs according to the switches
+		if btn is self.SW2_solar:
+			self.LED_solar = btn.value
+		if btn is self.SW2_battery:
+			self.LED_battery = btn.value
+		if btn is self.SW2_fuel_cell:
+			self.LED_fuel_cell = btn.value
+		# amount of electricity
+		elec = self.SW2_solar*1 + self.SW2_battery*2 + self._SW2_fuel_cell*4    # 1,2 and 4 as weight
+		if elec != self._electricity:
+			if elec == 0:
+				# shutdown!
+				RGB.turnOff()
+				self.DISP_altitude.off()
+				self.DISP_position.off()
+				self.DISP_speed.off()
+				self.DISP_counter.off()
+			# adjust the brightness
+			self.DISP_altitude.setBrightness(elec)
+			self.DISP_position.setBrightness(elec)
+			self.DISP_speed.setBrightness(elec)
+			self.DISP_counter.setBrightness(elec)
+			# set the RGB electricity led
+			self.RGB_electricity = GREEN if elec>2 else YELLOW if elec==2 else ORANGE if elec==1 else RED,FAST
+			self._electricity = elec
+#
+
+#
+# @onChange(MB.SW3_gates)
+# async def gates(self):
+# 	logger.debug('%s = %s', str(self), self.valueName)
+# 	MB.RGB_gate1 = BLACK
+# 	MB.RGB_gate2 = BLACK
+# 	if self == 'gate1':
+# 		MB.RGB_gate1 = YELLOW
+# 	elif self == 'gate2':
+# 		MB.RGB_gate2 = YELLOW
+#
+#
+#
+#
+# MB.PB_Go.state=0
+# @onChange(MB.PB_Go)
+# async def GoChange(self):
+# 	logger.debug('%s state=%d',str(self),self.state)
+# 	if self.state==1:
+# 		MB.RGB_Go = RED, FAST
+# 		self.state = 0
+# 	else:
+# 		MB.RGB_Go = BLACK
+# 		self.state = 1
+#
+#
+# @onChange(MB.SW3_mode)
+# async def changeMode(self):
+# 	logger.debug('%s = %s',str(self),self.valueName)
+# 	MB.RGB_landing = BLACK
+# 	MB.RGB_takeoff = BLACK
+# 	MB.RGB_orbit = BLACK
+# 	if self == 'orbit':
+# 		MB.RGB_orbit = GREEN
+# 	elif self == 'takeoff':
+# 		MB.RGB_takeoff = GREEN
+# 	else:
+# 		MB.RGB_landing = GREEN
+#
+#
+#
+
+
+
+# create the object and start it !
+if __name__ == '__main__':
+	MB = MissionBoard()
+	MB.start()

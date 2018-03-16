@@ -74,12 +74,6 @@ class LVL(Element):
 		self._TMindex = TMindex & 7
 		self._number = number & 3
 
-	def runCheck ( self ):
-		"""
-		prints '0.0.0.0' to '9.9.9.9' to test the SSD
-		"""
-		pass
-
 
 	def __set__(self, instance, value):
 		# bound the value

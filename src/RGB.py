@@ -46,8 +46,6 @@ class RGB(Element):
 		self._pos = pos
 		self._inverted = pos in inverted
 
-	def runCheck(self):
-		pass
 
 	def __set__(self, instance, value):
 		# value should be a color (a 3-byte number) and a blink scheme (2-byte number)

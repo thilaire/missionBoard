@@ -15,17 +15,6 @@ class LED(Element):
 		self._TMindex = TMindex&3
 		self._index = index
 
-	def runCheck(self):
-		pass
-		input('Checking LED %s'%str(self))
-		self.set(False)
-		print('.',end='')
-		sleep(1)
-		self.set(True)
-		print('.',end='')
-		sleep(1)
-		self.set(False)
-		print('Done')
 
 	def __set__(self, obj, value):
 		"""Set the led (value is evaluated as a boolean)"""

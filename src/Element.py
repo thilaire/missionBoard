@@ -12,15 +12,15 @@ class Element:
 	_allElements = []   # list of all the created elements
 	_MB = None
 
-	def __init__(self, keyname, name ):
+	def __init__(self, keyname, name, onChange):
 		self._keyname = keyname
 		self._name = name
+		self._onChange = onChange
 		self._allElements.append(self)
 
 
 	def __str__(self):
 		return '<%s> (`%s`)' % (self._name, self._keyname)
-
 
 	@classmethod
 	def getAll(cls):
