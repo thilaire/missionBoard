@@ -17,7 +17,12 @@ logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
 # some const
-BEFORE_LANDING = 1
+NOT_YET_INIT = 1
+GROUND = 2
+TAKE_OFF = 3
+ORBIT = 4
+LANDING = 5
+
 
 
 
@@ -25,6 +30,8 @@ BEFORE_LANDING = 1
 class MissionBoard(ElementManager):
 
 	def __init__(self):
+
+		super(MissionBoard, self).__init__()
 
 		# Panel T2: position
 		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
@@ -122,8 +129,8 @@ class MissionBoard(ElementManager):
 
 		# intern variables
 
-		self._state = BEFORE_LANDING    # intern variables for the "states"
-		self._electricity = 0           # amount of available electricity: 0->none, 1->low level, ..., 3 and more -> good
+		self._phase = NOT_YET_INIT    # phase (not yet initialized, during takeoff, in orbit, during landing, etc.)
+		self._electricity = 5           # amount of available electricity: 0->none, 1->low level, ..., 3 and more -> good
 
 
 
@@ -166,26 +173,6 @@ class MissionBoard(ElementManager):
 		if "%04.4d"%self._position != "%04.4d"%sp:
 			self.DISP_position = "%04.4d"%sp
 		self._altitude = sp
-
-
-
-
-	async def start(self):
-		"""start !"""
-
-		RGB.turnOff()
-		self.askATdata()
-		self.DISP_counter.clear()
-
-		# self.LED_OnOff = True
-		# self.RGB_Go = RED,FAST
-
-		while True:
-			com = await ainput(">>>")
-			try:
-				exec(com)
-			except Exception as e:
-				print(e)
 
 
 
@@ -242,11 +229,12 @@ class MissionBoard(ElementManager):
 		if elec != self._electricity:
 			if elec == 0:
 				# shutdown!
-				RGB.turnOff()
-				self.DISP_altitude.off()
-				self.DISP_position.off()
-				self.DISP_speed.off()
-				self.DISP_counter.off()
+				logger.debug("shutdown!")
+				# RGB.turnOff()
+				# self.DISP_altitude.off()
+				# self.DISP_position.off()
+				# self.DISP_speed.off()
+				# self.DISP_counter.off()
 			# adjust the brightness
 			self.DISP_altitude.setBrightness(elec)
 			self.DISP_position.setBrightness(elec)
@@ -255,53 +243,30 @@ class MissionBoard(ElementManager):
 			# set the RGB electricity led
 			self.RGB_electricity = GREEN if elec>2 else YELLOW if elec==2 else ORANGE if elec==1 else RED,FAST
 			self._electricity = elec
-#
 
-#
-# @onChange(MB.SW3_gates)
-# async def gates(self):
-# 	logger.debug('%s = %s', str(self), self.valueName)
-# 	MB.RGB_gate1 = BLACK
-# 	MB.RGB_gate2 = BLACK
-# 	if self == 'gate1':
-# 		MB.RGB_gate1 = YELLOW
-# 	elif self == 'gate2':
-# 		MB.RGB_gate2 = YELLOW
-#
-#
-#
-#
-# MB.PB_Go.state=0
-# @onChange(MB.PB_Go)
-# async def GoChange(self):
-# 	logger.debug('%s state=%d',str(self),self.state)
-# 	if self.state==1:
-# 		MB.RGB_Go = RED, FAST
-# 		self.state = 0
-# 	else:
-# 		MB.RGB_Go = BLACK
-# 		self.state = 1
-#
-#
-# @onChange(MB.SW3_mode)
-# async def changeMode(self):
-# 	logger.debug('%s = %s',str(self),self.valueName)
-# 	MB.RGB_landing = BLACK
-# 	MB.RGB_takeoff = BLACK
-# 	MB.RGB_orbit = BLACK
-# 	if self == 'orbit':
-# 		MB.RGB_orbit = GREEN
-# 	elif self == 'takeoff':
-# 		MB.RGB_takeoff = GREEN
-# 	else:
-# 		MB.RGB_landing = GREEN
-#
-#
-#
+
+	async def start(self):
+		"""start !"""
+
+		RGB.turnOff()
+		self.askATdata()
+		self.DISP_counter.clear()
+
+		self.LED_OnOff = True
+		self.RGB_Go = RED,FAST
+		logger.debug('Start!')
+		self.DISP_counter = '01234567'
+
+		while True:
+			com = await ainput(">>>")
+			try:
+				exec(com)
+			except Exception as e:
+				print(e)
 
 
 
 # create the object and start it !
 if __name__ == '__main__':
 	MB = MissionBoard()
-	MB.start()
+	MB.run( MB.start)

@@ -61,9 +61,6 @@ class ElementManager:
 			self._loop.call_soon_threadsafe(self._SPIqueue.put_nowait, [0])
 		GPIO.add_event_detect(24, GPIO.RISING, callback=sendZeroSpi)      # send 0 into SPIQueue in a threadsafe way, see addEvent
 
-		# array of 'onChange' function
-		self._onChange = {}
-
 
 	def runCheck(self):
 		"""
@@ -103,7 +100,7 @@ class ElementManager:
 		# (of the class, we have a singleton here; and it's the way to do with Python)
 		if isinstance(name, str):
 			# check the name
-			if hasattr(self, name):
+			if hasattr(self, elementType+'_'+name):
 				raise ValueError("An element with the same name (%s) already exists", name)
 			# add this as an attribute
 			setattr(self.__class__, elementType+'_'+name, dictOfElements[elementType](keyname, name, **args))
@@ -112,13 +109,14 @@ class ElementManager:
 			if 'pos' not in args:
 				args['pos'] = 0
 			for n in name:
-				# check the name
-				if hasattr(self, n):
-					raise ValueError("An element with the same name (%s) already exists", name)
-				# add this as an attribute
-				setattr(self.__class__, elementType+'_'+n, dictOfElements[elementType](keyname, n, **args ))
-				args['pos'] += 1
-				logger.debug("Add `%s_%s` to ElementManager", elementType, n)
+				if n:
+					# check the name
+					if hasattr(self, elementType+'_'+n):
+						raise ValueError("An element with the same name (%s) already exists", name)
+					# add this as an attribute
+					setattr(self.__class__, elementType+'_'+n, dictOfElements[elementType](keyname, n, **args ))
+					args['pos'] += 1
+					logger.debug("Add `%s_%s` to ElementManager", elementType, n)
 
 
 
@@ -171,7 +169,7 @@ class ElementManager:
 			# process the event
 			if element._onChange is not None:
 				logger.debug("Event onChange for %s", str(element))
-				await event._onChange(self, element)
+				await element._onChange(element)
 
 
 	def addEvent(self, obj):

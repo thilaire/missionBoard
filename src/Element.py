@@ -12,7 +12,7 @@ class Element:
 	_allElements = []   # list of all the created elements
 	_MB = None
 
-	def __init__(self, keyname, name, onChange):
+	def __init__(self, keyname, name, onChange=None):
 		self._keyname = keyname
 		self._name = name
 		self._onChange = onChange
