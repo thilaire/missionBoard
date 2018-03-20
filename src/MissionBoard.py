@@ -51,7 +51,7 @@ class MissionBoard(ElementManager):
 		self.add('T6_LVL_2', 'fuel_spaceship', TMindex=7, number=1)
 		self.add('T6_LVL_3', 'oxygen', TMindex=7, number=2)
 		self.add('T6_SW3_1', 'water_pump', values=['off','toilets','bathroom'], TMindex=5, pins=[3,2])
-		self.add('T6_SW3_2', 'fuel_pump', values=['off','spaceship','rocket'], TMindex=5, pins=[4,5])
+		self.add('T6_SW3_2', 'fuel_pump', values=['off','spaceship','rocket'], TMindex=5, pins=[4,5], onChange=self.fuel)
 
 		# Panel T7: buttons 1
 		self.add('T7_SW2_1', 'turbo_gas', TMindex=6, pin=7, onChange=self.turbo)
@@ -65,11 +65,11 @@ class MissionBoard(ElementManager):
 		self.add('T8_LED_1', 'light_cabin', TMindex=5, index=2)
 		self.add('T8_SW2_2', 'light_outside', TMindex=6, pin=4, onChange=self.light)
 		self.add('T8_LED_2', 'light_outside', TMindex=5, index=3)
-		self.add('T8_SW2_3', 'solar', TMindex=6, pin=2)
+		self.add('T8_SW2_3', 'solar', TMindex=6, pin=2, onChange=self.electricity)
 		self.add('T8_LED_3', 'solar', TMindex=5, index=4)
-		self.add('T8_SW2_4', 'battery', TMindex=6, pin=1)
+		self.add('T8_SW2_4', 'battery', TMindex=6, pin=1, onChange=self.electricity)
 		self.add('T8_LED_4', 'battery', TMindex=5, index=5)
-		self.add('T8_SW2_5', 'fuel_cell', TMindex=6, pin=0)
+		self.add('T8_SW2_5', 'fuel_cell', TMindex=6, pin=0, onChange=self.electricity)
 		self.add('T8_LED_5', 'fuel_cell', TMindex=5, index=6)
 		self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
 
@@ -81,8 +81,8 @@ class MissionBoard(ElementManager):
 		self.add('B1_LED','OnOff', TMindex=4, index=1)
 
 		# Panel B2: displays
-		self.add('B2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', '', 'gate2',
-			'landing','alarm', ''], pos=1, inverted=[5])
+		self.add('B2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', 'x', 'gate2',
+			'landing','alarm', 'y'], pos=1, inverted=[5])
 		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 		# Panel B3: laser
@@ -132,6 +132,9 @@ class MissionBoard(ElementManager):
 		self._phase = NOT_YET_INIT    # phase (not yet initialized, during takeoff, in orbit, during landing, etc.)
 		self._electricity = 5           # amount of available electricity: 0->none, 1->low level, ..., 3 and more -> good
 
+		self._oxygen = 0
+		self._fuelRocket = 0
+		self._fuelSpaceship = 0
 
 
 	# altitude
@@ -179,18 +182,20 @@ class MissionBoard(ElementManager):
 	async def laser(self, btn):
 		"""Manage changes for the laser switches (SW2_laser and SW2_laserColor)"""
 		if self._electricity>0:
-			if btn == 'armed':
+			if self.SW2_laser == 'armed':
 				self.RGB_laser = (RED if self.SW2_laserColor == 'red' else BLUE), FAST
 			else:
 				self.RGB_laser = BLACK
+		else:
+			self.RGB_laser = BLACK
 
 
 	async def gates(self, btn):
 		"""Manage changes for the gate switch"""
 		if self._electricity>0:
-			if self == 'gate1':
+			if btn == 'gate1':
 				MB.RGB_gate1 = YELLOW   # we come from 'closed', so RGB_gate2 is supposed to be BLACK
-			elif self == 'gate2':
+			elif btn == 'gate2':
 				MB.RGB_gate2 = YELLOW   # we come from 'closed', so RGB_gate1 is supposed to be BLACK
 			else:
 				MB.RGB_gate1 = BLACK
@@ -225,24 +230,32 @@ class MissionBoard(ElementManager):
 		if btn is self.SW2_fuel_cell:
 			self.LED_fuel_cell = btn.value
 		# amount of electricity
-		elec = self.SW2_solar*1 + self.SW2_battery*2 + self._SW2_fuel_cell*4    # 1,2 and 4 as weight
+		elec = self.SW2_solar.value*1 + self.SW2_battery.value*2 + self.SW2_fuel_cell.value*4    # 1,2 and 4 as weight
 		if elec != self._electricity:
 			if elec == 0:
 				# shutdown!
 				logger.debug("shutdown!")
-				# RGB.turnOff()
-				# self.DISP_altitude.off()
-				# self.DISP_position.off()
+				RGB.turnOff()
+				self.DISP_altitude.off()
+				self.DISP_position.off()
+				self.DISP_counter.off()
 				# self.DISP_speed.off()
-				# self.DISP_counter.off()
-			# adjust the brightness
-			self.DISP_altitude.setBrightness(elec)
-			self.DISP_position.setBrightness(elec)
-			self.DISP_speed.setBrightness(elec)
-			self.DISP_counter.setBrightness(elec)
+				# self.DISP_roll.off()
+				# self.DISP_yaw.off()
+			else:
+				# adjust the brightness
+				self.DISP_altitude.setBrightness(elec)
+				self.DISP_position.setBrightness(elec)
+				self.DISP_direction.setBrightness(elec)
+				self.DISP_counter.setBrightness(elec)
+				# self.DISP_speed.setBrightness(elec)
+				# self.DISP_roll.setBrightness(elec)
+				# self.DISP_yaw.setBrightness(elec)
 			# set the RGB electricity led
-			self.RGB_electricity = GREEN if elec>2 else YELLOW if elec==2 else ORANGE if elec==1 else RED,FAST
+			self.RGB_electricity = GREEN if elec>2 else YELLOW if elec==2 else ORANGE if elec==1 else (RED,FAST)
 			self._electricity = elec
+
+
 
 
 	async def start(self):
@@ -263,6 +276,8 @@ class MissionBoard(ElementManager):
 				exec(com)
 			except Exception as e:
 				print(e)
+
+
 
 
 

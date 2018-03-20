@@ -57,7 +57,7 @@ class SW2(Switch):
 		# init super class
 		super(SW2, self).__init__(keyname, name, TMindex, [pin], onChange)
 		self._pin = pin
-		self._valueNames = values
+		self._valueNames = list(values)
 
 	@property
 	def value(self):
@@ -69,7 +69,7 @@ class SW2(Switch):
 		# check if we can compare
 		if isinstance(other, str):
 			if other not in self._valueNames:
-				raise ValueError("The SW2 %s can only be compared to ", str(self), str(self._values))
+				raise ValueError("The SW2 %s can only be compared to %s", str(self), str(self._valueNames))
 			# return comparison
 			return self._valueNames[(self._values[self._TMindex] >> self._pin) & 1] == other
 		else:

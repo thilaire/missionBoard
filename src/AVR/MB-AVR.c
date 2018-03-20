@@ -23,7 +23,6 @@ Copyright 2017-2018 T. Hilaire
 
 ----------------------------------------------------------------------------*/
 
-#include "test1637.h"
 
 #include <util/delay.h>
 #include <avr/io.h>
@@ -244,9 +243,9 @@ int main(void) {
 	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
 
 	/* setup the TMx8 and TMx7 boards */
-	//setupTMx(1);
-	//initADC();
-	//runADC(0);
+	setupTMx(1);
+	initADC();
+	runADC(0);
 
 
 	SPDR = 0;
@@ -254,12 +253,12 @@ int main(void) {
 	//TM1637_setup(clkMask);
 	//TM1637_write(255,255,255,255, clkMask);
 
-    TM1637_SERIAL_INIT;
+    //TM1637_SERIAL_INIT;
 
-	led_print(0, "tE5t");
+	//led_print(0, "tE5t");
 
 
 	/* enable interrupts and wait */
-	//sei();
+	sei();
 	while(1);   /*TODO: idle mode? */
 }
