@@ -45,10 +45,10 @@ The TM1637 boards are numbered `0` to `2` (so `7TM0` to `7TM2`), and the TM1638 
 | 27 (**ID_SD**, EEPROM)     |            |     |                         |   |                         |     |            | (I2C ID EEPROM, **ID_SC**) 28 |
 | 29 (**GPIO05**)            | `RPi_IO5`  | In  | `B7_PB_DOWN` (Joystick) |   |                         |     |            |                      (GND) 30 |
 | 31 (**GPIO06**)            | `RPi_IO6`  | In  | `B7_PB_RIGHT`(Joystick) |   | `B7_PB_LEFT` (Joystick) | In  | `RPi_IO12` |               (**GPIO12**) 32 |
-| 33 (**GPIO13**)            | `RPi_IO13` |     |                         |   |                         |     |            |                      (GND) 34 |
+| 33 (**GPIO13**)            | `RPi_IO13` |     |   x                     |   |                         |     |            |                      (GND) 34 |
 | 35 (**GPIO19**)            | `RPi_IO19` |     |   x                     |   |   x                     |     | `RPi_IO16` |               (**GPIO16**) 36 |
 | 37 (**GPIO26**)            | `RPi_IO26` |     |   x                     |   |   x                     |     | `RPi_IO20` |               (**GPIO20**) 38 |
-| 39 (GND)                   |            |     |   x                     |   |   x                     |     | `RPi_IO21` |               (**GPIO21**) 40 |
+| 39 (GND)                   |            |     |   x                     |   |   `REL_SW`              | Out | `RPi_IO21` |               (**GPIO21**) 40 |
                                                                                                      
 x: still available
 
@@ -79,8 +79,8 @@ x: still available
 | 02 (**PD0**)             | `AT_PD0`   | Out |  `7TM0_CLK`    |   | `B4_POT_1`    | Ana | `AT_ADC4`  |   (ADC4, SDA, **PC4**) 27 |
 | 03 (**PD1**)             | `AT_PD1`   | Out |  `7TM1_CLK`    |   | `B4_POT_0`    | Ana | `AT_ADC3`  |   (ADC3, SCL, **PC3**) 26 |
 | 04 (**PD2**, INT0)       | `AT_PD2`   | Out |  `7TM2_CLK`    |   | `B36_SW`      | Ana | `AT_PC2`   |        (ADC2, **PC2**) 25 |
-| 05 (**PD3**, INT1)       | `AT_PD3`   | Out |  `8TM4_STB`    |   | `B1_SW`?      | In  | `AT_PC1`   |        (ADC1, **PC1**) 24 |
-| 06 (**PD4**, T0)         | `AT_PD4`   | ??  |      ???       |   | `RPi_IO24`    | Out | `AT_PC0`   |        (ADC0, **PC0**) 23 |
+| 05 (**PD3**, INT1)       | `AT_PD3`   | Out |  `8TM4_STB`    |   | `B1_SW`       | In  | `AT_PC1`   |        (ADC1, **PC1**) 24 |
+| 06 (**PD4**, T0)         | `AT_PD4`   | Out |  `REL_SW`      |   | `RPi_IO24`    | Out | `AT_PC0`   |        (ADC0, **PC0**) 23 |
 | 07 (VCC)                 |            |     |    3.3V        |   |     GND       |     |            |                  (GND) 22 |
 | 08 (GND)                 |            |     |     GND        |   | `AT_LED`      | Out | `AT_PC7`   |              (**PC7**) 21 |
 | 09 (**PB6**, CLKI)       | `AT_PB6`   | I/O | `8TM_DIO`      |   |    +3.3V      |     |            |                 (AVCC) 20 |
