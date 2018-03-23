@@ -117,7 +117,7 @@ avrdude done.  Thank you.
 (in my case, I want to use the 8MHz intern oscillator, without scaling, so the fuses are `0xE2DFFF`)
 Go to [http://eleccelerator.com/fusecalc/fusecalc.php?chip=attiny88](http://eleccelerator.com/fusecalc/fusecalc.php) (or equivalent) to compute your fuses, and use `avrdude`:
 ```Shell
-avrdude -c linuxgpio -p attiny88 -U lfuse:w:0xEE:m 	-U hfuse:w:0xDF:m   
+sudo avrdude -c linuxgpio -p attiny88 -U lfuse:w:0xEE:m 	-U hfuse:w:0xDF:m   
 ```
 
 Eventually, if you have the error 
