@@ -260,5 +260,26 @@ int main(void) {
 
 	/* enable interrupts and wait */
 	sei();
-	while(1);   /*TODO: idle mode? */
+
+	PORTD |= (1U<<4);
+	_delay_ms(500);
+	PORTD &= ~(1U<<4);
+
+	while(1)
+	{
+		if (PINC&2)
+		{
+			PORTD |= (1U<<4);
+			PORTC |= (1U<<7);
+		}
+		else
+		{
+			PORTD &= ~(1U<<4);
+			PORTC &= ~(1U<<7);
+		}
+		_delay_ms(100);
+	}
+
+
+	   /*TODO: idle mode? */
 }

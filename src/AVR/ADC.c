@@ -33,7 +33,7 @@ void initADC()
 {
 	ADMUX = 0b01100000;     /* align left, so that we read 8 MSB bits in ADCH */
 	ADCSRB = 0;
-	DIDR0 = 0b11000011;     /* reduce power consumption, only ADC2, 3, 4 and 5 are used */
+	DIDR0 = 0b11000000;     /* reduce power consumption, only ADC2, 3, 4 and 5 are used */
 	ADCSRA = 0b10000100;    /* prescaler=32, so it runs at 250kHz; a conversion takes 25 cycles, or 0.1ms */
 }
 
