@@ -148,6 +148,7 @@ ISR (SPI_STC_vect) {
 	/* if we receive some data, it means that the RPi is running */
 	if (RPiPower < RPI_ON) {
 		RPiPower = RPI_ON;
+		setLedTMx8(100);    /* and turn on the led */
 	}
 
 
@@ -215,7 +216,12 @@ ISR (TIMER1_COMPA_vect  ) {
 		}
 		/* check if the power LED need to blink */
 		if (RPiPower&1) {
-			setLedTMx8(68 | (blinkCycle&1)<<5); /* turn on or off the led T1_LED, according to blinkCycle */
+			//setLedTMx8(68 | (blinkCycle&1)<<5); /* turn on or off the led T1_LED, according to blinkCycle */
+			if (blinkCycle&1)
+				setBrightnessTMx(0b10001100);
+			else
+				turnOffTMx(0b11100100);
+
 		}
 		/* update the blink cycle */
 		blinkCycle = (blinkCycle+1) & 15;   /* only the 4 LSB */
@@ -225,18 +231,36 @@ ISR (TIMER1_COMPA_vect  ) {
 	SPISend_header &= 0b11001111;
 	SPISend_header |= NB_BYTES[SPISend_header>>2];
 
+	/* check if the RPi has shut down */
+	if (RPiPower == RPI_SHUTING && (PINC&1)==0) {
+		_delay_ms(10000);   /* TODO: need to know when the RPi is completly off to turn off the relay (instead of waiting 10s) */
+		turnOff_RPi();
+	}
+
 	/* check if the power switch has changed (overset SPDR if necessary) */
 	if ((PINC&2) != switchPower) {
 		switchPower = PINC&2;
 		if (RPiPower == RPI_OFF) {
-			uint8_t boot[4] = {124,92,92,120};
+			/* turn on the RPi */
 			turnOn_RPi();
 			RPiPower = RPI_BOOTING;
+			/* display "boot" */
+			uint8_t boot[4] = {124,92,92,120};
 			setDisplayTMx(0b11000100,boot);
+			setLedTMx8(100);
 		}
 		else if (RPiPower == RPI_ON) {
+			/* change PC0 to input with pull-up */
+			DDRC &= ~(0b00000001);
+			//PORTC |= 0b00000001;
+			/* now, we are shuting down the RPi */
 			RPiPower = RPI_SHUTING;
 			SPISend_header = 0b10000000;
+			/* display "OFF" */
+			uint8_t off[4] = {92,113,113,0};
+			clearTMx(0b11101100);
+			setDisplayTMx(0b11000100,off);
+			setLedTMx8(100);
 		}
 	}
 

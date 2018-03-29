@@ -4,3 +4,8 @@ First, the [micro-controller](ATtiny.md) and the [Raspberry Pi](RPi.md) were pow
 
 But, I was not safe to turn off directly the Raspberry Pi without shut it down (with commands like `shutdown`).
 So, now, the ATtiny is always on (powered by a dedicated 5v-to-3.3v converter), and command a mecanical relay ()
+
+
+## some links
+
+- [http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/raspberry-pi/on-off-power-controller](http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/raspberry-pi/on-off-power-controller)

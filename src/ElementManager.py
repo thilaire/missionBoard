@@ -147,6 +147,9 @@ class ElementManager:
 
 				# treat received data
 				if header&128:
+					# change GPIO24 in output
+					GPIO.setup(24, GPIO.OUT)
+					GPIO.output(24, 1)
 					# shutdown ask
 					logger.debug("Shutdown asked by the ATtiny")
 					#import os
