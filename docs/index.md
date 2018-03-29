@@ -27,6 +27,14 @@ So this is the plan: I will design something that can fit in a case, and this gi
 - [ ] Enjoy with the kids !
 
 
+# nice features of the project (that can be useful for other projects)
+
+- [safe switch for the raspberry pi](power.md)
+- [TM1637 and TM1638 library](TM163x.md)
+- [Over the air ATtiny programming](ATtiny.md) (the Raspberry Pi *is* the AVR programmer)
+- [Several digital input with only one pin](multiple-inputs.md)
+- ...
+
 # Few pictures of project in its current state
 
 ![bottom panel](photos/IMG_2284.JPG)

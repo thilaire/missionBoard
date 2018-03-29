@@ -51,7 +51,7 @@ class MissionBoard(ElementManager):
 		self.add('T6_LVL_2', 'fuel_spaceship', TMindex=7, number=1)
 		self.add('T6_LVL_3', 'oxygen', TMindex=7, number=2)
 		self.add('T6_SW3_1', 'water_pump', values=['off','toilets','bathroom'], TMindex=5, pins=[3,2])
-		self.add('T6_SW3_2', 'fuel_pump', values=['off','spaceship','rocket'], TMindex=5, pins=[4,5], onChange=self.fuel)
+		self.add('T6_SW3_2', 'fuel_pump', values=['off','spaceship','rocket'], TMindex=5, pins=[4,5])
 
 		# Panel T7: buttons 1
 		self.add('T7_SW2_1', 'turbo_gas', TMindex=6, pin=7, onChange=self.turbo)
@@ -78,7 +78,7 @@ class MissionBoard(ElementManager):
 
 		# Panel B1: start/mode
 		self.add('B1_SW3', 'gameMode', values=['computer', 'spaceship','games'], TMindex=4, pins=[0,1])
-		self.add('B1_LED','OnOff', TMindex=4, index=1)
+		#self.add('B1_LED','OnOff', TMindex=4, index=1)
 
 		# Panel B2: displays
 		self.add('B2_RGB', ['oxygen', 'electricity', 'takeoff', 'overspeed', 'gate1', 'automaticPilot', 'orbit', 'x', 'gate2',

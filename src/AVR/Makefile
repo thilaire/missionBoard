@@ -45,6 +45,8 @@ assembly: $(SRC:.c=.s)
 # (use ssh with public/private key, so as to do not have to type the password each time...)
 program: $(OUT).hex
 	scp $< $(HOST):.
+	@ssh -t $(HOST) 'echo 21 > /sys/class/gpio/export || true'
+	@ssh -t $(HOST) 'echo "out" > /sys/class/gpio/gpio21/direction || true'
 	@ssh -t $(HOST) 'echo 1 > /sys/class/gpio/gpio21/value'
 	ssh -t $(HOST) sudo avrdude -c linuxgpio -p $(DEVICE) -U flash:w:$< -v
 	@ssh -t $(HOST) sudo rmmod spi_bcm2835

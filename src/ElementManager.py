@@ -145,17 +145,23 @@ class ElementManager:
 				recv = self._spi.xfer(data)
 				SPIlogger.debug("Receive data %s", str(recv))
 
-				# manage the data sent back
-				if header&4:
-					Potval = recv[0]
-					index = header&3
-					SPIlogger.debug("Pot %d, value=%d",index,Potval)
-					POT.checkChanges(index, Potval)
-				if header&8:
-					TMval = recv[(header>>4)-1]
-					index = header&3
-					SPIlogger.debug("TM %d, value=%d",index,TMval)
-					Switch.checkChanges(index, TMval)
+				# treat received data
+				if header&128:
+					# shutdown ask
+					logger.debug("Shutdown asked by the ATtiny")
+					#import os
+					#os.system("sudo shutdown -h now")
+				else:
+					if header&4:
+						Potval = recv[0]
+						index = header&3
+						SPIlogger.debug("Pot %d, value=%d",index,Potval)
+						POT.checkChanges(index, Potval)
+					if header&8:
+						TMval = recv[(header>>4)-1]
+						index = header&3
+						SPIlogger.debug("TM %d, value=%d",index,TMval)
+						Switch.checkChanges(index, TMval)
 
 
 	async def _manageEvents(self):

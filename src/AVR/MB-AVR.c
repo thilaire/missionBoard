@@ -34,6 +34,15 @@ Copyright 2017-2018 T. Hilaire
 #include "ADC.h"
 
 
+/* constants and functions for powering the Raspberry Pi */
+#define RPI_OFF 0
+#define RPI_BOOTING 1
+#define RPI_ON 2
+#define RPI_SHUTING 3
+inline __attribute__((always_inline)) static void turnOn_RPi() { PORTD |= (1U<<4); }
+inline __attribute__((always_inline)) static void turnOff_RPi() { PORTD &= ~(1U<<4); }
+uint8_t RPiPower = RPI_OFF;     /* state of the Raspberry Pi power (see constants) */
+uint8_t switchPower = 0;        /* current state of the switch (to catch its change) */
 
 //debug
 extern const uint8_t NUMBER_FONT[];
@@ -135,6 +144,13 @@ ISR (SPI_STC_vect) {
 		SPISend_cycle++;
 	}
 
+	/* === Power === */
+	/* if we receive some data, it means that the RPi is running */
+	if (RPiPower < RPI_ON) {
+		RPiPower = RPI_ON;
+	}
+
+
 }
 
 
@@ -197,22 +213,44 @@ ISR (TIMER1_COMPA_vect  ) {
 			fillRGBBuffer(blinkCycle);
 			updateRGB();
 		}
+		/* check if the power LED need to blink */
+		if (RPiPower&1) {
+			setLedTMx8(68 | (blinkCycle&1)<<5); /* turn on or off the led T1_LED, according to blinkCycle */
+		}
+		/* update the blink cycle */
 		blinkCycle = (blinkCycle+1) & 15;   /* only the 4 LSB */
 	}
 
 	/* update SPI header and SPDR (next byte to be sent)*/
 	SPISend_header &= 0b11001111;
 	SPISend_header |= NB_BYTES[SPISend_header>>2];
-	SPDR = SPISend_header;
+
+	/* check if the power switch has changed (overset SPDR if necessary) */
+	if ((PINC&2) != switchPower) {
+		switchPower = PINC&2;
+		if (RPiPower == RPI_OFF) {
+			uint8_t boot[4] = {124,92,92,120};
+			turnOn_RPi();
+			RPiPower = RPI_BOOTING;
+			setDisplayTMx(0b11000100,boot);
+		}
+		else if (RPiPower == RPI_ON) {
+			RPiPower = RPI_SHUTING;
+			SPISend_header = 0b10000000;
+		}
+	}
 
 	/* pulse the Raspberry Pi if something has changed */
-	if (SPISend_header&0b00001100) {
+	if (SPISend_header&0b10001100) {
 		PORTC |= 1;
 		//_delay_us(1);
 		PORTC &= ~1;
 	}
+
 	/* next cycle */
 	cycle++;
+	/* update SPDR with the datat to be sent */
+	SPDR = SPISend_header;
 }
 
 
@@ -225,6 +263,13 @@ int main(void) {
 	/* configure the USI */
 	SPCR |= (1<<SPIE) | (1<<SPE);
 	SPDR = 0;   /* next byte to send */
+
+	/* powering the Raspberry Pi */
+	switchPower = PINC&2;
+	if (!switchPower) {
+		turnOn_RPi();
+		RPiPower = RPI_ON;
+	}
 
 	/* turn off the RGB leds */
 	_delay_ms(10);
@@ -247,6 +292,10 @@ int main(void) {
 	initADC();
 	runADC(0);
 
+	/* turn on the led T1_LED if the RPi is already running */
+	if (RPiPower == RPI_ON) {
+		setLedTMx8(100);
+	}
 
 	SPDR = 0;
 	//uint8_t clkMask = 0b00000111;
@@ -260,26 +309,5 @@ int main(void) {
 
 	/* enable interrupts and wait */
 	sei();
-
-	PORTD |= (1U<<4);
-	_delay_ms(500);
-	PORTD &= ~(1U<<4);
-
-	while(1)
-	{
-		if (PINC&2)
-		{
-			PORTD |= (1U<<4);
-			PORTC |= (1U<<7);
-		}
-		else
-		{
-			PORTD &= ~(1U<<4);
-			PORTC &= ~(1U<<7);
-		}
-		_delay_ms(100);
-	}
-
-
-	   /*TODO: idle mode? */
+	while(1);   /*TODO: idle mode? */
 }

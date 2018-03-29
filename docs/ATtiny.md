@@ -182,7 +182,11 @@ See the [APA106 documentation](APA106.md) for the blinking details (how to encod
 
 ## Communication between RPi and micro-controller (protocol)
 
-The communication between the Raspberry Pi is "simple". The RPi send a first byte, that indicates the command. This command may be followed by some data (up to 8 bytes).
+The communication between the Raspberry Pi is "simple". It is done through the SPI, plus one line (`GPIO 24` of the Raspberry Pi and `PC0` of the ATtiny) that is used by the micro-controller when it wants to send some data (IRQ-like).
+
+### RPi -> ATtiny
+
+The RPi send a first byte, that indicates the command. This command may be followed by some data (up to 8 bytes).
 The following table sums up the commands:
 
 |7|6|5|4|3|2|1|0|Details|Extra bytes|
@@ -225,6 +229,22 @@ The following table sums up the commands:
 |-|-|-|-|-|-|-|-|-|-|
 
 
+### ATtiny -> RPi
 
-to add:
-- acknowledgment for "turn off the RPi" command
+When the ATtiny wants to tell something (ie "some button has changed"), it first initiates the communication by putting RPi_IO24 up (and then down). Then, it can send its information (when the RPi send then `No operation` command (byte `0`)).
+The ATtiny first send a 1-byte header, and then the data (0, 1 or 2 bytes ).
+The following table sums up the header:
+
+| Bit | Information |
+|:---:|:-----------------:]
+| 7   | The RPi must shut down (0 extra byte sent after that) |
+| 4-5 | Give how many bytes are then sent (0,1 or 2) |
+| 3   | 1 if a TMx8 has changed |
+| 2   | 1 if a potentiometer has changed |
+| 0-1 | the index of the Potentionmeter/TMx8 that has changed |
+
+Example: 
+- `0b10000000` when the RPi must shut down
+- `0b00011010` when the TMx8 index 2 has changed (1 byte will follow: the corresponding data)
+- `0b00010100` when the Potentionmeter index 0 has changed (1 byte will follow: the value of this potentiometer)
+- `0b00111101` when the Potentiometer index 1 *and* the TMx8 index 1 has changed (so 2 bytes will follow, first the TMx8 data and then the potentiometer) 
