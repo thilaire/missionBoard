@@ -18,4 +18,4 @@ class LED(Element):
 
 	def __set__(self, obj, value):
 		"""Set the led (value is evaluated as a boolean)"""
-		self._EM.sendSPI([0b01000000 | self._TMindex | self._index << 2 | (1 << 5 if value else 0)])
+		self.sendSPI([0b01000000 | self._TMindex | self._index << 2 | (1 << 5 if value else 0)])

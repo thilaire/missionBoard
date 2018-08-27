@@ -31,3 +31,7 @@ class Element:
 	def setEM(cls, EM):
 		"""Used to set the MissionBoard object"""
 		cls._EM = EM
+
+	def sendSPI(self, data):
+		"""Simply call the sendSPI of the ElementManager"""
+		self._EM.sendSPI(data)
