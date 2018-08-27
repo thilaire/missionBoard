@@ -31,7 +31,7 @@ class POT(Element):
 		# assign its new value
 		Pot._value = value
 		# call onChange method (through Event Queue) for each switch
-		cls._MB.addEvent(Pot)
+		cls._EM.addEvent(Pot)
 
 
 	@property

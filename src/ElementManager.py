@@ -40,7 +40,7 @@ class ElementManager:
 
 	def __init__(self):
 		# save itself to ELement
-		Element.setMB(self)
+		Element.setEM(self)
 
 		# open SPI connection
 		self._spi = SpiDev()
@@ -152,8 +152,8 @@ class ElementManager:
 					GPIO.output(24, 1)
 					# shutdown ask
 					logger.debug("Shutdown asked by the ATtiny")
-					#import os
-					#os.system("sudo shutdown -h now")
+					import os
+					os.system("sudo shutdown -h now")
 				else:
 					if header&4:
 						Potval = recv[0]

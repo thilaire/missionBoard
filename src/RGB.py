@@ -69,9 +69,9 @@ class RGB(Element):
 		if self._inverted:
 			color = (color & 0x0000FF) | ((color & 0x00ff00) << 8) | ((color & 0xFF0000)>>8)
 		data = [self._pos,] + list(blink.to_bytes(2, byteorder='big')) + list(color.to_bytes(3, byteorder='big'))
-		self._MB.sendSPI(data)
+		self._EM.sendSPI(data)
 
 	@classmethod
 	def turnOff(cls):
 		"""Turn off all the RGB leds"""
-		cls._MB.sendSPI([0b00011111])
+		cls._EM.sendSPI([0b00011111])

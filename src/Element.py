@@ -10,7 +10,7 @@ class Element:
 	"""
 
 	_allElements = []   # list of all the created elements
-	_MB = None
+	_EM = None          # ElementManager
 
 	def __init__(self, keyname, name, onChange=None):
 		self._keyname = keyname
@@ -28,6 +28,6 @@ class Element:
 		return cls._allElements
 
 	@classmethod
-	def setMB(cls, MB):
+	def setEM(cls, EM):
 		"""Used to set the MissionBoard object"""
-		cls._MB = MB
+		cls._EM = EM

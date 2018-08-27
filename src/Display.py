@@ -21,7 +21,7 @@ class DISP(Element):
 		"""
 		input('Checking SSD %s'%str(self))
 		for i in range(10):
-			print('.',end='')
+			print('.', end='')
 			self.set((str(i)+'.')*4)
 			sleep(1)
 		self.set('')
@@ -44,20 +44,20 @@ class DISP(Element):
 			raise ValueError("Cannot assign the Display %s, the value should be %d characters",(str(self), self._size))
 		# send the command and the list of values
 		command = 0b11000000 + (1<<4 if self._size==8 else 0) + (self._block<<3) + self._TMindex
-		self._MB.sendSPI( [command,] + lv)
+		self._EM.sendSPI([command, ] + lv)
 
 
 	def setBrightness(self, brightness):
 		"""Set the brightness"""
-		self._MB.sendSPI( [0b10000000 | self._TMindex | (brightness&7)<<3])
+		self._EM.sendSPI( [0b10000000 | self._TMindex | (brightness & 7) << 3])
 
 	def off(self):
 		"""Turns off the display"""
-		self._MB.sendSPI([0b11100000 | self._TMindex])
+		self._EM.sendSPI([0b11100000 | self._TMindex])
 
 	def clear( self ):
 		"""Clear the display"""
-		self._MB.sendSPI([0b11101000 | self._TMindex])
+		self._EM.sendSPI([0b11101000 | self._TMindex])
 
 
 maskLevel = [48, 12, 3]
@@ -88,4 +88,4 @@ class LVL(Element):
 
 		# send the command and the list of values
 		command = 0b11001000 | self._TMindex
-		self._MB.sendSPI([command,] + self._values)
+		self._EM.sendSPI([command, ] + self._values)

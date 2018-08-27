@@ -39,7 +39,7 @@ class Switch(Element):
 			diff >>= 1
 		# call onChange method (through Event Queue) for each switch
 		for sw in lswitch:
-			cls._MB.addEvent(sw)
+			cls._EM.addEvent(sw)
 
 		cls._values[TMindex] = value
 
