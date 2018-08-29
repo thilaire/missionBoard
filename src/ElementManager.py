@@ -3,17 +3,12 @@
 from re import compile
 from spidev import SpiDev
 import RPi.GPIO as GPIO
-import asyncio
+from queue import Queue
 import logging
 
 
 
-#import uvloop
-#asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-
-
-
-# import UI elements (Leds, Buttons, Switches, etc.)
+# import UX elements (Leds, Buttons, Switches, etc.)
 from Element import Element
 from EventManager import EventManager
 from LED import LED
@@ -30,8 +25,10 @@ dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2, 'S
 # simple regex for Pxx_YYY_zzz or Pxx_YYY where P is `T` or `B`
 regElement = compile("[TB](\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
 
+# logger
 logger = logging.getLogger()
 SPIlogger = logging.getLogger('SPI')
+
 
 class ElementManager:
 	"""
@@ -47,9 +44,8 @@ class ElementManager:
 		self._spi.open(0,0)
 		self._spi.max_speed_hz = 100000 #122000
 
-		# prepare the asyncio loop and the queues
-		self._loop = asyncio.get_event_loop()
-		self._SPIqueue = asyncio.Queue(loop=self._loop)
+		# declare the SPI queue
+		self._SPIqueue = Queue()
 
 		# take the IO24 into consideration when AVR wants to communicate
 		GPIO.setwarnings(False)
@@ -57,8 +53,8 @@ class ElementManager:
 		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 		def sendZeroSpi(x):
 			logger.debug('IO24 Rising!')
-			self._loop.call_soon_threadsafe(self._SPIqueue.put_nowait, [0])
-		GPIO.add_event_detect(24, GPIO.RISING, callback=sendZeroSpi)      # send 0 into SPIQueue in a threadsafe way, see addEvent
+			self.sendSPI([0])
+		GPIO.add_event_detect(24, GPIO.RISING, callback=sendZeroSpi)
 
 
 	def runCheck(self):
@@ -71,13 +67,43 @@ class ElementManager:
 
 	def run(self, fct):
 		"""
-		Main loop (manage the different queues)
+		Infinite loop to send every message in the SPI queue to the ATtiny through the SPI
+		(a way to send one message at once)
 		"""
-		# run the
-		EventManager.runAll()
-		self._loop.run_until_complete(self._proceedSPIQueue())
-		# should never happened
-		self._loop.close()
+		while True:
+			# wait for data
+			data = self._SPIqueue.get()
+			# send the 1st byte
+			SPIlogger.debug("Send %s", str(data[0]))
+			header, = self._spi.xfer([data.pop(0)])
+			SPIlogger.debug("Receive Header= %s", str(header))
+			# add more byte if the AVR respond and want to send data
+			data.extend([0] * ((header >> 4) - len(data)))
+			if data:
+				SPIlogger.debug("Send %s", str(data))
+				recv = self._spi.xfer(data)
+				SPIlogger.debug("Receive data %s", str(recv))
+
+				# treat received data
+				if header & 128:
+					# change GPIO24 in output
+					GPIO.setup(24, GPIO.OUT)
+					GPIO.output(24, 1)
+					# shutdown ask
+					logger.debug("Shutdown asked by the ATtiny")
+					import os
+					os.system("sudo shutdown -h now")
+				else:
+					if header & 4:
+						Potval = recv[0]
+						index = header & 3
+						SPIlogger.debug("Pot %d, value=%d", index, Potval)
+						POT.checkChanges(index, Potval)
+					if header & 8:
+						TMval = recv[(header >> 4) - 1]
+						index = header & 3
+						SPIlogger.debug("TM %d, value=%d", index, TMval)
+						Switch.checkChanges(index, TMval)
 
 
 
@@ -126,46 +152,6 @@ class ElementManager:
 		SPIlogger.debug("send %s", str(data))
 		self._SPIqueue.put_nowait(data)
 
-
-	async def _proceedSPIQueue(self):
-		"""
-		Infinite loop to send every message in the SPI queue to the ATtiny through the SPI
-		(a way to send one message at once)
-		"""
-		while True:
-			# wait for data
-			data = await self._SPIqueue.get()
-			# send the 1st byte
-			SPIlogger.debug("Send %s", str(data[0]))
-			header, = self._spi.xfer([data.pop(0)])
-			SPIlogger.debug("Receive Header= %s", str(header))
-			# add more byte if the AVR respond and want to send data
-			data.extend([0] * ((header>>4) - len(data)))
-			if data:
-				SPIlogger.debug("Send %s", str(data))
-				recv = self._spi.xfer(data)
-				SPIlogger.debug("Receive data %s", str(recv))
-
-				# treat received data
-				if header&128:
-					# change GPIO24 in output
-					GPIO.setup(24, GPIO.OUT)
-					GPIO.output(24, 1)
-					# shutdown ask
-					logger.debug("Shutdown asked by the ATtiny")
-					import os
-					os.system("sudo shutdown -h now")
-				else:
-					if header & 4:
-						Potval = recv[0]
-						index = header & 3
-						SPIlogger.debug("Pot %d, value=%d", index, Potval)
-						POT.checkChanges(index, Potval)
-					if header & 8:
-						TMval = recv[(header >> 4)-1]
-						index = header & 3
-						SPIlogger.debug("TM %d, value=%d", index, TMval)
-						Switch.checkChanges(index, TMval)
 
 
 	def askATdata(self):

@@ -4,8 +4,6 @@
 Describe how the different buttons/displays are connected
 Define the different callbacks
 """
-from time import sleep
-from aioconsole import ainput
 import logging
 
 from EventManager import EventManager
@@ -15,6 +13,7 @@ from RGB import RED, YELLOW, GREEN, ORANGE, FAST, SLOW, BLACK, BLUE, RGB
 # logger
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+
 
 # some const
 NOT_YET_INIT = 1
@@ -141,6 +140,18 @@ class MissionBoard(ElementManager):
 		self._fuelSpaceship = 0
 
 
+		# then, start (initialize stuff)
+		RGB.turnOff()
+		self.DISP_counter.clear()
+		self.askATdata()
+
+		self.LED_OnOff = True
+		self.RGB_Go = RED, FAST
+		logger.debug('Start!')
+		self.DISP_counter = '01234567'
+
+
+
 	# altitude
 	@property
 	def altitude(self):
@@ -257,36 +268,12 @@ class MissionBoard(ElementManager):
 				# self.DISP_roll.setBrightness(elec)
 				# self.DISP_yaw.setBrightness(elec)
 			# set the RGB electricity led
-			self.RGB_electricity = GREEN if elec>2 else YELLOW if elec==2 else ORANGE if elec==1 else (RED,FAST)
+			self.RGB_electricity = GREEN if elec > 2 else YELLOW if elec == 2 else ORANGE if elec == 1 else (RED, FAST)
 			self._electricity = elec
-
-
-
-
-	async def start(self):
-		"""start !"""
-
-		RGB.turnOff()
-		self.askATdata()
-		self.DISP_counter.clear()
-
-		self.LED_OnOff = True
-		self.RGB_Go = RED,FAST
-		logger.debug('Start!')
-		self.DISP_counter = '01234567'
-
-		while True:
-			com = await ainput(">>>")
-			try:
-				exec(com)
-			except Exception as e:
-				print(e)
-
-
 
 
 
 # create the object and start it !
 if __name__ == '__main__':
 	MB = MissionBoard()
-	MB.run( MB.start)
+	MB.run()

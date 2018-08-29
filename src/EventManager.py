@@ -1,35 +1,33 @@
 # coding=utf-8
 
-import asyncio
+
 import logging
 import threading
+from queue import Queue
 
 logger = logging.getLogger()
 
+
+
+
 class EventManager:
+	"""Encompass queue and worker function
+	TODO: maybe not necessary to put it in one class..."""
 	_listOfEvents = []
 
 	def __init__(self, fct):
-		self._loop = asyncio.new_event_loop()
-		asyncio.set_event_loop(self._loop)
-		self._queue = asyncio.Queue(loop=self._loop)
+		self._queue = Queue()
 		self._fct = fct
 		self._listOfEvents.append(self)
 
 
-	def runLoop(self):
-		"""run the asyncio loop associated"""
-		self._loop.run_until_complete(self._proceedQueue())
-		# should never happened
-		self._loop.close()
-
-
-	async def _proceedQueue(self):
-		logger.debug("Launch _proceedQueue %s", self._fct.__name__)
+	def waitEvent(self):
+		logger.debug("Launch waitEvent %s", self._fct.__name__)
 		while True:
-			btn = await self._queue.get()
+			btn = self._queue.get()
 			logger.debug("Receive '%s' in '%s' queue", str(btn), self._fct.__name__)
 			self._fct(btn)
+			self._queue.task_done()     # useless, here
 
 
 	def notify(self, btn):
@@ -41,7 +39,7 @@ class EventManager:
 		https://stackoverflow.com/questions/32889527/is-there-a-way-to-use-asyncio-queue-in-multiple-threads
 		"""
 		logger.debug("addEvent: btn=%s", str(btn))
-		self._loop.call_soon_threadsafe(self._queue.put_nowait(btn))
+		self._queue.put_nowait(btn)
 
 
 	@classmethod
