@@ -9,15 +9,15 @@ class PB(Element):
 	"""
 	Push Button class
 	"""
-	def __init__(self, keyname, name, gpio, onChange = None):
-		super(PB, self).__init__(keyname, name, onChange)
+	def __init__(self, keyname, name, gpio, event=None):
+		super(PB, self).__init__(keyname, name, event)
 		self._gpio = gpio
 		self._value = False
 
 		# configure the pin for input, with pull-up
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.add_event_detect(gpio, GPIO.FALLING, callback=lambda x:self._EM.addEvent(self) , bouncetime=100)
+		GPIO.add_event_detect(gpio, GPIO.FALLING, callback=self.notify, bouncetime=100)
 
 
 	@property

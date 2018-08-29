@@ -12,10 +12,10 @@ class Element:
 	_allElements = []   # list of all the created elements
 	_EM = None          # ElementManager
 
-	def __init__(self, keyname, name, onChange=None):
+	def __init__(self, keyname, name, event=None):
 		self._keyname = keyname
 		self._name = name
-		self._onChange = onChange
+		self._eventM = event
 		self._allElements.append(self)
 
 
@@ -35,3 +35,8 @@ class Element:
 	def sendSPI(self, data):
 		"""Simply call the sendSPI of the ElementManager"""
 		self._EM.sendSPI(data)
+
+	def notify(self):
+		"""notify the eventmanager that something changes for this object"""
+		if self._eventM:
+			self._eventM.notify(self)

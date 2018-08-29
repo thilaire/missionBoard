@@ -10,9 +10,9 @@ class POT(Element):
 
 	_all = {}   # list of potentiometers
 
-	def __init__(self, keyname, name, index, onChange=None):
+	def __init__(self, keyname, name, index, event=None):
 		# init super class
-		super(POT, self).__init__(keyname, name, onChange)
+		super(POT, self).__init__(keyname, name, event)
 		# register in the dictionnary of switches
 		self._all[index] = self
 		self._index = index
@@ -30,8 +30,8 @@ class POT(Element):
 			return  #TODO: should not happen, do something ?
 		# assign its new value
 		Pot._value = value
-		# call onChange method (through Event Queue) for each switch
-		cls._EM.addEvent(Pot)
+		# notify the Potentiometer that its value changes
+		Pot.notify()
 
 
 	@property

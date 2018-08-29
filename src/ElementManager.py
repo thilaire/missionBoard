@@ -4,7 +4,6 @@ from re import compile
 from spidev import SpiDev
 import RPi.GPIO as GPIO
 import asyncio
-import types
 import logging
 
 
@@ -16,6 +15,7 @@ import logging
 
 # import UI elements (Leds, Buttons, Switches, etc.)
 from Element import Element
+from EventManager import EventManager
 from LED import LED
 from Display import DISP, LVL
 from PushButton import PB
@@ -50,7 +50,6 @@ class ElementManager:
 		# prepare the asyncio loop and the queues
 		self._loop = asyncio.get_event_loop()
 		self._SPIqueue = asyncio.Queue(loop=self._loop)
-		self._EventQueue = asyncio.Queue(loop=self._loop)
 
 		# take the IO24 into consideration when AVR wants to communicate
 		GPIO.setwarnings(False)
@@ -74,7 +73,9 @@ class ElementManager:
 		"""
 		Main loop (manage the different queues)
 		"""
-		self._loop.run_until_complete(asyncio.gather(self._proceedSPIQueue(), self._manageEvents(), fct()))
+		# run the
+		EventManager.runAll()
+		self._loop.run_until_complete(self._proceedSPIQueue())
 		# should never happened
 		self._loop.close()
 
@@ -104,7 +105,7 @@ class ElementManager:
 				raise ValueError("An element with the same name (%s) already exists", name)
 			# add this as an attribute
 			setattr(self.__class__, elementType+'_'+name, dictOfElements[elementType](keyname, name, **args))
-			logger.debug("Add `%s_%s` to ElementManager",elementType,name)
+			logger.debug("Add `%s_%s` to ElementManager", elementType, name)
 		else:
 			if 'pos' not in args:
 				args['pos'] = 0
@@ -155,41 +156,16 @@ class ElementManager:
 					import os
 					os.system("sudo shutdown -h now")
 				else:
-					if header&4:
+					if header & 4:
 						Potval = recv[0]
-						index = header&3
-						SPIlogger.debug("Pot %d, value=%d",index,Potval)
+						index = header & 3
+						SPIlogger.debug("Pot %d, value=%d", index, Potval)
 						POT.checkChanges(index, Potval)
-					if header&8:
-						TMval = recv[(header>>4)-1]
-						index = header&3
-						SPIlogger.debug("TM %d, value=%d",index,TMval)
+					if header & 8:
+						TMval = recv[(header >> 4)-1]
+						index = header & 3
+						SPIlogger.debug("TM %d, value=%d", index, TMval)
 						Switch.checkChanges(index, TMval)
-
-
-	async def _manageEvents(self):
-		"""
-		Infinite loop to manage the events in the Event Queue
-		(the queue contains directly the PB objects)
-		"""
-		while True:
-			# wait for event
-			element = await self._EventQueue.get()
-			# process the event
-			if element._onChange is not None:
-				logger.debug("Event onChange for %s", str(element))
-				await element._onChange(element)
-
-
-	def addEvent(self, obj):
-		"""Simply add the object in the Event Queue
-		the put_nowait is done in the same thread as the loop with call_soon_threadsafe
-		addEvent is called by a RPi.GIPIO callback, that is in another thread, see
-		https://raspberrypi.stackexchange.com/questions/54514/implement-a-gpio-function-with-a-callback-calling-a-asyncio-method
-		and
-		https://stackoverflow.com/questions/32889527/is-there-a-way-to-use-asyncio-queue-in-multiple-threads
-		"""
-		self._loop.call_soon_threadsafe(self._EventQueue.put_nowait, obj)
 
 
 	def askATdata(self):

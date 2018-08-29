@@ -13,9 +13,9 @@ class Switch(Element):
 	_all = {}     # keep track of the SW object, according to their (TMindex,pin)
 	_values = {0: 0, 1: 0, 2: 0, 3: 0}    # keep track of the values
 
-	def __init__(self, keyname, name, TMindex, pins, onChange=None):
+	def __init__(self, keyname, name, TMindex, pins, event=None):
 		# init super class
-		super(Switch, self).__init__(keyname, name, onChange)
+		super(Switch, self).__init__(keyname, name, event)
 		# register in the dictionnary of switches
 		for pin in pins:
 			self._all[(TMindex-4,pin)] = self       # TMindex-4 because TMx7 doesn't count, here
@@ -29,17 +29,17 @@ class Switch(Element):
 		# check for each bit that differ
 		lswitch = []    # list of switches that have changed
 		for i in range(8):
-			if diff&1:
+			if diff & 1:
 				# get the corresponding switch
-				switch = cls._all.get((TMindex,i))
+				switch = cls._all.get((TMindex, i))
 				if switch:
 					# add it the list of switches that have changed (if it is not yet in)
 					if switch not in lswitch:
 						lswitch.append(switch)
 			diff >>= 1
-		# call onChange method (through Event Queue) for each switch
+		# notify each switch (it uses the queue of the eventManager associated)
 		for sw in lswitch:
-			cls._EM.addEvent(sw)
+			sw.notify()
 
 		cls._values[TMindex] = value
 
@@ -53,9 +53,9 @@ class SW2(Switch):
 	2-position switches
 	"""
 
-	def __init__(self, keyname, name, TMindex, pin, values=['off','on'], onChange=None):
+	def __init__(self, keyname, name, TMindex, pin, values=['off','on'], event=None):
 		# init super class
-		super(SW2, self).__init__(keyname, name, TMindex, [pin], onChange)
+		super(SW2, self).__init__(keyname, name, TMindex, [pin], event)
 		self._pin = pin
 		self._valueNames = list(values)
 
@@ -81,9 +81,9 @@ class SW3(Switch):
 	3-position switches
 	"""
 
-	def __init__(self, keyname, name, values, TMindex, pins, onChange=None):
+	def __init__(self, keyname, name, values, TMindex, pins, event=None):
 		# init super class
-		super(SW3, self).__init__(keyname, name, TMindex, pins, onChange)
+		super(SW3, self).__init__(keyname, name, TMindex, pins, event)
 		self._pins = pins
 		self._valueNames = values
 
