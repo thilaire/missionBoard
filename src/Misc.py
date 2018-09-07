@@ -110,9 +110,11 @@ class FuelPump(ThreadedLoop):
 		self.add('T6_LVL_2', 'spaceship', TMindex=7, number=1)
 		self.add('T6_SW3_2', 'pump', values=['off', 'spaceship', 'rocket'], TMindex=5, pins=[4, 5])
 		# sound
-		# self.sound = Sound(SoundPath + "fuel.wav")
+		self.sound = Sound(SoundPath + "fuel.wav")
 		# levels
 		self.fuel = [0, 0, 0]       # [ x, spaceship fuel, rocket fuel ]
+		self.rocket = 0
+		self.spaceship = 0
 
 	def onEvent(self, e):
 		"""Manage changes for the pump buttons (water, oxygen and fuel)"""
@@ -131,13 +133,13 @@ class FuelPump(ThreadedLoop):
 					self.runTimer('FUEL PUMP', 5 if self.fuel[self.pump.value] < 8 else 10)
 				else:
 					# stop the sound
-					# TODO: self.sound.stop()
+					self.sound.fadeout(100)
 					pass
 		# the fuel button has been changed
 		elif e == self.pump and self.EM.state == 'ground':
 			if e.valueName != 'off':
 				# play sound in loop (until stop)
-				# TODO: self.sound.play(loop=-1)
+				self.sound.play(loops=-1, fade_ms=100)
 				# run the timer to increase the level in 5 (or 10) seconds
 				self.runTimer('FUEL PUMP', 5 if self.fuel[self.pump.value] < 8 else 10)
 
@@ -150,7 +152,7 @@ class WaterPump(ThreadedLoop):
 		# elements
 		# sounds
 		self.toilets = Sound(SoundPath + "toilets.wav")
-		self.bathroom = Sound(SoundPath + "water.wav")
+		self.bathroom = Sound(SoundPath + "bathroom.wav")
 		# levels
 		self.add('T6_SW3_1', 'pump', values=['off', 'toilets', 'bathroom'], TMindex=5, pins=[3, 2])
 
@@ -159,6 +161,6 @@ class WaterPump(ThreadedLoop):
 		if e == 'toilets':
 			self.toilets.play()
 		elif e == 'bathroom':
-			self.bathroom.play(loop=-1)
+			self.bathroom.play(loops=-1, fade_ms=100)
 		else:
-			self.bathroom.stop()
+			self.bathroom.fadeout(100)
