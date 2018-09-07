@@ -91,8 +91,9 @@ class ThreadedLoop:
 
 	def runTimer(self, name, duration):
 		"""add a timer (duration in seconds)"""
-		if name in self._timers:
-			raise ValueError("A timer with the same name ('%s') already exist in %s", name, self.onEvent.__name__)
+		# if name in self._timers:
+		#	raise ValueError("A timer with the same name ('%s') already exist in %s", name, self.onEvent.__name__)
+		# -> if the timer already exists, its duration is replaced
 		self._timers[name] = duration
 
 
