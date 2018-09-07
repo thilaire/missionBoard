@@ -1,7 +1,6 @@
 # coding=utf-8
 
 from Element import Element
-from time import sleep
 
 
 class LED(Element):
@@ -12,7 +11,7 @@ class LED(Element):
 
 	def __init__(self, keyname, name, TMindex, index):
 		super(LED, self).__init__(keyname, name)
-		self._TMindex = TMindex&3
+		self._TMindex = TMindex & 3
 		self._index = index
 
 

@@ -1,8 +1,6 @@
 # coding=utf-8
 
 
-#TODO: replace with namedTuple ???
-
 class Element:
 	"""
 	Main class for all the elements

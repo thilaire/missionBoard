@@ -1,7 +1,6 @@
 # coding=utf-8
 
 from Element import Element
-from time import sleep
 import RPi.GPIO as GPIO
 
 

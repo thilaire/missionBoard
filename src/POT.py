@@ -25,9 +25,9 @@ class POT(Element):
 		# get the concerned potentiometer
 		try:
 			Pot = cls._all[index]
-		except:
+		except IndexError:
 			print("INDEX="+str(index))
-			return  #TODO: should not happen, do something ?
+			return  # TODO: should not happen, do something ? Remove the try/except ?
 		# assign its new value
 		Pot._value = value
 		# notify the Potentiometer that its value changes

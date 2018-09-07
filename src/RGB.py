@@ -54,9 +54,9 @@ class RGB(Element):
 		if isinstance(value, int):
 			color = value
 			blink = 0xFFFF  # no blink
-		elif len(value)==2:
-			color,blink = value
-		elif len(value)==3:
+		elif len(value) == 2:
+			color, blink = value
+		elif len(value) == 3:
 			color, blink, offset = value
 			if offset is True:
 				blink = ~blink
@@ -67,7 +67,7 @@ class RGB(Element):
 
 		# convert it to list of bytes, and send it
 		if self._inverted:
-			color = (color & 0x0000FF) | ((color & 0x00ff00) << 8) | ((color & 0xFF0000)>>8)
+			color = (color & 0x0000FF) | ((color & 0x00ff00) << 8) | ((color & 0xFF0000) >> 8)
 		data = [self._pos, ] + list(blink.to_bytes(2, byteorder='big')) + list(color.to_bytes(3, byteorder='big'))
 		self.sendSPI(data)
 

@@ -1,15 +1,15 @@
 # coding=utf-8
 
 
-from spidev import SpiDev
-import RPi.GPIO as GPIO
-from queue import Queue
 import logging
+from queue import Queue
+from spidev import SpiDev
+
+import RPi.GPIO as GPIO
 
 from Element import Element
 from POT import POT
 from Switches import Switch
-
 
 # logger
 logger = logging.getLogger()
@@ -31,8 +31,8 @@ class ElementManager:
 
 		# open SPI connection
 		self._spi = SpiDev()
-		self._spi.open(0,0)
-		self._spi.max_speed_hz = 100000 #122000
+		self._spi.open(0, 0)
+		self._spi.max_speed_hz = 100000     # 122000
 
 		# declare the SPI queue
 		self._SPIqueue = Queue()
@@ -41,20 +41,10 @@ class ElementManager:
 		GPIO.setwarnings(False)
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		def sendZeroSpi(x):
-			logger.debug('IO24 Rising!')
-			self.sendSPI([0])
-		GPIO.add_event_detect(24, GPIO.RISING, callback=sendZeroSpi)
+		GPIO.add_event_detect(24, GPIO.RISING, callback=lambda _: self.sendSPI([0]))    # send 0 to SPI when IO24 is rising
 
 		# create the different loops (on object per class give)
 		self._loops = [c(self) for c in loops]
-
-	def runCheck(self):
-		"""
-		check the system, item per item
-		"""
-		for e in Element.getAll():
-			e.runCheck()
 
 	def start(self):
 		"""fct to be overloaded
@@ -92,8 +82,8 @@ class ElementManager:
 					GPIO.output(24, 1)
 					# shutdown ask
 					logger.debug("Shutdown asked by the ATtiny")
-					import os
-					#os.system("sudo shutdown -h now")
+					# import os
+					# os.system("sudo shutdown -h now")
 				else:
 					if header & 4:
 						Potval = recv[0]

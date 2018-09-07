@@ -16,9 +16,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)
 
 class Laser(ThreadedLoop):
 	"""Manage the laser"""
-	def __init__(self, MB):
+	def __init__(self, EM):
 		"""create the buttons, LEDs, etc."""
-		super(Laser, self).__init__(MB)
+		super(Laser, self).__init__(EM)
 		# buttons
 		self.add('B3_SW2_0', 'armed', values=['disarmed', 'armed'], TMindex=7, pin=4)
 		self.add('B3_SW2_1', 'color', values=['blue', 'red'], TMindex=4, pin=7)
@@ -68,9 +68,9 @@ class Laser(ThreadedLoop):
 
 class Light(ThreadedLoop):
 	"""Manage the lights inside/outside the spaceship"""
-	def __init__(self, MB):
+	def __init__(self, EM):
 		"""create the buttons, LEDs, etc."""
-		super(Light, self).__init__(MB)
+		super(Light, self).__init__(EM)
 		self.add('T8_SW2_1', 'cabin', TMindex=6, pin=5)
 		self.add('T8_LED_1', 'LED_cabin', TMindex=5, index=2)
 		self.add('T8_SW2_2', 'outside', TMindex=6, pin=4)
@@ -88,16 +88,16 @@ class Light(ThreadedLoop):
 
 class Gates(ThreadedLoop):
 	"""Manage the gates"""
-	def __init__(self, MB):
+	def __init__(self, EM):
 		"""create the buttons, LEDs, etc."""
-		super(Gates, self).__init__(MB)
+		super(Gates, self).__init__(EM)
 		self.add('B2_RGB', 'gate1', pos=5, inverted=True)
 		self.add('B2_RGB', 'gate2', pos=9, inverted=True)
 		self.add('T7_SW3', 'gates', values=['closed', 'gate1', 'gate2'], TMindex=5, pins=[0, 1])
 		
 	def onEvent(self, e):
 		"""Manage changes for the gate switches"""
-		#TODO: gérer le son et le timing (3s pour fermer la porte, les boutons inopérants, etc.)
+		# TODO: gérer le son et le timing (3s pour fermer la porte, les boutons inopérants, etc.)
 		if self.EM.electricity > 0:
 			if e == 'gate1':
 				self.gate1 = YELLOW  # we come from 'closed', so gate2 is supposed to be BLACK
@@ -110,9 +110,9 @@ class Gates(ThreadedLoop):
 
 class Turbo(ThreadedLoop):
 	"""Manage the turbo"""
-	def __init__(self, MB):
+	def __init__(self, EM):
 		"""create the buttons, LED, etc."""
-		super(Turbo, self).__init__(MB)
+		super(Turbo, self).__init__(EM)
 		self.add('T7_SW2_1', 'gas', TMindex=6, pin=7, event=self)
 		self.add('T7_LED_1', 'LED_gas', TMindex=5, index=0)
 		self.add('T7_SW2_2', 'boost', TMindex=6, pin=6, event=self)
@@ -121,7 +121,7 @@ class Turbo(ThreadedLoop):
 	def onEvent(self, e):
 		"""Manage changes for the turbo buttons"""
 		# adjust the LEDs according to the switches
-		logger.debug("onEvent Turbo %s",e)
+		logger.debug("onEvent Turbo %s", e)
 		if e is self.gas:
 			self.LED_gas = e.value
 		if e is self.boost:
@@ -132,9 +132,9 @@ class Turbo(ThreadedLoop):
 
 class Electricity(ThreadedLoop):
 	"""Manage the electricity (buttons and displays)"""
-	def __init__(self, MB):
+	def __init__(self, EM):
 		"""create the buttons, LED, etc."""
-		super(Electricity, self).__init__(MB)
+		super(Electricity, self).__init__(EM)
 		self.add('T8_SW2_3', 'solar', TMindex=6, pin=2)
 		self.add('T8_LED_3', 'LED_solar', TMindex=5, index=4)
 		self.add('T8_SW2_4', 'battery', TMindex=6, pin=1)
@@ -270,14 +270,14 @@ class MissionBoard(ElementManager):
 		"""start function (initialize the displays)"""
 		# init the display
 		RGB.turnOff()
-		#self.DISP_counter.clear()
+		# self.DISP_counter.clear()
 		self.askATdata()
-		#self.LED_OnOff = True
-		#self.RGB_Go = RED, FAST
+		# self.LED_OnOff = True
+		# self.RGB_Go = RED, FAST
 		logger.debug('Start!')
-		#self.DISP_counter = '01234567'
-		#self.DISP_altitude = '01234567'
-		#self.LVL_oxygen = 7
+		# self.DISP_counter = '01234567'
+		# self.DISP_altitude = '01234567'
+		# self.LVL_oxygen = 7
 
 
 # create the main object and start it !

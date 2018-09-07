@@ -5,21 +5,21 @@ import logging
 from threading import Thread
 from time import clock
 from queue import Queue, Empty
-
+from re import compile
 
 # import UX elements (Leds, Buttons, Switches, etc.)
 from LED import LED
 from Display import DISP, LVL
 from PushButton import PB
 from RGB import RGB
-from Switches import Switch, SW2, SW3
+from Switches import SW2, SW3
 from POT import POT
 
 # dictionary of possible elements
 dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2, 'SW3': SW3, 'POT': POT, 'LVL': LVL}
 
 # simple regex for Pxx_YYY_zzz or Pxx_YYY where P is `T` or `B`
-from re import compile
+
 regElement = compile("[TB](\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
 
 
@@ -35,7 +35,7 @@ class ThreadedLoop:
 		self._timers = {}               # dictionary: timerName -> duration (in seconds)
 		self._lastEventTime = 0         # time of the last event
 
-	def onEvent(self,e):
+	def onEvent(self, e):
 		"""method called when an event (timer, button) occurs
 		is overload by inherited class"""
 		pass
@@ -91,7 +91,7 @@ class ThreadedLoop:
 	def runTimer(self, name, duration):
 		"""add a timer (duration in seconds)"""
 		if name in self._timers:
-			raise ValueError("A timer with the same name ('%s') already exist in %s", name, self._fct.__name__)
+			raise ValueError("A timer with the same name ('%s') already exist in %s", name, self.onEvent.__name__)
 		self._timers[name] = duration
 
 

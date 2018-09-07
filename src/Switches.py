@@ -5,6 +5,7 @@ from Element import Element
 import logging
 logger = logging.getLogger()
 
+
 class Switch(Element):
 	"""
 	switches (including SW2, SW3 and ROT3)
@@ -18,7 +19,7 @@ class Switch(Element):
 		super(Switch, self).__init__(keyname, name, event)
 		# register in the dictionnary of switches
 		for pin in pins:
-			self._all[(TMindex-4,pin)] = self       # TMindex-4 because TMx7 doesn't count, here
+			self._all[(TMindex-4, pin)] = self       # TMindex-4 because TMx7 doesn't count, here
 		self._TMindex = TMindex-4
 
 
@@ -43,17 +44,13 @@ class Switch(Element):
 
 		cls._values[TMindex] = value
 
-	@property
-	def valueName(self):
-		return self._valueNames[self.value]
-
 
 class SW2(Switch):
 	"""
 	2-position switches
 	"""
 
-	def __init__(self, keyname, name, TMindex, pin, values=['off','on'], event=None):
+	def __init__(self, keyname, name, TMindex, pin, values=('off', 'on'), event=None):
 		# init super class
 		super(SW2, self).__init__(keyname, name, TMindex, [pin], event)
 		self._pin = pin
@@ -62,7 +59,7 @@ class SW2(Switch):
 	@property
 	def value(self):
 		"""Get the value"""
-		return bool( (self._values[self._TMindex] >> self._pin) & 1 )
+		return bool((self._values[self._TMindex] >> self._pin) & 1)
 
 	def __eq__(self, other):
 		"""Compare to string in _values"""
@@ -70,7 +67,7 @@ class SW2(Switch):
 		if isinstance(other, str):
 			if other not in self._valueNames:
 				return False
-				#raise ValueError("The SW2 %s can only be compared to %s", str(self), str(self._valueNames))
+				# raise ValueError("The SW2 %s can only be compared to %s", str(self), str(self._valueNames))
 			# return comparison
 			return self._valueNames[(self._values[self._TMindex] >> self._pin) & 1] == other
 		else:
@@ -91,8 +88,8 @@ class SW3(Switch):
 	@property
 	def value(self):
 		"""Get the value"""
-		val = self._values[self._TMindex] & (1<<self._pins[0] | 1<<self._pins[1])
-		return 0 if val == 0 else (1 if val == 1<<self._pins[0] else 2)
+		val = self._values[self._TMindex] & (1 << self._pins[0] | 1 << self._pins[1])
+		return 0 if val == 0 else (1 if val == 1 << self._pins[0] else 2)
 
 
 	def __eq__(self, other):

@@ -1,7 +1,6 @@
 # coding=utf-8
 
 from Element import Element
-from time import sleep
 from Font import FONT
 
 
@@ -11,22 +10,10 @@ class DISP(Element):
 	"""
 	def __init__(self, keyname, name, TMindex, block, size):
 		super(DISP, self).__init__(keyname, name)
-		self._TMindex = TMindex&7
+		self._TMindex = TMindex & 7
 		self._block = block     # 0 or 1
 		self._size = size       # 4 or 8
 		self._value = ''        # TODO: useful ?
-
-	def runCheck ( self ):
-		"""
-		prints '0.0.0.0' to '9.9.9.9' to test the SSD
-		"""
-		input('Checking SSD %s'%str(self))
-		for i in range(10):
-			print('.', end='')
-			self.set((str(i)+'.')*4)
-			sleep(1)
-		self.set('')
-		print('Done')
 
 	def __set__(self, instance, value):
 		self._value = value
@@ -42,15 +29,15 @@ class DISP(Element):
 				lv.append(FONT[c])
 		# check if the size of the list
 		if len(lv) != self._size:
-			raise ValueError("Cannot assign the Display %s, the value should be %d characters",(str(self), self._size))
+			raise ValueError("Cannot assign the Display %s, the value should be %d characters", (str(self), self._size))
 		# send the command and the list of values
-		command = 0b11000000 + (1<<4 if self._size==8 else 0) + (self._block<<3) + self._TMindex
+		command = 0b11000000 + (1 << 4 if self._size == 8 else 0) + (self._block << 3) + self._TMindex
 		self.sendSPI([command, ] + lv)
 
 
 	def setBrightness(self, brightness):
 		"""Set the brightness"""
-		self.sendSPI( [0b10000000 | self._TMindex | (brightness & 7) << 3])
+		self.sendSPI([0b10000000 | self._TMindex | (brightness & 7) << 3])
 
 	def off(self):
 		"""Turns off the display"""
@@ -83,7 +70,7 @@ class LVL(Element):
 		# build the bytes to send
 		byte = (1 << value) - 1
 		self._values[self._number] = byte >> 2  # all the bytes up to
-		self._values[3] = ( (byte&3) << (2*(2-self._number)) ) | ( self._values[3] & (~(3<<(2*(2-self._number)))) )
+		self._values[3] = ((byte & 3) << (2*(2-self._number))) | (self._values[3] & (~(3 << (2*(2-self._number)))))
 
 		# send the command and the list of values
 		command = 0b11001000 | self._TMindex
