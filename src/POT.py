@@ -22,10 +22,11 @@ class POT(Element):
 
 	@classmethod
 	def checkChanges(cls, index, value):
+		"""Check which potentiometer has changed, and notify it"""
 		# get the concerned potentiometer
 		try:
 			Pot = cls._all[index]
-		except IndexError:
+		except KeyError:
 			print("INDEX="+str(index))
 			return  # TODO: should not happen, do something ? Remove the try/except ?
 		# assign its new value
