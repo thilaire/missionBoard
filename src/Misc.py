@@ -134,7 +134,7 @@ class FuelPump(ThreadedLoop):
 				else:
 					# stop the sound
 					self.sound.fadeout(100)
-					pass
+
 		# the fuel button has been changed
 		elif e == self.pump and self.EM.state == 'ground':
 			if e.valueName != 'off':
@@ -142,6 +142,10 @@ class FuelPump(ThreadedLoop):
 				self.sound.play(loops=-1, fade_ms=100)
 				# run the timer to increase the level in 5 (or 10) seconds
 				self.runTimer('FUEL PUMP', 5 if self.fuel[self.pump.value] < 8 else 10)
+			else:
+				# stop the sound
+				self.sound.fadeout(100)
+
 
 
 class WaterPump(ThreadedLoop):
