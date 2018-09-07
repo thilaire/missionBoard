@@ -5,137 +5,20 @@ Describe how the different buttons/displays are connected
 Define the different event loop (callbacks)
 """
 import pygame
-from pygame.mixer import Sound
 import logging
 
 from RGB import RED, YELLOW, GREEN, ORANGE, FAST, SLOW, BLACK, BLUE, RGB, NOBLINK
 from ElementManager import ElementManager
 from ThreadedLoop import ThreadedLoop
+from Elec import Electricity, Light
+from Misc import Laser, FuelPump, Gates
+
 
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+
 pygame.init()
-SoundPath = "../sound/"
 
-
-class Laser(ThreadedLoop):
-	"""Manage the laser"""
-	def __init__(self, EM):
-		"""create the buttons, LEDs, etc."""
-		super(Laser, self).__init__(EM)
-		# buttons
-		self.add('B3_SW2_0', 'armed', values=['disarmed', 'armed'], TMindex=7, pin=4)
-		self.add('B3_SW2_1', 'color', values=['blue', 'red'], TMindex=4, pin=7)
-		self.add('B8_PB_6', 'fire', gpio=2)
-		# LED
-		self.add('B8_RGB', 'RGB', pos=18, inverted=True)
-		# intern variables
-		self._laserFired = False
-
-	def onEvent(self, e):
-		"""Manage event in the switches, timer, etc."""
-		# # modify the RGB led according to the status
-		# if self._electricity > 0:
-		# 	# change the state according to the event
-		# 	if e == self.armed:
-		# 		self._state = LASER_ARMED if self.armed else LASER_UNARMED
-		# 	elif e == self.fire and LASER_ARMED:
-		# 		self._state = LASER_FIRED
-		# 		# play sound
-		# 		self.runTimer('FIRE', 5)
-		# 	elif e == 'FIRE':   # end of timer
-		# 		self._state = LASER_ARMED
-		# 	# set the RGB according to the state
-		# 	if self._state == LASER_ARMED:
-		# 		self.RGB = (RED if self.color == 'red' else BLUE), FAST
-		# 	elif self._state == LASER_FIRED:
-		# 		self.RGB = (RED if self.color == 'red' else BLUE), SLOW
-		# 	else:
-		# 		self.RGB = BLACK
-		# else:
-		# 	self.RGB = BLACK
-
-		if self.EM.electricity > 0:
-			if e == 'FIRE':
-				self._laserFired = False
-			if self.armed == 'armed':
-				self.RGB = (RED if self.color == 'red' else BLUE), (SLOW if self._laserFired else FAST)
-				if e is self.fire:
-					self._laserFired = True
-					# play sound
-					self.runTimer('FIRE', 5)
-			else:
-				self.RGB = BLACK
-		else:
-			self.RGB = BLACK
-
-
-class Light(ThreadedLoop):
-	"""Manage the lights inside/outside the spaceship"""
-	def __init__(self, EM):
-		"""create the buttons, LEDs, etc."""
-		super(Light, self).__init__(EM)
-		self.add('T8_SW2_1', 'cabin', TMindex=6, pin=5)
-		self.add('T8_LED_1', 'LED_cabin', TMindex=5, index=2)
-		self.add('T8_SW2_2', 'outside', TMindex=6, pin=4)
-		self.add('T8_LED_2', 'LED_outside', TMindex=5, index=3)
-
-	def onEvent(self, e):
-		"""Manage changes for the light switches"""
-		# adjust the LEDs according to the switches
-		if e is self.cabin:
-			self.LED_cabin = e.value
-		if e is self.outside:
-			self.LED_outside = e.value
-
-
-
-class Gates(ThreadedLoop):
-	"""Manage the gates"""
-	def __init__(self, EM):
-		"""create the buttons, LEDs, etc."""
-		super(Gates, self).__init__(EM)
-		self.add('B2_RGB', 'gate1', pos=5, inverted=True)
-		self.add('B2_RGB', 'gate2', pos=9)
-		self.add('T7_SW3', 'gates', values=['closed', 'gate1', 'gate2'], TMindex=5, pins=[0, 1])
-
-		self.soundOpen = Sound(SoundPath + "../sound/openGate.wav")
-		self.soundClose = Sound(SoundPath + "closeGate.wav")
-		self.gateMoving = False     # True if a gate is moving
-		self.state = 'closed'
-		self.error = False
-		
-	def onEvent(self, e):
-		"""Manage changes for the gate switches"""
-		logger.debug("BEFORE: %s", self.__dict__)
-		if self.EM.electricity > 0:
-			# determine the state (moving, error, etc.)
-			if (not self.gateMoving) and (not self.error):
-				if e == 'gate1':
-					self.soundOpen.play()
-					self.runTimer("TIMER", 3)
-				elif e == 'gate2':
-					self.soundOpen.play()
-					self.runTimer("TIMER", 3)
-				else:
-					self.soundClose.play()
-					self.runTimer("TIMER", 5)
-				self.gateMoving = True
-				self.state = e.valueName
-			else:
-				# still wrong position ?
-				self.error = not (self.gates == self.state)
-				# still moving ?
-				if e == 'TIMER':  # end of the timer
-					self.gateMoving = False
-			# then update the RGB color
-			if self.error:
-				self.gate1 = RED, FAST
-				self.gate2 = RED, FAST
-			else:
-				self.gate1 = (YELLOW if self.state == 'gate1' else BLACK, FAST if self.gateMoving else NOBLINK)
-				self.gate2 = (YELLOW if self.state == 'gate2' else BLACK, FAST if self.gateMoving else NOBLINK)
-		logger.debug("AFTER: %s", self.__dict__)
 
 
 class Turbo(ThreadedLoop):
@@ -143,9 +26,9 @@ class Turbo(ThreadedLoop):
 	def __init__(self, EM):
 		"""create the buttons, LED, etc."""
 		super(Turbo, self).__init__(EM)
-		self.add('T7_SW2_1', 'gas', TMindex=6, pin=7, event=self)
+		self.add('T7_SW2_1', 'gas', TMindex=6, pin=7)
 		self.add('T7_LED_1', 'LED_gas', TMindex=5, index=0)
-		self.add('T7_SW2_2', 'boost', TMindex=6, pin=6, event=self)
+		self.add('T7_SW2_2', 'boost', TMindex=6, pin=6)
 		self.add('T7_LED_2', 'LED_boost', TMindex=5, index=7)
 
 	def onEvent(self, e):
@@ -160,57 +43,6 @@ class Turbo(ThreadedLoop):
 			logger.debug(self.LED_boost)
 
 
-class Electricity(ThreadedLoop):
-	"""Manage the electricity (buttons and displays)"""
-	def __init__(self, EM):
-		"""create the buttons, LED, etc."""
-		super(Electricity, self).__init__(EM)
-		self.add('T8_SW2_3', 'solar', TMindex=6, pin=2)
-		self.add('T8_LED_3', 'LED_solar', TMindex=5, index=4)
-		self.add('T8_SW2_4', 'battery', TMindex=6, pin=1)
-		self.add('T8_LED_4', 'LED_battery', TMindex=5, index=5)
-		self.add('T8_SW2_5', 'fuel', TMindex=6, pin=0)
-		self.add('T8_LED_5', 'LED_fuel', TMindex=5, index=6)
-		self.add('B2_RGB', 'RGB', pos=2)
-
-	def onEvent(self, e):
-		"""Manage changes for the electricity switches"""
-		logger.debug("enter `electricity` function")
-		# adjust the LEDs according to the switches
-		if e is self.solar:
-			self.LED_solar = e.value
-		if e is self.battery:
-			self.LED_battery = e.value
-		if e is self.fuel:
-			self.LED_fuel = e.value
-		# amount of electricity
-		elec = self.solar.value * 1 + self.battery.value * 2 + self.fuel.value * 4  # 1,2 and 4 as weight
-		if elec != self.EM.electricity:
-			if elec == 0:
-				# shutdown!
-				logger.debug("shutdown electricity!")
-				RGB.turnOff()
-				# self.EM.DISP_altitude.off()
-				# self.EM.DISP_position.off()
-				# self.EM.DISP_counter.off()
-				# self.EM.DISP_speed.off()
-				# self.EM.DISP_roll.off()
-				# self.EM.DISP_yaw.off()
-			else:
-				# adjust the brightness
-				# self.EM.DISP_altitude.setBrightness(elec)
-				# self.EM.DISP_position.setBrightness(elec)
-				# self.EM.DISP_direction.setBrightness(elec)
-				# self.EM.DISP_counter.setBrightness(elec)
-				# self.EM.DISP_speed.setBrightness(elec)
-				# self.EM.DISP_roll.setBrightness(elec)
-				# self.EM.DISP_yaw.setBrightness(elec)
-				# set the RGB electricity led
-				pass
-			self.RGB = GREEN if elec > 2 else YELLOW if elec == 2 else ORANGE if elec == 1 else (RED, FAST)
-			self.EM.electricity = elec
-
-
 
 class MissionBoard(ElementManager):
 	"""class for the main object"""
@@ -218,6 +50,8 @@ class MissionBoard(ElementManager):
 		super(MissionBoard, self).__init__(loops)
 		# global states
 		self.electricity = 10       # level of electricity
+
+		self.state = 'ground'   # ground, takeoff, orbit or landing
 
 		# self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
 		# # self.add('T2_DISP_2', 'speed', TMindex=1, size=4)
@@ -312,5 +146,5 @@ class MissionBoard(ElementManager):
 
 # create the main object and start it !
 if __name__ == '__main__':
-	MB = MissionBoard([Laser, Light, Gates, Turbo, Electricity])
+	MB = MissionBoard([Laser, Light, Gates, Turbo, Electricity, FuelPump])
 	MB.run()
