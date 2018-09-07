@@ -11,7 +11,7 @@ from RGB import RED, YELLOW, GREEN, ORANGE, FAST, SLOW, BLACK, BLUE, RGB, NOBLIN
 from ElementManager import ElementManager
 from ThreadedLoop import ThreadedLoop
 from Elec import Electricity, Light
-from Misc import Laser, FuelPump, Gates
+from Misc import Laser, FuelPump, Gates, WaterPump
 
 
 logger = logging.getLogger()
@@ -146,5 +146,5 @@ class MissionBoard(ElementManager):
 
 # create the main object and start it !
 if __name__ == '__main__':
-	MB = MissionBoard([Laser, Light, Gates, Turbo, Electricity, FuelPump])
+	MB = MissionBoard([Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump])
 	MB.run()

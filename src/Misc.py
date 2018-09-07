@@ -141,3 +141,24 @@ class FuelPump(ThreadedLoop):
 				# run the timer to increase the level in 5 (or 10) seconds
 				self.runTimer('FUEL PUMP', 5 if self.fuel[self.pump.value] < 8 else 10)
 
+
+class WaterPump(ThreadedLoop):
+	"""Manage the water pumps (toilet and bathroom)"""
+	def __init__(self, EM):
+		"""Create the buttons, LED, etc."""
+		super(WaterPump, self).__init__(EM)
+		# elements
+		# sounds
+		self.toilets = Sound(SoundPath + "toilets.wav")
+		self.bathroom = Sound(SoundPath + "water.wav")
+		# levels
+		self.add('T6_SW3_1', 'pump', values=['off', 'toilets', 'bathroom'], TMindex=5, pins=[3, 2])
+
+	def onEvent(self, e):
+		"""Manage the water button"""
+		if e == 'toilets':
+			self.toilets.play()
+		elif e == 'bathroom':
+			self.bathroom.play(loop=-1)
+		else:
+			self.bathroom.stop()
