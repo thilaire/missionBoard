@@ -4,6 +4,7 @@ from Element import Element
 from time import sleep
 from Font import FONT
 
+
 class DISP(Element):
 	"""
 	Seven-Segment display
@@ -55,12 +56,10 @@ class DISP(Element):
 		"""Turns off the display"""
 		self.sendSPI([0b11100000 | self._TMindex])
 
-	def clear( self ):
+	def clear(self):
 		"""Clear the display"""
 		self.sendSPI([0b11101000 | self._TMindex])
 
-
-maskLevel = [48, 12, 3]
 
 class LVL(Element):
 	"""

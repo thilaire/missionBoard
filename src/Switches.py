@@ -69,7 +69,8 @@ class SW2(Switch):
 		# check if we can compare
 		if isinstance(other, str):
 			if other not in self._valueNames:
-				raise ValueError("The SW2 %s can only be compared to %s", str(self), str(self._valueNames))
+				return False
+				#raise ValueError("The SW2 %s can only be compared to %s", str(self), str(self._valueNames))
 			# return comparison
 			return self._valueNames[(self._values[self._TMindex] >> self._pin) & 1] == other
 		else:

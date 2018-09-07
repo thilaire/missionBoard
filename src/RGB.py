@@ -5,7 +5,7 @@ from Element import Element
 RED = 0xFF0000
 GREEN = 0x00FF00
 YELLOW = 0xFFFF00
-BLUE  = 0x0000FF
+BLUE = 0x0000FF
 ORANGE = 0xF58231
 PURPLE = 0x911EB4
 CYAN = 0x46F0F0
@@ -40,11 +40,11 @@ def bitRotation(b, shift):
 
 class RGB(Element):
 
-	def __init__(self, keyname, name, pos, inverted=[]):
+	def __init__(self, keyname, name, pos, inverted=False):
 		# inverted contain a list of pos, for RGB led those Red and Green are inverted (sometimes happen for my WS2812 clones)
 		super(RGB, self).__init__(keyname, name)
 		self._pos = pos
-		self._inverted = pos in inverted
+		self._inverted = inverted
 
 
 	def __set__(self, instance, value):
@@ -68,10 +68,10 @@ class RGB(Element):
 		# convert it to list of bytes, and send it
 		if self._inverted:
 			color = (color & 0x0000FF) | ((color & 0x00ff00) << 8) | ((color & 0xFF0000)>>8)
-		data = [self._pos,] + list(blink.to_bytes(2, byteorder='big')) + list(color.to_bytes(3, byteorder='big'))
+		data = [self._pos, ] + list(blink.to_bytes(2, byteorder='big')) + list(color.to_bytes(3, byteorder='big'))
 		self.sendSPI(data)
 
 	@classmethod
 	def turnOff(cls):
 		"""Turn off all the RGB leds"""
-		cls.sendSPI([0b00011111])
+		cls._EM.sendSPI([0b00011111])
