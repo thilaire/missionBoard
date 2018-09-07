@@ -28,6 +28,7 @@ OFF = 0x000000
 
 FAST = 0x5555
 SLOW = 0xFF00
+NOBLINK = 0xFFFF
 
 
 def bitRotation(b, shift):

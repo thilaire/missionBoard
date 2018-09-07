@@ -61,6 +61,11 @@ class SW2(Switch):
 		"""Get the value"""
 		return bool((self._values[self._TMindex] >> self._pin) & 1)
 
+	@property
+	def valueName(self):
+		"""get the value as defined in values parameter of constructor"""
+		return self._valueNames[self.value]
+
 	def __eq__(self, other):
 		"""Compare to string in _values"""
 		# check if we can compare
@@ -91,13 +96,19 @@ class SW3(Switch):
 		val = self._values[self._TMindex] & (1 << self._pins[0] | 1 << self._pins[1])
 		return 0 if val == 0 else (1 if val == 1 << self._pins[0] else 2)
 
+	@property
+	def valueName(self):
+		"""get the value as defined in values parameter of constructor"""
+		return self._valueNames[self.value]
+
 
 	def __eq__(self, other):
 		"""Compare to string in _values"""
 		# check if we can compare
 		if isinstance(other, str):
 			if other not in self._valueNames:
-				raise ValueError("The SW3 %s can only be compared to ", str(self), str(self._values))
+				return False
+				# raise ValueError("The SW3 %s can only be compared to ", str(self), str(self._values))
 			# return comparison
 			return self._valueNames[self.value] == other
 		else:

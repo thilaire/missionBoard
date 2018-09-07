@@ -3,7 +3,7 @@
 from operator import itemgetter
 import logging
 from threading import Thread
-from time import clock
+from time import time
 from queue import Queue, Empty
 from re import compile
 
@@ -49,12 +49,13 @@ class ThreadedLoop:
 		"""threaded loop that waits for the event in the queue
 		 (or wait for some time), and then launch the function"""
 		logger.debug("Launch waitEvent '%s'", self.__class__.__name__)
-		self._lastEventTime = clock()
+		self._lastEventTime = time()
 		while True:
 			timer, timeout = self.minTimer()
 			try:
 				btn = self._queue.get(timeout=timeout)
 				logger.debug("Receive '%s' in '%s' queue", str(btn), self.__class__.__name__)
+				self._queue.task_done()  # useless, here
 			except Empty:
 				logger.debug("Timeout '%s' (%ds) in '%s' queue", timer, timeout, self.__class__.__name__)
 				btn = timer
@@ -63,7 +64,7 @@ class ThreadedLoop:
 			self.updateTimers()
 			# call the fct with the button, or with the type of the delay event
 			self.onEvent(btn)
-			self._queue.task_done()     # useless, here
+
 
 	def run(self):
 		"""run the threaded loop """
@@ -80,12 +81,12 @@ class ThreadedLoop:
 	def updateTimers(self):
 		"""update the timers (decrease the duration of all the timers)
 		(most of the time, the dictionary of timers is empty)"""
-		delta = clock()-self._lastEventTime
+		delta = time()-self._lastEventTime
 		for timer in self._timers:
 			self._timers[timer] -= delta
 			if self._timers[timer] < 0:       # should not happen, except if two timers with same duration are launched
 				self.onEvent(timer)
-		self._lastEventTime = clock()
+		self._lastEventTime = time()
 
 
 	def runTimer(self, name, duration):
@@ -118,6 +119,8 @@ class ThreadedLoop:
 		# (of the class, we have a singleton here; and it's the way to do with Python)
 		# check the name
 		if hasattr(self, name) or hasattr(self.EM, type(self).__name__+'_'+name):
+			print(name)
+			print(type(self).__name__+'_'+name)
 			raise ValueError("An element with the same name (%s) already exists", name)
 		# create the element and add it as an attribute to the class, and to the ElementManager
 		element = dictOfElements[elementType](keyname, name, **args)

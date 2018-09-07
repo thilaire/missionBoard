@@ -4,14 +4,18 @@
 Describe how the different buttons/displays are connected
 Define the different event loop (callbacks)
 """
+import pygame
+from pygame.mixer import Sound
+import logging
 
-from RGB import RED, YELLOW, GREEN, ORANGE, FAST, SLOW, BLACK, BLUE, RGB
+from RGB import RED, YELLOW, GREEN, ORANGE, FAST, SLOW, BLACK, BLUE, RGB, NOBLINK
 from ElementManager import ElementManager
 from ThreadedLoop import ThreadedLoop
 
-import logging
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+pygame.init()
+SoundPath = "../sound/"
 
 
 class Laser(ThreadedLoop):
@@ -92,20 +96,46 @@ class Gates(ThreadedLoop):
 		"""create the buttons, LEDs, etc."""
 		super(Gates, self).__init__(EM)
 		self.add('B2_RGB', 'gate1', pos=5, inverted=True)
-		self.add('B2_RGB', 'gate2', pos=9, inverted=True)
+		self.add('B2_RGB', 'gate2', pos=9)
 		self.add('T7_SW3', 'gates', values=['closed', 'gate1', 'gate2'], TMindex=5, pins=[0, 1])
+
+		self.soundOpen = Sound(SoundPath + "../sound/openGate.wav")
+		self.soundClose = Sound(SoundPath + "closeGate.wav")
+		self.gateMoving = False     # True if a gate is moving
+		self.state = 'closed'
+		self.error = False
 		
 	def onEvent(self, e):
 		"""Manage changes for the gate switches"""
-		# TODO: gérer le son et le timing (3s pour fermer la porte, les boutons inopérants, etc.)
+		logger.debug("BEFORE: %s", self.__dict__)
 		if self.EM.electricity > 0:
-			if e == 'gate1':
-				self.gate1 = YELLOW  # we come from 'closed', so gate2 is supposed to be BLACK
-			elif e == 'gate2':
-				self.gate2 = YELLOW  # we come from 'closed', so gate1 is supposed to be BLACK
+			# determine the state (moving, error, etc.)
+			if (not self.gateMoving) and (not self.error):
+				if e == 'gate1':
+					self.soundOpen.play()
+					self.runTimer("TIMER", 3)
+				elif e == 'gate2':
+					self.soundOpen.play()
+					self.runTimer("TIMER", 3)
+				else:
+					self.soundClose.play()
+					self.runTimer("TIMER", 5)
+				self.gateMoving = True
+				self.state = e.valueName
 			else:
-				self.gate1 = BLACK
-				self.gate2 = BLACK
+				# still wrong position ?
+				self.error = not (self.gates == self.state)
+				# still moving ?
+				if e == 'TIMER':  # end of the timer
+					self.gateMoving = False
+			# then update the RGB color
+			if self.error:
+				self.gate1 = RED, FAST
+				self.gate2 = RED, FAST
+			else:
+				self.gate1 = (YELLOW if self.state == 'gate1' else BLACK, FAST if self.gateMoving else NOBLINK)
+				self.gate2 = (YELLOW if self.state == 'gate2' else BLACK, FAST if self.gateMoving else NOBLINK)
+		logger.debug("AFTER: %s", self.__dict__)
 
 
 class Turbo(ThreadedLoop):
