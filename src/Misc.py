@@ -7,6 +7,7 @@ Misc functionalities
 
 import logging
 from pygame.mixer import Sound
+import RPi.GPIO as GPIO
 
 from RGB import RED, YELLOW, GREEN, ORANGE, FAST, SLOW, BLACK, BLUE, RGB, NOBLINK
 from ThreadedLoop import ThreadedLoop
@@ -32,6 +33,10 @@ class Laser(ThreadedLoop):
 		self.pewpew = [Sound(SoundPath + "laser1.wav"), Sound(SoundPath + "laser2.wav")]
 		# intern variables
 		self._laserFired = False
+
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return self.armed == 'disarmed' and (not self.fire)
 
 	def onEvent(self, e):
 		"""Manage event in the switches, timer, etc."""
@@ -65,6 +70,10 @@ class Gates(ThreadedLoop):
 		self.gateMoving = False  # True if a gate is moving
 		self.state = 'closed'
 		self.error = False
+
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return self.gates == 'closed'
 
 	def onEvent(self, e):
 		"""Manage changes for the gate switches"""
@@ -116,6 +125,10 @@ class FuelPump(ThreadedLoop):
 		self.rocket = 0
 		self.spaceship = 0
 
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return self.pump == 'off'
+
 	def onEvent(self, e):
 		"""Manage changes for the pump buttons (water, oxygen and fuel)"""
 		# receive timer for the Fuel pump
@@ -133,7 +146,7 @@ class FuelPump(ThreadedLoop):
 					self.runTimer('FUEL PUMP', 5 if self.fuel[self.pump.value] < 8 else 10)
 				else:
 					# stop the sound
-					self.sound.fadeout(100)
+					self.sound.fadeout(1000)
 
 		# the fuel button has been changed
 		elif e == self.pump and self.EM.state == 'ground':
@@ -144,7 +157,7 @@ class FuelPump(ThreadedLoop):
 				self.runTimer('FUEL PUMP', 5 if self.fuel[self.pump.value] < 8 else 10)
 			else:
 				# stop the sound
-				self.sound.fadeout(100)
+				self.sound.fadeout(1000)
 
 
 
@@ -154,11 +167,14 @@ class WaterPump(ThreadedLoop):
 		"""Create the buttons, LED, etc."""
 		super(WaterPump, self).__init__(EM)
 		# elements
+		self.add('T6_SW3_1', 'pump', values=['off', 'toilets', 'bathroom'], TMindex=5, pins=[3, 2])
 		# sounds
 		self.toilets = Sound(SoundPath + "toilets.wav")
 		self.bathroom = Sound(SoundPath + "bathroom.wav")
-		# levels
-		self.add('T6_SW3_1', 'pump', values=['off', 'toilets', 'bathroom'], TMindex=5, pins=[3, 2])
+
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return self.pump == 'off'
 
 	def onEvent(self, e):
 		"""Manage the water button"""
@@ -168,3 +184,101 @@ class WaterPump(ThreadedLoop):
 			self.bathroom.play(loops=-1, fade_ms=100)
 		else:
 			self.bathroom.fadeout(100)
+
+
+class Oxygen(ThreadedLoop):
+	"""Manage the water pumps (toilet and bathroom)"""
+
+	def __init__(self, EM):
+		"""Create the buttons, LED, etc."""
+		super(Oxygen, self).__init__(EM)
+		# elements
+		self.add('B8_RGB', 'RGB_pump', pos=19, inverted=True)
+		self.add('B8_PB_5', 'pump', gpio=3, edge=GPIO.BOTH)
+		self.add('B2_RGB', 'panel', pos=1)
+		self.add('T6_LVL_3', 'oxygen', TMindex=7, number=2)
+
+		# sounds
+		self.pumpSound = Sound(SoundPath + "oxygen.wav")
+		# levels
+		self.level = 0
+		self.oxygen = 0
+
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return not self.pump
+
+	def onEvent(self, e):
+		"""Manage the water button"""
+		logger.debug("onEvent Oxygen!!")
+		if e is self.pump:
+			logger.debug("e.value=%s", e.value)
+			if not e.value:
+				self.pumpSound.play(loops=-1)
+				self.runTimer('DOWN', 1)
+		elif e == 'DOWN':
+			if not self.pump.value:
+				self.level = min(10, self.level + 0.3)
+				self.oxygen = int(self.level)
+				if self.level==10:
+					self.pumpSound.fadeout(1000)  # stop sound
+				else:
+					self.runTimer('DOWN', 1)
+			else:
+				self.pumpSound.fadeout(1000)# stop sound
+				pass
+
+class AllTheRest(ThreadedLoop):
+	def __init__(self, EM):  # self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
+		super(AllTheRest, self).__init__(EM)
+		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
+		# self.add('T2_DISP_2', 'speed', TMindex=1, size=4)
+		self.add('T2_DISP_3', 'position', TMindex=5, block=0, size=8)
+
+		# Panel T4: attitude
+		# self.add('T2_DISP_1', 'roll', TMindex=2, size=4)
+		# self.add('T2_DISP_2', 'yaw', TMindex=3, size=4)
+		self.add('T4_DISP_3', 'direction', TMindex=7, block=0, size=4)
+
+		# Panel T6: levels
+		self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
+
+		# Panel T9: keyboard
+		# TODO:
+
+		# Panel B1: start/mode
+		self.add('B1_SW3', 'gameMode', values=['computer', 'spaceship', 'games'], TMindex=4, pins=[0, 1])
+		self.add('B1_LED','OnOff', TMindex=4, index=1)
+
+		# Panel B2: displays
+		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
+
+		# Panel B4: pilot
+		self.add('B4_LED', 'manual', TMindex=4, index=0)
+		self.add('B4_POT_0', 'roll', index=0)
+		self.add('B4_POT_1', 'yaw', index=1)
+		self.add('B4_POT_0', 'speed', index=2)
+
+		# Panel B5: flight mode
+		self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
+		self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
+
+		# Panel B6: lift-off
+		self.add('B6_SW2_1', 'phase1', TMindex=7, pin=7)
+		self.add('B6_SW2_2', 'phase2', TMindex=7, pin=5)
+		self.add('B6_SW2_3', 'phase3', TMindex=7, pin=6)
+
+		# Panel B7: Joystick
+		self.add('B7_PB_UP', 'Up', gpio=7)
+		self.add('B7_PB_DOWN', 'Down', gpio=5)
+		self.add('B7_PB_LEFT', 'Left', gpio=12)
+		self.add('B7_PB_RIGHT', 'Right', gpio=6)
+
+		# Panel B8: commands
+
+		# Panel B9: audio
+		self.add('B9_SW3', 'Com', values=['Off', 'COM1', 'COM2'], TMindex=4, pins=[5, 6])
+
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return True

@@ -40,6 +40,11 @@ class ThreadedLoop:
 		is overload by inherited class"""
 		pass
 
+	def isReady(self, e):
+		"""method called to wait for all the loops to be ready
+		must be overloaded by interhited classes"""
+		return False
+
 	def notify(self, btn):
 		"""Simply add the object in the Event Queue"""
 		logger.debug("addEvent: btn=%s", str(btn))
@@ -63,7 +68,8 @@ class ThreadedLoop:
 			# update the remaining timers (if some still exist)
 			self.updateTimers()
 			# call the fct with the button, or with the type of the delay event
-			self.onEvent(btn)
+			if self.EM.onEvent(btn):
+				self.onEvent(btn)
 
 
 	def run(self):
