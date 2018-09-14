@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from Element import Element
+from MissionBoard.Element import Element
 
 RED = 0xFF0000
 GREEN = 0x00FF00

@@ -234,7 +234,7 @@ ISR (TIMER1_COMPA_vect  ) {
 	/* check if the RPi has shut down */
 	if (RPiPower == RPI_SHUTING && (PINC&1)==0) {
 		_delay_ms(5000);   /* TODO: need to know when the RPi is completly off to turn off the relay (instead of waiting 10s) */
-		turnOff_RPi();
+		//turnOff_RPi();
 	}
 
 	/* check if the power switch has changed (overset SPDR if necessary) */

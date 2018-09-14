@@ -8,7 +8,7 @@ class Element:
 	"""
 
 	_allElements = []   # list of all the created elements
-	_EM = None          # ElementManager
+	_EM = None          # ATBridge
 
 	def __init__(self, keyname, name, event=None):
 		self._keyname = keyname
@@ -31,7 +31,7 @@ class Element:
 		cls._EM = EM
 
 	def sendSPI(self, data):
-		"""Simply call the sendSPI of the ElementManager"""
+		"""Simply call the sendSPI of the ATBridge"""
 		self._EM.sendSPI(data)
 
 	def notify(self):

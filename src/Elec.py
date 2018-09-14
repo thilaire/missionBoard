@@ -6,14 +6,14 @@ Electricity functionalities
 
 import logging
 
-from RGB import RED, YELLOW, GREEN, ORANGE, FAST, SLOW, BLACK, BLUE, RGB, NOBLINK
-from ThreadedLoop import ThreadedLoop
+from MissionBoard.RGB import RED, YELLOW, GREEN, ORANGE, FAST, RGB
+from MissionBoard import Functionality
 
 logger = logging.getLogger()
 SoundPath = "../sound/"
 
 
-class Electricity(ThreadedLoop):
+class Electricity(Functionality):
 	"""Manage the electricity (buttons and displays)"""
 	def __init__(self, EM):
 		"""create the buttons, LED, etc."""
@@ -65,7 +65,7 @@ class Electricity(ThreadedLoop):
 
 
 
-class Light(ThreadedLoop):
+class Light(Functionality):
 	"""Manage the lights inside/outside the spaceship"""
 	def __init__(self, EM):
 		"""create the buttons, LEDs, etc."""

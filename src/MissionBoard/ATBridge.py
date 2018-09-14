@@ -7,24 +7,23 @@ from spidev import SpiDev
 
 import RPi.GPIO as GPIO
 
-from Element import Element
-from POT import POT
-from Switches import Switch
+from MissionBoard.Element import Element
+from MissionBoard.POT import POT
+from MissionBoard.Switches import Switch
 
 # logger
 logger = logging.getLogger()
 SPIlogger = logging.getLogger('SPI')
 
 
-class ElementManager:
+class ATBridge:
 	"""
-	Main object (contains interfaces to buttons, displays, callbacks, etc.)
+	Main object (contains interfaces to buttons, displays, etc.)
 	"""
 
-	def __init__(self, loops):
+	def __init__(self):
 		"""
-		Init the element Manager, and the different loops
-		:param loops: list of Classes (!!) inherited from ThreadedLopp
+		Init the driver with the AT tiny (through the SPI)
 		"""
 		# save itself to ELement
 		Element.setEM(self)
@@ -43,23 +42,12 @@ class ElementManager:
 		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 		GPIO.add_event_detect(24, GPIO.RISING, callback=lambda _: self.sendSPI([0]))    # send 0 to SPI when IO24 is rising
 
-		# create the different loops (on object per class give)
-		self._loops = [c(self) for c in loops]
 
-	def start(self):
-		"""fct to be overloaded
-		will be run when everything is ready"""
-		pass
-
-	def run(self):
+	def runSPI(self):
 		"""
 		Infinite loop to send every message in the SPI queue to the ATtiny through the SPI
 		(a way to send one message at once)
 		"""
-		# run all the threads
-		[l.run() for l in self._loops]
-		# run the start fct
-		self.start()
 		# SPI loop
 		while True:
 			# wait for data

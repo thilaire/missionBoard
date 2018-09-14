@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from Element import Element
-from Font import FONT
+from MissionBoard.Element import Element
+from MissionBoard.Font import FONT
 
 
 class DISP(Element):

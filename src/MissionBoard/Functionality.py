@@ -8,12 +8,12 @@ from queue import Queue, Empty
 from re import compile
 
 # import UX elements (Leds, Buttons, Switches, etc.)
-from LED import LED
-from Display import DISP, LVL
-from PushButton import PB
-from RGB import RGB
-from Switches import SW2, SW3
-from POT import POT
+from MissionBoard.LED import LED
+from MissionBoard.Display import DISP, LVL
+from MissionBoard.PushButton import PB
+from MissionBoard.RGB import RGB
+from MissionBoard.Switches import SW2, SW3
+from MissionBoard.POT import POT
 
 # dictionary of possible elements
 dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2, 'SW3': SW3, 'POT': POT, 'LVL': LVL}
@@ -26,12 +26,12 @@ regElement = compile("[TB](\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
 logger = logging.getLogger()
 
 
-class ThreadedLoop:
+class Functionality:
 	"""Threaded loop to manage queue and worker function"""
 
 	def __init__(self, EM):
 		self._queue = Queue()           # queue of event
-		self.EM = EM                   # element manager
+		self.EM = EM                   # event manager
 		self._timers = {}               # dictionary: timerName -> duration (in seconds)
 		self._lastEventTime = 0         # time of the last event
 
@@ -39,11 +39,6 @@ class ThreadedLoop:
 		"""method called when an event (timer, button) occurs
 		is overload by inherited class"""
 		pass
-
-	def isReady(self, e):
-		"""method called to wait for all the loops to be ready
-		must be overloaded by interhited classes"""
-		return False
 
 	def notify(self, btn):
 		"""Simply add the object in the Event Queue"""
@@ -54,6 +49,7 @@ class ThreadedLoop:
 		"""threaded loop that waits for the event in the queue
 		 (or wait for some time), and then launch the function"""
 		logger.debug("Launch waitEvent '%s'", self.__class__.__name__)
+		# loop (wait for a button change or a timer)
 		self._lastEventTime = time()
 		while True:
 			timer, timeout = self.minTimer()
@@ -68,9 +64,9 @@ class ThreadedLoop:
 			# update the remaining timers (if some still exist)
 			self.updateTimers()
 			# call the fct with the button, or with the type of the delay event
-			if self.EM.onEvent(btn):
-				self.onEvent(btn)
-
+			self.onEvent(btn)
+			# check if we move to another state
+			self.EM.manageState(self)
 
 	def run(self):
 		"""run the threaded loop """
@@ -98,7 +94,7 @@ class ThreadedLoop:
 	def runTimer(self, name, duration):
 		"""add a timer (duration in seconds)"""
 		# if name in self._timers:
-		#	raise ValueError("A timer with the same name ('%s') already exist in %s", name, self.onEvent.__name__)
+		#   raise ValueError("A timer with the same name ('%s') already exist in %s", name, self.onEvent.__name__)
 		# -> if the timer already exists, its duration is replaced
 		self._timers[name] = duration
 
@@ -129,7 +125,7 @@ class ThreadedLoop:
 			print(name)
 			print(type(self).__name__+'_'+name)
 			raise ValueError("An element with the same name (%s) already exists", name)
-		# create the element and add it as an attribute to the class, and to the ElementManager
+		# create the element and add it as an attribute to the class, and to the ATBridge
 		element = dictOfElements[elementType](keyname, name, **args)
 		setattr(self.__class__, name, element)
 		setattr(self.EM.__class__, type(self).__name__+'_'+name, element)
