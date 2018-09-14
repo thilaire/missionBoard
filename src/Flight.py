@@ -20,7 +20,7 @@ SoundPath = "../sound/"
 
 class Phase(Functionality):
 	"""Manage the three rocket buttons for the takeoff phases"""
-	def __init(self, EM):
+	def __init__(self, EM):
 		"""Create the buttons, LED, etc."""
 		super(Phase, self).__init__(EM)
 		# elements
@@ -32,20 +32,14 @@ class Phase(Functionality):
 
 	def onEvent(self, e):
 		"""Manage the buttons changes"""
-		if self.EM.state == 'Init':
-			if (not self.phase1) and (not self.phase2) and (not self.phase3):
-				self.EM.nextState()
-		elif self.EM.state == 'Phase1':
-			if self.phase1:
-				self.EM.nextState()
-		elif self.EM.state == 'Phase2':
-			if self.phase2:
-				self.EM.nextState()
-		elif self.EM.state == 'Phase3':
-			if self.phase3:
-				self.EM.nextState()
+		# TODO: sounds
+		# TODO: turn on associated LEDs, if one day we connect them
+		logger.debug("%s %s %s", self.phase1.value, self.phase2.value, self.phase3.value)
+		pass
 
-
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return (not self.phase1.value) and (not self.phase2.value) and (not self.phase3.value)
 
 
 
@@ -70,7 +64,9 @@ class Turbo(Functionality):
 			self.LED_boost = e.value
 			logger.debug(self.LED_boost)
 
-
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return (not self.gas.value) and (not self.boost.value)
 
 
 class AllTheRest(Functionality):

@@ -9,7 +9,7 @@ import logging
 
 from MissionBoard.RGB import RED, FAST, SLOW, BLUE, RGB
 from MissionBoard import EventManager
-
+from MissionBoard.State import Init
 from Elec import Electricity, Light
 from Misc import Laser, FuelPump, Gates, WaterPump, Oxygen
 from Flight import Phase, AllTheRest, Turbo
@@ -43,7 +43,7 @@ class MissionBoard(EventManager):
 		# self.LED_OnOff = True
 		self.RGB_Go = RED, FAST
 		logger.debug('Start!')
-		# self.AllTheRest_counter = '01234567'
+		self.AllTheRest_counter = '01234567'
 		self.AllTheRest_altitude = '76543210'
 		self.AllTheRest_position = '1-2-3-40'
 		self.AllTheRest_direction = '0123'
@@ -55,6 +55,6 @@ class MissionBoard(EventManager):
 # create the main object and start it !
 if __name__ == '__main__':
 	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, AllTheRest]
-	states = [Phase1, Tanks]
+	states = [Init, Phase1, Tanks]
 	MB = MissionBoard(func, states)
 	MB.run()

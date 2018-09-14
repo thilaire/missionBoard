@@ -35,6 +35,11 @@ class Functionality:
 		self._timers = {}               # dictionary: timerName -> duration (in seconds)
 		self._lastEventTime = 0         # time of the last event
 
+	def isReadyToStart(self):
+		"""method called to wait for all the loops to be ready
+		must be overloaded by inherited classes"""
+		return False
+
 	def onEvent(self, e):
 		"""method called when an event (timer, button) occurs
 		is overload by inherited class"""

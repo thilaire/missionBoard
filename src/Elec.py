@@ -63,6 +63,9 @@ class Electricity(Functionality):
 			self.RGB = GREEN if elec > 2 else YELLOW if elec == 2 else ORANGE if elec == 1 else (RED, FAST)
 			self.EM.electricity = elec
 
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return (not self.solar.value) and (not self.battery.value) and (not self.fuel.value)
 
 
 class Light(Functionality):
@@ -82,3 +85,7 @@ class Light(Functionality):
 			self.LED_cabin = e.value
 		if e is self.outside:
 			self.LED_outside = e.value
+
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return (not self.cabin.value) and (not self.outside.value)

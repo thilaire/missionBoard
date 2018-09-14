@@ -2,6 +2,7 @@
 
 import logging
 from MissionBoard.ATBridge import ATBridge
+from MissionBoard.State import Init
 
 logger = logging.getLogger()
 
@@ -12,20 +13,22 @@ class EventManager(ATBridge):
 		"""Create the main object"""
 		super(EventManager, self).__init__()
 		# create the different loops (on object per class given), store them as attribute
-		self._loops = []
+		self.functionalities = []
 		for cls in loops:
 			func = cls(self)
-			self._loops.append(func)
+			self.functionalities.append(func)
 			setattr(self.__class__, cls.__name__, func)
 		# store the states
 		self._states = [s(self) for s in states]
+		self.state = self._states[0]
+		self.isInitState = isinstance(self.state, Init)     # True if we start with Init State
 		self._currentState = 0
 
 
 	@property
-	def state(self):
-		"""current state"""
-		return self._states[self._currentState]
+	def stateName(self):
+		"""return current state name"""
+		return self.state.name
 
 
 	def nextState(self):
@@ -33,7 +36,10 @@ class EventManager(ATBridge):
 		# increase the state
 		prevState = self.state.name
 		self._currentState += 1
-		if self._currentState >= len(self._states):
+		try:
+			self.state = self._states[self._currentState]
+			self.isInitState = isinstance(self.state, Init)  # True if we start with Init State
+		except IndexError:
 			raise ValueError("Cannot go to next state")
 		logger.debug("We move from '%s' state to '%s' state", prevState, self.state.name)
 		# update the displays
@@ -42,9 +48,9 @@ class EventManager(ATBridge):
 
 	def manageState(self, func):
 		"""check if we need to move to another state"""
-		if func.__class__ in self._states[self._currentState].funcNext:
+		if self.isInitState or func.__class__ in self._states[self._currentState].funcNext:
 			# we need to check
-			if self.state.isOver():
+			if self.state.isOver(func):
 				self.nextState()
 
 
@@ -57,7 +63,7 @@ class EventManager(ATBridge):
 	def run(self):
 		"""run the loops, the start method and they the (endless) SPI loop"""
 		# run the loops (one per thread)
-		[l.run() for l in self._loops]
+		[l.run() for l in self.functionalities]
 		# start the object
 		self.start()
 		# and run the SPI loop
