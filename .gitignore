@@ -236,7 +236,6 @@ fabric.properties
 
 .idea/*
 
-.gitignore
 .idea/deployment.xml
 .idea/encodings.xml
 .idea/inspectionProfiles/
