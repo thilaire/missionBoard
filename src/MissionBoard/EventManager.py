@@ -48,7 +48,8 @@ class EventManager(ATBridge):
 
 	def manageState(self, func):
 		"""check if we need to move to another state"""
-		if self.isInitState or func.__class__ in self._states[self._currentState].funcNext:
+		logger.debug("State=%s", self.stateName)
+		if self.isInitState or func.__class__ in self.state.funcNext:
 			# we need to check
 			if self.state.isOver(func):
 				self.nextState()
