@@ -61,6 +61,11 @@ class SW2(Switch):
 		"""Get the value"""
 		return bool((self._values[self._TMindex] >> self._pin) & 1)
 
+	def __bool__(self):
+		"""return directly the value when evaluated as boolean / integer"""
+		# TODO: use __nonzero__ for python 2.x ?
+		return self.value
+
 	@property
 	def valueName(self):
 		"""get the value as defined in values parameter of constructor"""

@@ -27,6 +27,9 @@ class State:
 		To be inherited"""
 		return False
 
+	def __eq__(self, other):
+		"""Compare a state with a string (is it its name?)"""
+		return other == self.name
 
 
 class Init(State):

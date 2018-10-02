@@ -37,4 +37,5 @@ class POT(Element):
 
 	@property
 	def value(self):
+		"""return the value"""
 		return self._value

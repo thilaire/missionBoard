@@ -23,7 +23,7 @@ class PB(Element):
 	def value(self):
 		"""Get the value"""
 		self._value = GPIO.input(self._gpio)
-		return self._value
+		return not self._value
 
 
 
