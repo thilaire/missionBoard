@@ -19,7 +19,7 @@ class Phase1(State):
 
 	def isOver(self, func):
 		"""the phase is over when the switch 'Phase1' is on"""
-		return self.EM.Phase_phase1.value and (not self.EM.Phase_phase2.value) and (not self.EM.Phase_phase3.value)
+		return self.EM.Phase_phase1 and (not self.EM.Phase_phase2) and (not self.EM.Phase_phase3)
 
 
 # ----- Fill the tanks --------
@@ -34,6 +34,6 @@ class Tanks(State):
 	def isOver(self, func):
 		"""the phase is over when the tanks are full"""
 		return (self.EM.WaterPump_level == 10) and (self.EM.Oxygen.fuel[1] == 10) and (self.EM.Oxygen.fuel[2] == 10) \
-		        and (not self.EM.Phase.phase2.value) and (not self.EM.Phase_phase3.value)
+		        and (not self.EM.Phase.phase2) and (not self.EM.Phase_phase3)
 
 

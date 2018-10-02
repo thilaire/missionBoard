@@ -69,29 +69,18 @@ class Turbo(Functionality):
 		return (not self.gas.value) and (not self.boost.value)
 
 
-class AllTheRest(Functionality):
-	def __init__(self, EM):  # self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
-		super(AllTheRest, self).__init__(EM)
+class Flight(Functionality):
+	"""manage the flight buttons"""
+	def __init__(self, EM):
+		"""create the buttons, LED, etc."""
+		super(Flight, self).__init__(EM)
+		# displays
 		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
 		# self.add('T2_DISP_2', 'speed', TMindex=1, size=4)
 		self.add('T2_DISP_3', 'position', TMindex=5, block=0, size=8)
-
-		# Panel T4: attitude
 		# self.add('T2_DISP_1', 'roll', TMindex=2, size=4)
 		# self.add('T2_DISP_2', 'yaw', TMindex=3, size=4)
 		self.add('T4_DISP_3', 'direction', TMindex=7, block=0, size=4)
-
-		# Panel T6: levels
-		self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
-
-		# Panel T9: keyboard
-		# TODO:
-
-		# Panel B1: start/mode
-		self.add('B1_SW3', 'gameMode', values=['computer', 'spaceship', 'games'], TMindex=4, pins=[0, 1])
-		self.add('B1_LED', 'OnOff', TMindex=4, index=1)
-
-		# Panel B2: displays
 		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
 
 		# Panel B4: pilot
@@ -104,6 +93,30 @@ class AllTheRest(Functionality):
 		self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
 		self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
 
+
+	def onEvent(self, e):
+		"""Manage changes for the filght buttons"""
+		pass
+
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return (self.roll.value == 0) and (self.yaw.value == 0) and (self.yaw.speed == 0)\
+		        and (self.mode == 'takeoff') and (self.autoPilot == 'auto')
+
+
+class AllTheRest(Functionality):
+	def __init__(self, EM):  # self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
+		super(AllTheRest, self).__init__(EM)
+
+		# Panel T6: levels
+		self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
+
+		# Panel T9: keyboard
+		# TODO:
+
+		# Panel B1: start/mode
+		self.add('B1_SW3', 'gameMode', values=['computer', 'spaceship', 'games'], TMindex=4, pins=[0, 1])
+		self.add('B1_LED', 'OnOff', TMindex=4, index=1)
 
 		# Panel B7: Joystick
 		self.add('B7_PB_UP', 'Up', gpio=7)

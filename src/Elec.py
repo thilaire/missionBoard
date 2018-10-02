@@ -65,7 +65,7 @@ class Electricity(Functionality):
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		return (not self.solar.value) and (not self.battery.value) and (not self.fuel.value)
+		return (not self.solar) and (not self.battery) and (not self.fuel)
 
 
 class Light(Functionality):
@@ -80,12 +80,13 @@ class Light(Functionality):
 
 	def onEvent(self, e):
 		"""Manage changes for the light switches"""
-		# adjust the LEDs according to the switches
-		if e is self.cabin:
-			self.LED_cabin = e.value
-		if e is self.outside:
-			self.LED_outside = e.value
+		if self.EM.state != 'Init':
+			# adjust the LEDs according to the switches
+			if e is self.cabin:
+				self.LED_cabin = e.value
+			if e is self.outside:
+				self.LED_outside = e.value
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		return (not self.cabin.value) and (not self.outside.value)
+		return (not self.cabin) and (not self.outside)
