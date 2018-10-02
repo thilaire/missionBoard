@@ -258,3 +258,5 @@ src/AVR/light_ws2812.o
 src/AVR/test_led.o
 src/MissionBoard.pyc
 /docs/_site/
+docs/.jekyll-metadata
+src/AVR/TMx8.s
