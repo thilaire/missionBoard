@@ -22,6 +22,7 @@ class EventManager(ATBridge):
 		self._states = [s(self) for s in states]
 		self.state = self._states[0]
 		self.isInitState = isinstance(self.state, Init)     # True if we start with Init State
+		self.state.init()   # run the 1st state
 		self._currentState = 0
 
 
