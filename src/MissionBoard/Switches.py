@@ -27,13 +27,14 @@ class Switch(Element):
 	def checkChanges(cls, TMindex, value):
 		# get the bit that have changed
 		diff = value ^ cls._values[TMindex]
+		logger.debug("TMindex=%d value=%d, values=%s, diff=%d", TMindex, value, cls._values, diff)
 		# check for each bit that differ
 		lswitch = []    # list of switches that have changed
 		for i in range(8):
 			if diff & 1:
 				# get the corresponding switch
-				switch = cls._all.get((TMindex, i))
-				if switch:
+				switch = cls._all.get((TMindex, i), None)
+				if switch is not None:
 					# add it the list of switches that have changed (if it is not yet in)
 					if switch not in lswitch:
 						lswitch.append(switch)
