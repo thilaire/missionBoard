@@ -10,13 +10,14 @@ class POT(Element):
 
 	_all = {}   # list of potentiometers
 
-	def __init__(self, keyname, name, index, event=None):
+	def __init__(self, keyname, name, index, event=None, reverse=False):
 		# init super class
 		super(POT, self).__init__(keyname, name, event)
 		# register in the dictionnary of switches
 		self._all[index] = self
 		self._index = index
-		self._value = 0
+		self._value = 255 if reverse else 0
+		self._reverse = reverse
 
 
 
@@ -30,7 +31,7 @@ class POT(Element):
 			print("INDEX="+str(index))
 			return  # TODO: should not happen, do something ? Remove the try/except ?
 		# assign its new value
-		Pot._value = value
+		Pot._value = 255-value if Pot._reverse else value
 		# notify the Potentiometer that its value changes
 		Pot.notify()
 
