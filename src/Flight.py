@@ -86,8 +86,8 @@ class Flight(Functionality):
 		# Panel B4: pilot
 		self.add('B4_LED', 'manual', TMindex=4, index=0)
 		self.add('B4_POT_0', 'roll', index=0)
-		self.add('B4_POT_1', 'yaw', index=1)
-		self.add('B4_POT_0', 'speed', index=2)
+		self.add('B4_POT_1', 'yaw', index=1, reverse=True)
+		self.add('B4_POT_2', 'speed', index=2)
 
 		# Panel B5: flight mode
 		self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
@@ -96,11 +96,12 @@ class Flight(Functionality):
 
 	def onEvent(self, e):
 		"""Manage changes for the filght buttons"""
+		logger.debug("Flight: button %s", e)
 		pass
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		return (self.roll.value == 0) and (self.yaw.value == 0) and (self.yaw.speed == 0)\
+		return (self.roll.value < 5) and (self.yaw.value < 5) and (self.speed.value < 5)\
 		        and (self.mode == 'takeoff') and (self.autoPilot == 'auto')
 
 
