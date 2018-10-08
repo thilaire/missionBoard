@@ -27,7 +27,6 @@ class Switch(Element):
 	def checkChanges(cls, TMindex, value):
 		# get the bit that have changed
 		diff = value ^ cls._values[TMindex]
-		logger.debug("TMindex=%d value=%d, values=%s, diff=%d", TMindex, value, cls._values, diff)
 		# check for each bit that differ
 		lswitch = []    # list of switches that have changed
 		for i in range(8):
