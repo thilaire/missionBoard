@@ -2,7 +2,7 @@
 
 
 import logging
-logger = logging.getLogger()
+logger = logging.getLogger("State")
 
 
 class State:
@@ -48,7 +48,7 @@ class Init(State):
 		the state is over when all the functionalities are ready to start"""
 		ready = func.isReadyToStart()
 		self._ready[func] = ready
-		logger.debug(", ".join(f.__class__.__name__ for f, b in self._ready.items() if not b))
+		logger.debug("Not Ready: " + ", ".join(f.__class__.__name__ for f, b in self._ready.items() if not b))
 		# return True if all the functionalities are ready
 		if ready:
 			return all(self._ready.values())

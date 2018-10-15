@@ -1,6 +1,11 @@
 # coding=utf-8
 
 from MissionBoard.Element import Element
+import logging
+
+# logger
+logger = logging.getLogger()
+SPIlogger = logging.getLogger('Element')
 
 
 class POT(Element):
@@ -17,7 +22,7 @@ class POT(Element):
 		self._all[index] = self
 		self._index = index
 		self._value = 255 if reverse else 0
-		self._reverse = reverse
+		self.reverse = reverse
 
 
 
@@ -28,10 +33,10 @@ class POT(Element):
 		try:
 			Pot = cls._all[index]
 		except KeyError:
-			print("INDEX="+str(index))
+			logger.debug("An undefined potentiometer has changed (index=%d)", index)
 			return  # TODO: should not happen, do something ? Remove the try/except ?
 		# assign its new value
-		Pot._value = 255-value if Pot._reverse else value
+		Pot._value = 255-value if Pot.reverse else value
 		# notify the Potentiometer that its value changes
 		Pot.notify()
 
@@ -40,3 +45,4 @@ class POT(Element):
 	def value(self):
 		"""return the value"""
 		return self._value
+

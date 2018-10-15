@@ -13,7 +13,7 @@ from MissionBoard.RGB import RED, YELLOW, FAST, BLACK, BLUE, NOBLINK
 from MissionBoard import Functionality
 
 
-logger = logging.getLogger()
+logger = logging.getLogger("Flight")
 SoundPath = "../sound/"
 
 
@@ -56,7 +56,6 @@ class Turbo(Functionality):
 	def onEvent(self, e):
 		"""Manage changes for the turbo buttons"""
 		# adjust the LEDs according to the switches
-		logger.debug("onEvent Turbo %s", e)
 		if e is self.gas:
 			self.LED_gas = e.value
 		if e is self.boost:
@@ -96,7 +95,6 @@ class Flight(Functionality):
 
 	def onEvent(self, e):
 		"""Manage changes for the filght buttons"""
-		logger.debug("Flight: button %s", e)
 		pass
 
 	def isReadyToStart(self):

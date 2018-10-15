@@ -9,7 +9,7 @@ import logging
 from MissionBoard.RGB import RED, YELLOW, GREEN, ORANGE, FAST, RGB
 from MissionBoard import Functionality
 
-logger = logging.getLogger()
+logger = logging.getLogger("Elec")
 SoundPath = "../sound/"
 
 

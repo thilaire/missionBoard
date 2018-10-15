@@ -17,7 +17,7 @@ from Phases import Phase1, Tanks
 
 # init logger
 logger = logging.getLogger()
-logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.INFO)
 
 # init pygame (for the sound)
 pygame.init()

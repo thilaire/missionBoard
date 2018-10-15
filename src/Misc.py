@@ -13,7 +13,7 @@ from MissionBoard.RGB import RED, YELLOW, FAST, BLACK, BLUE, NOBLINK
 from MissionBoard import Functionality
 
 
-logger = logging.getLogger()
+logger = logging.getLogger("Misc")
 SoundPath = "../sound/"
 
 
@@ -78,7 +78,6 @@ class Gates(Functionality):
 
 	def onEvent(self, e):
 		"""Manage changes for the gate switches"""
-		logger.debug("BEFORE: %s", self.__dict__)
 		if self.EM.electricity > 0:
 			# determine the state (moving, error, etc.)
 			if (not self.gateMoving) and (not self.error):
@@ -212,7 +211,6 @@ class Oxygen(Functionality):
 
 	def onEvent(self, e):
 		"""Manage the water button"""
-		logger.debug("onEvent Oxygen!!")
 		if e is self.pump:
 			logger.debug("e.value=%s", e.value)
 			if not e.value:

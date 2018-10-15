@@ -8,12 +8,15 @@ from queue import Queue, Empty
 from re import compile
 
 # import UX elements (Leds, Buttons, Switches, etc.)
+from MissionBoard.Element import Element
+
 from MissionBoard.LED import LED
 from MissionBoard.Display import DISP, LVL
 from MissionBoard.PushButton import PB
 from MissionBoard.RGB import RGB
 from MissionBoard.Switches import SW2, SW3
 from MissionBoard.POT import POT
+
 
 # dictionary of possible elements
 dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2, 'SW3': SW3, 'POT': POT, 'LVL': LVL}
@@ -50,31 +53,37 @@ class Functionality:
 		logger.debug("addEvent: btn=%s", str(btn))
 		self._queue.put_nowait(btn)
 
+	@property
+	def name(self):
+		return self.__class__.__name__
+
 	def waitEvents(self):
 		"""threaded loop that waits for the event in the queue
 		 (or wait for some time), and then launch the function"""
-		logger.debug("Launch waitEvent '%s'", self.__class__.__name__)
+		logger.debug("Launch waitEvent '%s'", self.name)
 		# loop (wait for a button change or a timer)
 		self._lastEventTime = time()
 		while True:
 			timer, timeout = self.minTimer()
 			try:
 				btn = self._queue.get(timeout=timeout)
-				logger.debug("Receive '%s' in '%s' queue", str(btn), self.__class__.__name__)
+				logger.debug("Receive '%s' in '%s' queue", str(btn), self.name)
 				self._queue.task_done()  # useless, here
 			except Empty:
-				logger.debug("Timeout '%s' (%ds) in '%s' queue", timer, timeout, self.__class__.__name__)
+				logger.debug("Timeout '%s' (%ds) in '%s' queue", timer, timeout, self.name)
 				btn = timer
 				del self._timers[timer]     # remove that timer
 			# update the remaining timers (if some still exist)
 			self.updateTimers()
 			# call the fct with the button, or with the type of the delay event
+			logger.info("Run `%s` event (because of %s", self.name, str(btn) if isinstance(btn, Element) else "Timer %d"%btn)
 			self.onEvent(btn)
 			# check if we move to another state
 			self.EM.manageState(self)
 
 	def run(self):
 		"""run the threaded loop """
+		logger.info("Start the functionality %s", self.name)
 		t = Thread(target=self.waitEvents, daemon=True)
 		t.start()
 
@@ -134,5 +143,5 @@ class Functionality:
 		element = dictOfElements[elementType](keyname, name, **args)
 		setattr(self.__class__, name, element)
 		setattr(self.EM.__class__, type(self).__name__+'_'+name, element)
-		logger.debug("Element `%s` (%s) is added to %s", keyname, name, type(self).__name__)
+		logger.info("Element `%s` (%s) is added to %s", keyname, name, type(self).__name__)
 

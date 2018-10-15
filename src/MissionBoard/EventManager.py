@@ -4,6 +4,7 @@ import logging
 from MissionBoard.ATBridge import ATBridge
 from MissionBoard.State import Init
 
+
 logger = logging.getLogger()
 
 
@@ -42,7 +43,7 @@ class EventManager(ATBridge):
 			self.isInitState = isinstance(self.state, Init)  # True if we start with Init State
 		except IndexError:
 			raise ValueError("Cannot go to next state")
-		logger.debug("We move from '%s' state to '%s' state", prevState, self.state.name)
+		logger.info("We move from '%s' state to '%s' state", prevState, self.state.name)
 		# update the displays
 		self.state.init()
 
@@ -65,7 +66,8 @@ class EventManager(ATBridge):
 	def run(self):
 		"""run the loops, the start method and they the (endless) SPI loop"""
 		# run the loops (one per thread)
-		[l.run() for l in self.functionalities]
+		for l in self.functionalities:
+			l.run()
 		# start the object
 		self.start()
 		# and run the SPI loop

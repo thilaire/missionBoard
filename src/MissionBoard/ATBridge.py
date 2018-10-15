@@ -69,7 +69,7 @@ class ATBridge:
 					GPIO.setup(24, GPIO.OUT)
 					GPIO.output(24, 1)
 					# shutdown ask
-					logger.debug("Shutdown asked by the ATtiny")
+					logger.info("Shutdown asked by the ATtiny")
 					# import os
 					# os.system("sudo shutdown -h now")
 				else:
