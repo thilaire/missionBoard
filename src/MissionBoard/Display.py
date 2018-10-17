@@ -75,3 +75,4 @@ class LVL(Element):
 		# send the command and the list of values
 		command = 0b11001000 | self._TMindex
 		self.sendSPI([command, ] + self._values)
+		# TODO: before sending the command and the values, check if the values has changed before last sent. If not, it is not necessary to send it again
