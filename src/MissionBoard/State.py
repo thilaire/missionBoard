@@ -43,12 +43,13 @@ class Init(State):
 		# dictionary that associate a boolean for each functionality
 		self._ready = {func: func.isReadyToStart() for func in EM.functionalities}
 
+
 	def isOver(self, func):
 		"""update the boolean for the functionality
 		the state is over when all the functionalities are ready to start"""
 		ready = func.isReadyToStart()
 		self._ready[func] = ready
-		logger.debug("Not Ready: " + ", ".join(f.__class__.__name__ for f, b in self._ready.items() if not b))
+		logger.warning("Not Ready: " + ", ".join(f.__class__.__name__ for f, b in self._ready.items() if not b))
 		# return True if all the functionalities are ready
 		if ready:
 			return all(self._ready.values())

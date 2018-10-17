@@ -17,7 +17,7 @@ from Phases import Phase1, Tanks
 
 # init logger
 logger = logging.getLogger()
-logging.basicConfig(format='%(asctime)s - %(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.INFO)
 
 # init pygame (for the sound)
 pygame.init()
@@ -29,6 +29,7 @@ class MissionBoard(EventManager):
 	def start(self):
 		"""start function (initialize the displays)"""
 		# global states
+		logger.info('Start!')
 		self.electricity = 10       # level of electricity
 
 		# init the displays
@@ -38,24 +39,22 @@ class MissionBoard(EventManager):
 		# self.AllTheRest_position.clear()
 		# self.AllTheRest_direction.clear()
 
-		# self.AllTheRest_counter.clear()
-
 		# self.LED_OnOff = True
 		self.RGB_Go = RED, FAST
-		logger.debug('Start!')
 
 		self.Flight_altitude = '76543210'
 		self.Flight_position = '1-2-3-40'
 		self.Flight_direction = '0123'
-		# self.LVL_oxygen = 7
+		self.Oxygen_level = 7
 
 		self.askATdata()
 
 
 # add an init method to the Init state (that display 'Init')
 def displayInit(self):
-	logger.debug("JHLKHJMLKJMLJKMLKLM")
+	logger.warning("JHLKHJMLKJMLJKMLKLM")
 	self.EM.Flight_counter = '- Init -'
+
 Init.init = displayInit
 
 

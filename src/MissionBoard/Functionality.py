@@ -76,7 +76,7 @@ class Functionality:
 			# update the remaining timers (if some still exist)
 			self.updateTimers()
 			# call the fct with the button, or with the type of the delay event
-			logger.info("Run `%s` event (because of %s", self.name, str(btn) if isinstance(btn, Element) else "Timer %d"%btn)
+			logger.info("Run `%s` event (because of %s", self.name, str(btn) if isinstance(btn, Element) else "Timer "+btn)
 			self.onEvent(btn)
 			# check if we move to another state
 			self.EM.manageState(self)
