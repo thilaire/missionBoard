@@ -65,7 +65,7 @@ class Electricity(Functionality):
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		return (not self.solar) and (not self.battery) and (not self.fuel)
+		return self.solar and self.battery and self.fuel
 
 
 class Light(Functionality):
@@ -90,3 +90,20 @@ class Light(Functionality):
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
 		return (not self.cabin) and (not self.outside)
+
+
+class Computer(Functionality):
+	"""Manage the computers (main or safety"""
+	def __init__(self, EM):
+		"""create the button"""
+		super(Light, self).__init__(EM)
+		self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
+
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return self.computer == 'backup'
+
+	def onEvent(self, e):
+		"Manage changes for the computer switch"
+		# TODO:
+		pass

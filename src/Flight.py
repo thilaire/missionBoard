@@ -92,6 +92,8 @@ class Flight(Functionality):
 		self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
 		self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
 
+		self.counter = "99999999"
+
 
 	def onEvent(self, e):
 		"""Manage changes for the filght buttons"""
@@ -103,12 +105,13 @@ class Flight(Functionality):
 		        and (self.mode == 'takeoff') and (self.autoPilot == 'auto')
 
 
+
+
+
 class AllTheRest(Functionality):
 	def __init__(self, EM):  # self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
 		super(AllTheRest, self).__init__(EM)
 
-		# Panel T6: levels
-		self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
 
 		# Panel T9: keyboard
 		# TODO:

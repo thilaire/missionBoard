@@ -17,6 +17,9 @@ class Phase1(State):
 	"""Define the Phase 1"""
 	funcNext = [Phase, ]
 
+	def init(self):
+		self.EM.Flight_counter = "PHASE 1 "
+
 	def isOver(self, func):
 		"""the phase is over when the switch 'Phase1' is on"""
 		return self.EM.Phase_phase1 and (not self.EM.Phase_phase2) and (not self.EM.Phase_phase3)
