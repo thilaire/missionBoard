@@ -31,7 +31,9 @@ class ATBridge:
 		# open SPI connection
 		self._spi = SpiDev()
 		self._spi.open(0, 0)
-		self._spi.max_speed_hz = 100000     # 122000
+		self._spi.max_speed_hz = 10000     # 122000
+		# TODO: check why higher speed cause problem (ATtiny send data that is seen as "AT asked for shutdown"
+		# change the logging level (that slows down the RPi) disables this problem... strange!
 
 		# declare the SPI queue
 		self._SPIqueue = Queue()
@@ -91,9 +93,12 @@ class ATBridge:
 
 	def sendSPI(self, data):
 		"""Simply add the data in the queue"""
-		SPIlogger.debug("send %s in the queue", str(data))
 		self._SPIqueue.put_nowait(data)
-
+		if isinstance(data, list):
+			strdata = ", ".join(str(d)+'(0b{0:08b})'.format(d) if i == 0 else str(d) for i, d in enumerate(data))
+		else:
+			strdata = str(data)+'(0b{0:08b})'.format(data)
+		SPIlogger.debug("Put [%s] in the queue (content=%s)", strdata, str(list(self._SPIqueue.queue)))
 
 
 	def askATdata(self):
