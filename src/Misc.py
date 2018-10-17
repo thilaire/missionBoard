@@ -36,7 +36,7 @@ class Laser(Functionality):
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		logger.debug("self.fire.value=%s", self.fire.value)
+		logger.warning("self.armed=%s  self.fire.value=%s", self.armed.valueName, self.fire.value)
 		return self.armed == 'disarmed' and (not self.fire)
 
 	def onEvent(self, e):
@@ -212,12 +212,11 @@ class Oxygen(Functionality):
 	def onEvent(self, e):
 		"""Manage the water button"""
 		if e is self.pump:
-			logger.debug("e.value=%s", e.value)
-			if not e.value:
+			if e.value:
 				self.pumpSound.play(loops=-1)
 				self.runTimer('DOWN', 1)
 		elif e == 'DOWN':
-			if not self.pump:
+			if self.pump.value:
 				self.level = min(10, self.level + 0.3)
 				self.oxygen = int(self.level)
 				if self.level == 10:

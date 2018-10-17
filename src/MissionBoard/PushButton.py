@@ -15,7 +15,7 @@ class PB(Element):
 
 		# configure the pin for input, with pull-up
 		GPIO.setmode(GPIO.BCM)
-		GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 		GPIO.add_event_detect(gpio, edge, callback=lambda x: self.notify(), bouncetime=500)
 
 
@@ -25,5 +25,10 @@ class PB(Element):
 		self._value = GPIO.input(self._gpio)
 		return not self._value
 
+
+	def __bool__(self):
+		"""return directly the value when evaluated as boolean / integer"""
+		# TODO: use __nonzero__ for python 2.x ?
+		return self.value
 
 
