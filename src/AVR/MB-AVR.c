@@ -115,6 +115,8 @@ ISR (SPI_STC_vect) {
 				else if (SPIRec_command == 0b11110000) {
 					/* ask for the AVR datas (TMx8 and potentiometers) */
 					/* we reset the data, so that they will be send again in the next polling cycles */
+					for(int i=0; i<8; i++)
+						clearTMx(i);
 					switchDataTMx();
 					switchDataADC();
 				}
@@ -229,7 +231,7 @@ ISR (TIMER1_COMPA_vect  ) {
 
 	/* update SPI header and SPDR (next byte to be sent)*/
 	SPISend_header &= 0b11001111;
-	SPISend_header |= NB_BYTES[SPISend_header>>2];
+	SPISend_header |= NB_BYTES[(SPISend_header>>2)&3];
 
 	/* check if the RPi has shut down */
 	if (RPiPower == RPI_SHUTING && (PINC&1)==0) {
