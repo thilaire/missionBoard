@@ -38,6 +38,9 @@ class ATBridge:
 		# declare the SPI queue
 		self._SPIqueue = Queue()
 
+		# first add a query for all the data
+		self.resetATdata()
+
 		# take the IO24 into consideration when AVR wants to communicate
 		GPIO.setwarnings(False)
 		GPIO.setmode(GPIO.BCM)
@@ -50,6 +53,7 @@ class ATBridge:
 		Infinite loop to send every message in the SPI queue to the ATtiny through the SPI
 		(a way to send one message at once)
 		"""
+
 		# SPI loop
 		while True:
 			# wait for data
@@ -101,7 +105,7 @@ class ATBridge:
 		SPIlogger.debug("Put [%s] in the queue (content=%s)", strdata, str(list(self._SPIqueue.queue)))
 
 
-	def askATdata(self):
+	def resetATdata(self):
 		"""
 		ask the ATtiny to send its data
 		"""
