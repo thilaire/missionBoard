@@ -34,7 +34,6 @@ class Phase(Functionality):
 		"""Manage the buttons changes"""
 		# TODO: sounds
 		# TODO: turn on associated LEDs, if one day we connect them
-		logger.debug("%s %s %s", self.phase1.value, self.phase2.value, self.phase3.value)
 		pass
 
 	def isReadyToStart(self):
@@ -91,8 +90,6 @@ class Flight(Functionality):
 		# Panel B5: flight mode
 		self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
 		self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
-
-		self.counter = "99999999"
 
 
 	def onEvent(self, e):

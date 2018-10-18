@@ -17,7 +17,7 @@ from Phases import Phase1, Tanks
 
 # init logger
 logger = logging.getLogger()
-logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
 # init pygame (for the sound)
 pygame.init()
@@ -47,7 +47,7 @@ class MissionBoard(EventManager):
 		self.Flight_direction = '0123'
 		self.Oxygen_level = 7
 
-		self.askATdata()
+
 
 
 # add an init method to the Init state (that display 'Init')

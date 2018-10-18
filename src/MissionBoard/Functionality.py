@@ -143,5 +143,5 @@ class Functionality:
 		element = dictOfElements[elementType](keyname, name, **args)
 		setattr(self.__class__, name, element)
 		setattr(self.EM.__class__, type(self).__name__+'_'+name, element)
-		logger.info("Element `%s` (%s) is added to %s", keyname, name, type(self).__name__)
+		logger.debug("Element `%s` (%s) is added to %s", keyname, name, type(self).__name__)
 

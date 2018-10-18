@@ -36,7 +36,6 @@ class Laser(Functionality):
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		logger.warning("self.armed=%s  self.fire.value=%s", self.armed.valueName, self.fire.value)
 		return self.armed == 'disarmed' and (not self.fire)
 
 	def onEvent(self, e):
