@@ -259,4 +259,5 @@ src/AVR/test_led.o
 src/MissionBoard.pyc
 /docs/_site/
 docs/.jekyll-metadata
-src/AVR/TMx8.s
+src/AVR/*.s
+
