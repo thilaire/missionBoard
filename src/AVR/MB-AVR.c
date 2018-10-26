@@ -33,7 +33,6 @@ Copyright 2017-2018 T. Hilaire
 
 
 
-#include "MB-AVR.h"
 #include "RGB.h"
 #include "TMx.h"
 #include "ADC.h"
@@ -75,53 +74,29 @@ uint8_t switchPower = 0;        /* current state of the switch (to catch its cha
 
 
 /* circular buffer for the data received from SPI */
-#define SPI_BUFFER_LENGTH 8
-#define SPI_BUFFER_MASK 0b00000111
-SPImessage SPIbuffer[SPI_BUFFER_LENGTH];
-uint8_t SPInextMsg = 0;     /* index of the next message */
-uint8_t SPIpop = 0;         /* index of the current message, to be pop */
+#define SPI_BUFFER_LENGTH 64
+#define SPI_BUFFER_MASK 0b00111111
+volatile uint8_t SPIbuffer[SPI_BUFFER_LENGTH];
+volatile uint8_t SPIread = 0;     /* index of the next byte to read */
+volatile uint8_t SPIwrite = 0;    /* index of the next byte to be written */
+volatile uint8_t SPIend = 0xFF;    /* index of the end of the message, 0xFF means that it is not yet computed */
 
 
 /* SPI interrupt function */
 ISR (SPI_STC_vect) {
-	/* some static data */
-	static uint8_t cycle = 0;     /* counts the cycles */
-	static uint8_t nbBytes = 0;      /* how many bytes we will receive in the buffer for this command */
-	static uint8_t* nextData = &(SPIbuffer[0].command);     /* pointer to the byte to be filled */
-
 	/* copy the data  */
-	uint8_t byte = SPDR;
-	*(nextData++) = byte;
-	/* compute how many bytes we will next receive */
-	if (cycle==0) {
-		if ((byte & 0xF0) == 0b11000000)
-			nbBytes = 4;     /* set the 7-segment display, 4-byte mode */
-		else if ((byte & 0xF0) == 0b11010000)
-			nbBytes = 8;     /* set the 7-segment display, 8-byte mode */
-		else if ( ((byte & 0xE0) == 0) && (byte!=0) && (byte!=31) )
-			nbBytes = 5;     /* set RGB Led */
-		else
-			nbBytes = 0;     /* other commands do not require extra bytes */
+	SPIbuffer[SPIwrite] = SPDR;
+	/* increase the write index */
+	SPIwrite = (SPIwrite+1) & SPI_BUFFER_MASK;
+	/* check overflow */
+	if (SPIwrite == SPIread) {
+		/* TODO: should never happen. When sure, remove this test */
+		uint8_t val[4] = {0xFF, 0xBB, 0xFF, 0xBB};
+		setDisplayTMx(0b11000100,val);
+		while(1); /* block everything */
 	}
-	/* check if the end of the data transfer */
-	cycle++;
-	if (cycle > nbBytes) {
-		cycle = 0;
-		/* increase the index of the next message (circular buffer) */
-		SPInextMsg = (SPInextMsg+1) & SPI_BUFFER_MASK;
-		/* TODO: test overflow ! */
-		if (SPInextMsg == SPIpop) {
-			uint8_t val[4] = {0xFF, 0xBB, 0xFF, 0xBB};
-			setDisplayTMx(0b11000100,val);
-			while(1); /* block everything */
-		}
-		/* point to the next message */
-		nextData = &(SPIbuffer[SPInextMsg].command);
-	}
-
 	/* send the next byte */
-	SPDR = byte - 2;
-
+	SPDR -= 2;
 }
 //
 //
@@ -297,52 +272,66 @@ int main(void) {
 	/* enable interrupts and wait */
 	sei();
 
-	/* loop to unstack commands from the SPI buffer */
-	uint8_t val[4] = {0,0,0,0};
-				uint8_t val2[4] = {0,0,0,0};
-			val2[1] = NUMBER_FONT2[SPInextMsg];
-			val2[2] = NUMBER_FONT2[SPIpop];
-			//setDisplayTMx(0b11001100,val2);
-	while(1)
-	{
-		/* test */
-		_NOP();
 
-		/* check if there are some message available */
-		if (SPInextMsg != SPIpop)
-		{
+	uint8_t data[8] = {0};
+	uint8_t command = 0;
+	uint8_t nbBytes = 0;
+	while(1) {
+		/* compute the index of the end f the message */
+		if ((SPIend == 0xFF) && SPIwrite == ((SPIread+1)&SPI_BUFFER_MASK)) {
+			command = SPIbuffer[SPIread];
+			if ((command & 0xF0) == 0b11000000) {
+				SPIend = (SPIwrite + 4) & SPI_BUFFER_MASK;     /* set the 7-segment display, 4-byte mode */
+				nbBytes = 4;
+			}
+			else if ((command & 0xF0) == 0b11010000) {
+				SPIend = (SPIwrite + 8) & SPI_BUFFER_MASK;     /* set the 7-segment display, 8-byte mode */
+				nbBytes = 8;
+			}
+			else if ( ((command & 0xE0) == 0) && (command!=0) && (command!=31) ) {
+				SPIend = (SPIwrite + 5) & SPI_BUFFER_MASK;     /* set RGB Led */
+				nbBytes = 5;
+			}
+			else {
+				SPIend = SPIwrite;     /* other commands do not require extra bytes */
+				nbBytes = 0;
+			}
+		}
+		/* treat the message when it is complete */
+		if (SPIwrite == SPIend) {
+			/* get the command and copy the data */
+			command = SPIbuffer[SPIread];
+			for(uint8_t i=0; i<nbBytes; i++)
+				data[i] = SPIbuffer[(SPIread+1+i)&SPI_BUFFER_MASK];
+
 			/* treat it, according to its 1st byte (command)*/
-			SPImessage* msg = &(SPIbuffer[SPIpop]);
-
-
-			switch (msg->command & 0b11000000) {
+			switch (command & 0b11000000) {
 				case 0:
-					if (msg->command) {
-						if (msg->command == 0b00011111) {
+					if (command) {
+						if (command == 0b00011111) {
 							turnOffRGB();
 						}
 						else {
 							/* set RGB color */
-							setRGBLed(msg->command-1, msg->data);
+							setRGBLed(command-1, data);
 						}
 					}
 					/*else NOP: do nothing */
 					break;
 				case 0b01000000:
 					/* set a led */
-					setLedTMx8(msg->command);
+					setLedTMx8(command);
 					break;
 				case 0b10000000:
 					/* set the brightness and turn on*/
-					setBrightnessTMx(msg->command);
+					setBrightnessTMx(command);
 					break;
 				default:    /* 0b11xxxxxx */
-					if ( !(msg->command & 0b00100000 ) ) {
+					if ( !(command & 0b00100000 ) ) {
 						/* set the display */
-
-						setDisplayTMx(msg->command, msg->data);
+						setDisplayTMx(command, data);
 					}
-					else if (msg->command == 0b11110000) {
+					else if (command == 0b11110000) {
 						/* ask for the AVR datas (TMx8 and potentiometers) */
 						/* we reset the data, so that they will be send again in the next polling cycles */
 						for(int i=0; i<8; i++)
@@ -350,17 +339,18 @@ int main(void) {
 						switchDataTMx();
 						switchDataADC();
 					}
-					else if ((msg->command & 0b00011000) == 0) {
+					else if ((command & 0b00011000) == 0) {
 						/* turn off the display */
-						turnOffTMx(msg->command);
+						turnOffTMx(command);
 					}
-					else if ((msg->command & 0b00011000) == 8) {
+					else if ((command & 0b00011000) == 8) {
 						/* clear the display */
-						clearTMx(msg->command);
+						clearTMx(command);
 					}
 			}
 			/* increase the index of the current msg */
-			SPIpop = (SPIpop+1) & SPI_BUFFER_MASK;
+			SPIread = SPIend;
+			SPIend = 0xFF;
 		}
 
 	}
