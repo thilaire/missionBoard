@@ -31,7 +31,7 @@ class ATBridge:
 		# open SPI connection
 		self._spi = SpiDev()
 		self._spi.open(0, 0)
-		self._spi.max_speed_hz = 10000     # 122000
+		self._spi.max_speed_hz = int(2e5)     # 122000
 		# TODO: check why higher speed cause problem (ATtiny send data that is seen as "AT asked for shutdown"
 		# change the logging level (that slows down the RPi) disables this problem... strange!
 
@@ -63,32 +63,34 @@ class ATBridge:
 			header, = self._spi.xfer([data.pop(0)])
 			SPIlogger.debug("Receive Header= %s", str(header))
 			# add more byte if the AVR respond and want to send data
-			data.extend([0] * ((header >> 4) - len(data)))
+
+			#data.extend([0] * ((header >> 4) - len(data)))
+
 			if data:
 				SPIlogger.debug("Send %s", str(data))
 				recv = self._spi.xfer(data)
 				SPIlogger.debug("Receive data %s", str(recv))
 
-				# treat received data
-				if header & 128:
-					# change GPIO24 in output
-					GPIO.setup(24, GPIO.OUT)
-					GPIO.output(24, 1)
-					# shutdown ask
-					logger.info("Shutdown asked by the ATtiny")
-					# import os
-					# os.system("sudo shutdown -h now")
-				else:
-					if header & 4:
-						Potval = recv[0]
-						index = header & 3
-						SPIlogger.debug("Pot %d, value=%d", index, Potval)
-						POT.checkChanges(index, Potval)
-					if header & 8:
-						TMval = recv[(header >> 4) - 1]
-						index = header & 3
-						SPIlogger.debug("TM %d, value=%d", index, TMval)
-						Switch.checkChanges(index, TMval)
+				# # treat received data
+				# if header & 128:
+				# 	# change GPIO24 in output
+				# 	GPIO.setup(24, GPIO.OUT)
+				# 	GPIO.output(24, 1)
+				# 	# shutdown ask
+				# 	logger.info("Shutdown asked by the ATtiny")
+				# 	# import os
+				# 	# os.system("sudo shutdown -h now")
+				# else:
+				# 	if header & 4:
+				# 		Potval = recv[0]
+				# 		index = header & 3
+				# 		SPIlogger.debug("Pot %d, value=%d", index, Potval)
+				# 		POT.checkChanges(index, Potval)
+				# 	if header & 8:
+				# 		TMval = recv[(header >> 4) - 1]
+				# 		index = header & 3
+				# 		SPIlogger.debug("TM %d, value=%d", index, TMval)
+				# 		Switch.checkChanges(index, TMval)
 
 
 
