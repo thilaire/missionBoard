@@ -2,6 +2,7 @@
 CC = avr-gcc
 OBJCPY = avr-objcopy
 CCFLAGS = -Wall -O3
+#OPTIM =
 OPTIM = -Os
 
 # about the AVR
