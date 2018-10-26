@@ -4,7 +4,7 @@
 import logging
 from queue import Queue
 from spidev import SpiDev
-
+from time import sleep
 import RPi.GPIO as GPIO
 
 from MissionBoard.Element import Element
@@ -31,9 +31,7 @@ class ATBridge:
 		# open SPI connection
 		self._spi = SpiDev()
 		self._spi.open(0, 0)
-		self._spi.max_speed_hz = int(2e5)     # 122000
-		# TODO: check why higher speed cause problem (ATtiny send data that is seen as "AT asked for shutdown"
-		# change the logging level (that slows down the RPi) disables this problem... strange!
+		self._spi.max_speed_hz = int(1e6)     # 122000
 
 		# declare the SPI queue
 		self._SPIqueue = Queue()
@@ -92,7 +90,8 @@ class ATBridge:
 				# 		SPIlogger.debug("TM %d, value=%d", index, TMval)
 				# 		Switch.checkChanges(index, TMval)
 
-
+			# sleep a µs
+			sleep(1e-3)
 
 
 

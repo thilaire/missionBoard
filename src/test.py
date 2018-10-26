@@ -8,7 +8,7 @@ from MissionBoard.Functionality import Functionality
 from MissionBoard.State import Init
 # init logger
 logger = logging.getLogger()
-logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
 
 
@@ -35,7 +35,7 @@ class MissionBoard(EventManager):
 		self.Test_altitude = '76543210'
 		self.Test_counter = '1-2-3-40'
 		for i in range(100):
-			self.Test_counter = str((i*17)%10)*8;
+			self.Test_counter = "".join(str((i*17*j)%10) for j in range(8))
 		logger.info('Done')
 
 def displayInit(self):
