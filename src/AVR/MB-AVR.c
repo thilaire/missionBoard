@@ -27,12 +27,39 @@ Copyright 2017-2018 T. Hilaire
 #include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/cpufunc.h>
+
 #include <string.h>
+
+
 
 #include "MB-AVR.h"
 #include "RGB.h"
 #include "TMx.h"
 #include "ADC.h"
+
+
+/* debug */
+const uint8_t NUMBER_FONT2[] = {
+  0b00111111, // 0
+  0b00000110, // 1
+  0b01011011, // 2
+  0b01001111, // 3
+  0b01100110, // 4
+  0b01101101, // 5
+  0b01111101, // 6
+  0b00000111, // 7
+  0b01111111, // 8
+  0b01101111, // 9
+  0b01110111, // A
+  0b01111100, // B
+  0b00111001, // C
+  0b01011110, // D
+  0b01111001, // E
+  0b01110001  // F
+};
+
+
 
 
 /* constants and functions for powering the Raspberry Pi */
@@ -49,7 +76,7 @@ uint8_t switchPower = 0;        /* current state of the switch (to catch its cha
 
 /* circular buffer for the data received from SPI */
 #define SPI_BUFFER_LENGTH 8
-#define SPI_BUFFER_MASK (SPI_BUFFER_LENGTH-1)
+#define SPI_BUFFER_MASK 0b00000111
 SPImessage SPIbuffer[SPI_BUFFER_LENGTH];
 uint8_t SPInextMsg = 0;     /* index of the next message */
 uint8_t SPIpop = 0;         /* index of the current message, to be pop */
@@ -63,18 +90,19 @@ ISR (SPI_STC_vect) {
 	static uint8_t* nextData = &(SPIbuffer[0].command);     /* pointer to the byte to be filled */
 
 	/* copy the data  */
-	*(nextData++) = SPDR;
+	uint8_t byte = SPDR;
+	*(nextData++) = byte;
 	/* compute how many bytes we will next receive */
 	if (cycle==0) {
-		if ((SPDR & 0xF0) == 0b11000000)
+		if ((byte & 0xF0) == 0b11000000)
 			nbBytes = 4;     /* set the 7-segment display, 4-byte mode */
-		else if ((SPDR & 0xF0) == 0b11010000)
+		else if ((byte & 0xF0) == 0b11010000)
 			nbBytes = 8;     /* set the 7-segment display, 8-byte mode */
-		else if ( ((SPDR & 0xE0) == 0) && (SPDR!=0) && (SPDR!=31) )
+		else if ( ((byte & 0xE0) == 0) && (byte!=0) && (byte!=31) )
 			nbBytes = 5;     /* set RGB Led */
 		else
 			nbBytes = 0;     /* other commands do not require extra bytes */
-		}
+	}
 	/* check if the end of the data transfer */
 	cycle++;
 	if (cycle > nbBytes) {
@@ -82,14 +110,17 @@ ISR (SPI_STC_vect) {
 		/* increase the index of the next message (circular buffer) */
 		SPInextMsg = (SPInextMsg+1) & SPI_BUFFER_MASK;
 		/* TODO: test overflow ! */
-		/* if (SPInextMsg == SPIpop) {
-		} */
+		if (SPInextMsg == SPIpop) {
+			uint8_t val[4] = {0xFF, 0xBB, 0xFF, 0xBB};
+			setDisplayTMx(0b11000100,val);
+			while(1); /* block everything */
+		}
 		/* point to the next message */
 		nextData = &(SPIbuffer[SPInextMsg].command);
 	}
 
 	/* send the next byte */
-	SPDR = SPDR - 2;
+	SPDR = byte - 2;
 
 }
 //
@@ -267,13 +298,23 @@ int main(void) {
 	sei();
 
 	/* loop to unstack commands from the SPI buffer */
+	uint8_t val[4] = {0,0,0,0};
+				uint8_t val2[4] = {0,0,0,0};
+			val2[1] = NUMBER_FONT2[SPInextMsg];
+			val2[2] = NUMBER_FONT2[SPIpop];
+			//setDisplayTMx(0b11001100,val2);
 	while(1)
 	{
+		/* test */
+		_NOP();
+
 		/* check if there are some message available */
 		if (SPInextMsg != SPIpop)
 		{
 			/* treat it, according to its 1st byte (command)*/
 			SPImessage* msg = &(SPIbuffer[SPIpop]);
+
+
 			switch (msg->command & 0b11000000) {
 				case 0:
 					if (msg->command) {
@@ -298,6 +339,7 @@ int main(void) {
 				default:    /* 0b11xxxxxx */
 					if ( !(msg->command & 0b00100000 ) ) {
 						/* set the display */
+
 						setDisplayTMx(msg->command, msg->data);
 					}
 					else if (msg->command == 0b11110000) {
@@ -316,9 +358,9 @@ int main(void) {
 						/* clear the display */
 						clearTMx(msg->command);
 					}
+			}
 			/* increase the index of the current msg */
 			SPIpop = (SPIpop+1) & SPI_BUFFER_MASK;
-			}
 		}
 
 	}
