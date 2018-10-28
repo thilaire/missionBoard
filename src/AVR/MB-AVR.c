@@ -298,7 +298,8 @@ int main(void) {
 			}
 		}
 		/* treat the message when it is complete */
-		if (SPIwrite == SPIend) {
+		//if (SPIwrite == SPIend) {
+		if (((uint8_t) (SPIwrite-SPIread) & SPI_BUFFER_MASK) >= ((uint8_t) (SPIend-SPIread) & SPI_BUFFER_MASK)) {
 			/* get the command and copy the data */
 			command = SPIbuffer[SPIread];
 			for(uint8_t i=0; i<nbBytes; i++)
