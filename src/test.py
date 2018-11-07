@@ -8,7 +8,7 @@ from MissionBoard.Functionality import Functionality
 from MissionBoard.State import Init
 # init logger
 logger = logging.getLogger()
-logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.INFO)
 
 
 
@@ -19,6 +19,16 @@ class Test(Functionality):
 		# displays
 		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
 		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
+		self.runTimer("test",1)
+
+		self.i = 0
+
+	def onEvent(self, e):
+		"""Manage changes"""
+		self.counter = "%08d"%self.i
+		self.i += 1
+		self.runTimer("test", 0.001)
+
 
 
 class MissionBoard(EventManager):
@@ -33,9 +43,10 @@ class MissionBoard(EventManager):
 		# self.Test_altitude.clear()
 
 		self.Test_altitude = '76543210'
-		self.Test_counter = '1-2-3-40'
-		for i in range(100):
-			self.Test_counter = "".join(str((i*17*j)%10) for j in range(8))
+		# self.Test_counter = '1-2-3-40'
+		# for i in range(100):
+		# 	self.Test_counter = "".join(str((i*17*j)%10) for j in range(8))
+		# 	#self.Test_counter = str(i%10)*8
 		logger.info('Done')
 
 def displayInit(self):

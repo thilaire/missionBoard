@@ -82,6 +82,8 @@ volatile uint8_t SPIwrite = 0;    /* index of the next byte to be written */
 volatile uint8_t SPIend = 0xFF;    /* index of the end of the message, 0xFF means that it is not yet computed */
 
 
+volatile uint8_t SPIFlag = 0;
+
 /* SPI interrupt function */
 ISR (SPI_STC_vect) {
 	/* copy the data  */
@@ -97,6 +99,9 @@ ISR (SPI_STC_vect) {
 	}
 	/* send the next byte */
 	SPDR -= 2;
+	/* set the flag (to tell that we have receive something) */
+	SPIFlag = 1;
+
 }
 //
 //
@@ -218,8 +223,114 @@ ISR (TIMER1_COMPA_vect  ) {
 //
 //	/* next cycle */
 //	cycle++;
-//	/* update SPDR with the datat to be sent */
+//	/* update SPDR with the data to be sent */
 //	SPDR = SPISend_header;
+}
+
+
+void debugDisp(uint8_t x, uint8_t y, uint8_t z)
+{
+	uint8_t data[8] = {0xbc,0xff,0xbc,0xff,0xbc,0xff,0xbc,0xfe};
+/*	data[0] = NUMBER_FONT2[ x>>4 ];
+	data[1] = NUMBER_FONT2[ x&15];
+	data[2] = NUMBER_FONT2[ y>>4 ];
+	data[3] = NUMBER_FONT2[ y&15];
+	data[4] = NUMBER_FONT2[ z>>4 ];
+	data[5] = NUMBER_FONT2[ z&15];
+*/
+	setDisplayTMx(0b11010100,data)  ;
+
+
+}
+
+
+/* called when we have a new byte from SPI */
+void SPIbyte() {
+
+	uint8_t data[8] = {0};
+	uint8_t command = 0;
+	static uint8_t nbBytes = 0;
+
+	/* clear the SPI flag */
+	SPIFlag = 0;
+
+	/* compute the index of the end of the message */
+	if ( (SPIend == 0xFF) ) { //&& (SPIwrite == ((SPIread+1)&SPI_BUFFER_MASK)) ) {
+		command = SPIbuffer[SPIread];
+		if ((command & 0xF0) == 0b11000000) {
+			SPIend = (SPIwrite + 4) & SPI_BUFFER_MASK;     /* set the 7-segment display, 4-byte mode */
+			nbBytes = 4;
+		}
+		else if ((command & 0xF0) == 0b11010000) {
+			SPIend = (SPIwrite + 8) & SPI_BUFFER_MASK;     /* set the 7-segment display, 8-byte mode */
+			nbBytes = 8;
+		}
+		else if ( ((command & 0xE0) == 0) && (command!=0) && (command!=31) ) {
+			SPIend = (SPIwrite + 5) & SPI_BUFFER_MASK;     /* set RGB Led */
+			nbBytes = 5;
+		}
+		else {
+			SPIend = SPIwrite;     /* other commands do not require extra bytes */
+			nbBytes = 0;
+		}
+	}
+	/* treat the message when it is complete */
+	if (SPIwrite == SPIend) {
+	//if (((uint8_t) (SPIwrite-SPIread) & SPI_BUFFER_MASK) >= ((uint8_t) (SPIend-SPIread) & SPI_BUFFER_MASK)) {
+		/* get the command and copy the data */
+		command = SPIbuffer[SPIread];
+		for(uint8_t i=0; i<nbBytes; i++)
+			data[i] = SPIbuffer[(SPIread+1+i)&SPI_BUFFER_MASK];
+
+		/* treat it, according to its 1st byte (command)*/
+		switch (command & 0b11000000) {
+			case 0:
+				if (command) {
+					if (command == 0b00011111) {
+						turnOffRGB();
+					}
+					else {
+						/* set RGB color */
+						setRGBLed(command-1, data);
+					}
+				}
+				/*else NOP: do nothing */
+				break;
+			case 0b01000000:
+				/* set a led */
+				setLedTMx8(command);
+				break;
+			case 0b10000000:
+				/* set the brightness and turn on*/
+				setBrightnessTMx(command);
+				break;
+			default:    /* 0b11xxxxxx */
+				if ( !(command & 0b00100000 ) ) {
+					/* set the display */
+					setDisplayTMx(command, data);
+				}
+				else if (command == 0b11110000) {
+					/* ask for the AVR datas (TMx8 and potentiometers) */
+					/* we reset the data, so that they will be send again in the next polling cycles */
+					for(int i=0; i<8; i++)
+						clearTMx(i);
+					switchDataTMx();
+					switchDataADC();
+				}
+				else if ((command & 0b00011000) == 0) {
+					/* turn off the display */
+					turnOffTMx(command);
+				}
+				else if ((command & 0b00011000) == 8) {
+					/* clear the display */
+					clearTMx(command);
+				}
+		}
+		/* increase the index of the current msg */
+		SPIread = SPIend;
+		SPIend = 0xFF;
+	}
+
 }
 
 
@@ -273,87 +384,13 @@ int main(void) {
 	sei();
 
 
-	uint8_t data[8] = {0};
-	uint8_t command = 0;
-	uint8_t nbBytes = 0;
+
 	while(1) {
-		/* compute the index of the end f the message */
-		if ((SPIend == 0xFF) && SPIwrite == ((SPIread+1)&SPI_BUFFER_MASK)) {
-			command = SPIbuffer[SPIread];
-			if ((command & 0xF0) == 0b11000000) {
-				SPIend = (SPIwrite + 4) & SPI_BUFFER_MASK;     /* set the 7-segment display, 4-byte mode */
-				nbBytes = 4;
-			}
-			else if ((command & 0xF0) == 0b11010000) {
-				SPIend = (SPIwrite + 8) & SPI_BUFFER_MASK;     /* set the 7-segment display, 8-byte mode */
-				nbBytes = 8;
-			}
-			else if ( ((command & 0xE0) == 0) && (command!=0) && (command!=31) ) {
-				SPIend = (SPIwrite + 5) & SPI_BUFFER_MASK;     /* set RGB Led */
-				nbBytes = 5;
-			}
-			else {
-				SPIend = SPIwrite;     /* other commands do not require extra bytes */
-				nbBytes = 0;
-			}
-		}
-		/* treat the message when it is complete */
-		//if (SPIwrite == SPIend) {
-		if (((uint8_t) (SPIwrite-SPIread) & SPI_BUFFER_MASK) >= ((uint8_t) (SPIend-SPIread) & SPI_BUFFER_MASK)) {
-			/* get the command and copy the data */
-			command = SPIbuffer[SPIread];
-			for(uint8_t i=0; i<nbBytes; i++)
-				data[i] = SPIbuffer[(SPIread+1+i)&SPI_BUFFER_MASK];
-
-			/* treat it, according to its 1st byte (command)*/
-			switch (command & 0b11000000) {
-				case 0:
-					if (command) {
-						if (command == 0b00011111) {
-							turnOffRGB();
-						}
-						else {
-							/* set RGB color */
-							setRGBLed(command-1, data);
-						}
-					}
-					/*else NOP: do nothing */
-					break;
-				case 0b01000000:
-					/* set a led */
-					setLedTMx8(command);
-					break;
-				case 0b10000000:
-					/* set the brightness and turn on*/
-					setBrightnessTMx(command);
-					break;
-				default:    /* 0b11xxxxxx */
-					if ( !(command & 0b00100000 ) ) {
-						/* set the display */
-						setDisplayTMx(command, data);
-					}
-					else if (command == 0b11110000) {
-						/* ask for the AVR datas (TMx8 and potentiometers) */
-						/* we reset the data, so that they will be send again in the next polling cycles */
-						for(int i=0; i<8; i++)
-							clearTMx(i);
-						switchDataTMx();
-						switchDataADC();
-					}
-					else if ((command & 0b00011000) == 0) {
-						/* turn off the display */
-						turnOffTMx(command);
-					}
-					else if ((command & 0b00011000) == 8) {
-						/* clear the display */
-						clearTMx(command);
-					}
-			}
-			/* increase the index of the current msg */
-			SPIread = SPIend;
-			SPIend = 0xFF;
-		}
-
+	/* TODO: manage to do the same with software interrupt, so don't have to poll the change of the Flag (it should be an interrupt flag, instead) */
+	/* check if we have received something */
+	if (SPIFlag)
+		/* if so, do something */
+		SPIbyte();
 	}
 
 }
