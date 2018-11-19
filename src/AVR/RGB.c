@@ -50,7 +50,7 @@ uint16_t blinkEventTable[NB_RGB] = {0};    /* intermediate table: the same as bl
 
 /* add a new command for a led
 nLed: number of the led
-buffer: the 5 bytes for the SPI buffer */
+buffer: the 5 bytes from the SPI buffer */
 void setRGBLed(uint8_t nLed, uint8_t* buffer)
 {
 	RGBledsHasChanged = 1;

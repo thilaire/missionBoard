@@ -76,13 +76,18 @@ uint8_t switchPower = 0;        /* current state of the switch (to catch its cha
 /* circular buffer for the data received from SPI */
 #define SPI_BUFFER_LENGTH 64
 #define SPI_BUFFER_MASK 0b00111111
-volatile uint8_t SPIbuffer[SPI_BUFFER_LENGTH];
-volatile uint8_t SPIread = 0;     /* index of the next byte to read */
-volatile uint8_t SPIwrite = 0;    /* index of the next byte to be written */
-volatile uint8_t SPIend = 0xFF;    /* index of the end of the message, 0xFF means that it is not yet computed */
+uint8_t SPIbuffer[SPI_BUFFER_LENGTH];
+uint8_t SPIread = 0;     /* index of the next byte to read */
+uint8_t SPIwrite = 0;    /* index of the next byte to be written */
+uint8_t SPIend = 0xFF;    /* index of the end of the message, 0xFF means that it is not yet computed */
+uint8_t SPIFlag = 0;       /* flag set to 1 when a byte is received */
 
 
-volatile uint8_t SPIFlag = 0;
+/* timer for the polling */
+uint8_t timerFlag = 0;     /* flag set to 1 when a sampling occurs */
+uint8_t cycle = 0;  /* timer cycle: 4 MSB gives blinking cycle, the other the what-to-do cycle */
+
+
 
 /* SPI interrupt function */
 ISR (SPI_STC_vect) {
@@ -101,145 +106,6 @@ ISR (SPI_STC_vect) {
 	SPDR -= 2;
 	/* set the flag (to tell that we have receive something) */
 	SPIFlag = 1;
-
-}
-//
-//
-///* get the data from the TMx8 and update SPIsend data accordingly */
-//void updateDataTMx8(uint8_t nTM) {
-//	uint8_t data;
-//	if (getDataTMx8(nTM, &data)) {
-//		/* copy the data in the right place (header is 1 if Pot has changed, 0 otherwise) */
-//		SPISend_data[SPISend_header>>2] = data;
-//		/* TMx8 data has changed */
-//		SPISend_header |= 0b00001000;
-//	}
-//}
-//
-//
-///* get the data from the ADC and update SPIsend data accordingly */
-//void updateADC(uint8_t cycle) {
-//	uint8_t data;
-//
-//	if (cycle==3) {  /* switches on analog input*/
-//		if (getADCSwitches(&data)) {
-//			/* copy the data in the first byte */
-//			SPISend_data[0] = data;
-//			/* ADC data has changed */
-//			SPISend_header |= 0b00001000;
-//		}
-//	}
-//	else if (getADC(cycle, &data)) { /* regular potentiometer */
-//		/* copy the data in the first byte */
-//		SPISend_data[0] = data;
-//		/* ADC data has changed */
-//		SPISend_header |= 0b00000100;
-//	}
-//}
-//
-
-
-
-
-/* Timer 1 interrupt function (when TIMER1==OCR1A) */
-ISR (TIMER1_COMPA_vect  ) {
-//	static uint8_t cycle=0;
-//	static uint8_t blinkCycle = 0;
-//
-//	/* initialize SPI header */
-//	SPISend_header = cycle&3;
-//
-//	/* acquire Potentiometer */
-//	updateADC(cycle&3);
-//	/* acquire data from TMx8 */
-//	updateDataTMx8(cycle&3);
-//	/* run ADC for the next cycle */
-//	runADC((cycle+1)&3);
-//
-//	/* run blinking cycle */
-//	if ((cycle&63) == 63) {
-//		/* check if we need to send data to the led (something has changed since previous cycle ?) */
-//		if (RGBshouldBeUpdated(blinkCycle)) {
-//			/* prepare the buffer */
-//			fillRGBBuffer(blinkCycle);
-//			updateRGB();
-//		}
-//		/* check if the power LED need to blink */
-//		if (RPiPower&1) {
-//			//setLedTMx8(68 | (blinkCycle&1)<<5); /* turn on or off the led T1_LED, according to blinkCycle */
-//			if (blinkCycle&1)
-//				setBrightnessTMx(0b10001100);
-//			else
-//				turnOffTMx(0b11100100);
-//
-//		}
-//		/* update the blink cycle */
-//		blinkCycle = (blinkCycle+1) & 15;   /* only the 4 LSB */
-//	}
-//
-//	/* update SPI header and SPDR (next byte to be sent)*/
-//	SPISend_header &= 0b11001111;
-//	SPISend_header |= NB_BYTES[(SPISend_header>>2)&3];
-//
-//	/* check if the RPi has shut down */
-//	if (RPiPower == RPI_SHUTING && (PINC&1)==0) {
-//		_delay_ms(5000);   /* TODO: need to know when the RPi is completly off to turn off the relay (instead of waiting 10s) */
-//		//turnOff_RPi();
-//	}
-//
-//	/* check if the power switch has changed (overset SPDR if necessary) */
-//	if ((PINC&2) != switchPower) {
-//		switchPower = PINC&2;
-//		if (RPiPower == RPI_OFF) {
-//			/* turn on the RPi */
-//			turnOn_RPi();
-//			RPiPower = RPI_BOOTING;
-//			/* display "boot" */
-//			uint8_t boot[4] = {124,92,92,120};
-//			setDisplayTMx(0b11000100,boot);
-//			setLedTMx8(100);
-//		}
-//		else if (RPiPower == RPI_ON) {
-//			/* change PC0 to input with pull-up */
-//			DDRC &= ~(0b00000001);
-//			//PORTC |= 0b00000001;
-//			/* now, we are shuting down the RPi */
-//			RPiPower = RPI_SHUTING;
-//			SPISend_header = 0b10000000;
-//			/* display "OFF" */
-//			uint8_t off[4] = {92,113,113,0};
-//			clearTMx(0b11101100);
-//			setDisplayTMx(0b11000100,off);
-//			setLedTMx8(100);
-//		}
-//	}
-//
-//	/* pulse the Raspberry Pi if something has changed */
-//	if (SPISend_header&0b10001100) {
-//		PORTC |= 1;
-//		//_delay_us(1);
-//		PORTC &= ~1;
-//	}
-//
-//	/* next cycle */
-//	cycle++;
-//	/* update SPDR with the data to be sent */
-//	SPDR = SPISend_header;
-}
-
-
-void debugDisp(uint8_t x, uint8_t y, uint8_t z)
-{
-	uint8_t data[8] = {0xbc,0xff,0xbc,0xff,0xbc,0xff,0xbc,0xfe};
-/*	data[0] = NUMBER_FONT2[ x>>4 ];
-	data[1] = NUMBER_FONT2[ x&15];
-	data[2] = NUMBER_FONT2[ y>>4 ];
-	data[3] = NUMBER_FONT2[ y&15];
-	data[4] = NUMBER_FONT2[ z>>4 ];
-	data[5] = NUMBER_FONT2[ z&15];
-*/
-	setDisplayTMx(0b11010100,data)  ;
-
 
 }
 
@@ -334,6 +200,132 @@ void SPIbyte() {
 }
 
 
+
+
+
+
+
+/* get the data from the TMx8 and update SPIsend data accordingly */
+void updateDataTMx8(uint8_t nTM) {
+	uint8_t data;
+	if (getDataTMx8(nTM, &data)) {
+		/* copy the data in the right place (header is 1 if Pot has changed, 0 otherwise) */
+		//SPISend_data[SPISend_header>>2] = data;
+		/* TMx8 data has changed */
+		//SPISend_header |= 0b00001000;
+	}
+}
+
+
+/* get the data from the ADC and update SPIsend data accordingly */
+void updateADC(uint8_t cycle) {
+	uint8_t data;
+
+	if (cycle==3) {  /* switches on analog input*/
+		if (getADCSwitches(&data)) {
+			/* copy the data in the first byte */
+			//SPISend_data[0] = data;
+			/* ADC data has changed */
+			//SPISend_header |= 0b00001000;
+		}
+	}
+	else if (getADC(cycle, &data)) { /* regular potentiometer */
+		/* copy the data in the first byte */
+		//SPISend_data[0] = data;
+		/* ADC data has changed */
+		//SPISend_header |= 0b00000100;
+	}
+}
+
+
+
+/* Timer 1 interrupt function (when TIMER1==OCR1A) */
+ISR (TIMER1_COMPA_vect  ) {
+	/* increase the cycle and set the flag. That's all */
+	/* the treatment is done outside of the interrupt, in order to be able to be interrupted by SPI interrupt */
+	cycle++;
+	timerFlag = 1;
+}
+
+
+void doTimer()
+{
+	/* clear the timer flag */
+	timerFlag = 0;
+
+	/* acquire Potentiometer */
+	updateADC(cycle&3);
+	/* acquire data from TMx8 */
+	//updateDataTMx8(cycle&3);
+	/* run ADC for the next cycle */
+	runADC((cycle+1)&3);
+
+	/* run blinking cycle */
+	if ((cycle&15) == 3) {
+		uint8_t blinkCycle = cycle>>4;
+		/* check if we need to send data to the led (something has changed since previous cycle ?) */
+		if (RGBshouldBeUpdated(blinkCycle)) {
+			/* prepare the buffer */
+			fillRGBBuffer(blinkCycle);
+			updateRGB();
+		}
+//		/* check if the power LED need to blink */
+//		if (RPiPower&1) {
+//			//setLedTMx8(68 | (blinkCycle&1)<<5); /* turn on or off the led T1_LED, according to blinkCycle */
+//			if (blinkCycle&1)
+//				setBrightnessTMx(0b10001100);
+//			else
+//				turnOffTMx(0b11100100);
+//
+//		}
+
+	}
+
+//	/* check if the RPi has shut down */
+//	if (RPiPower == RPI_SHUTING && (PINC&1)==0) {
+//		_delay_ms(5000);   /* TODO: need to know when the RPi is completly off to turn off the relay (instead of waiting 10s) */
+//		//turnOff_RPi();
+//	}
+
+//	/* check if the power switch has changed (overset SPDR if necessary) */
+//	if ((PINC&2) != switchPower) {
+//		switchPower = PINC&2;
+//		if (RPiPower == RPI_OFF) {
+//			/* turn on the RPi */
+//			turnOn_RPi();
+//			RPiPower = RPI_BOOTING;
+//			/* display "boot" */
+//			uint8_t boot[4] = {124,92,92,120};
+//			setDisplayTMx(0b11000100,boot);
+//			setLedTMx8(100);
+//		}
+//		else if (RPiPower == RPI_ON) {
+//			/* change PC0 to input with pull-up */
+//			DDRC &= ~(0b00000001);
+//			//PORTC |= 0b00000001;
+//			/* now, we are shuting down the RPi */
+//			RPiPower = RPI_SHUTING;
+//	//SPISend_header = 0b10000000;
+//			/* display "OFF" */
+//			uint8_t off[4] = {92,113,113,0};
+//			clearTMx(0b11101100);
+//			setDisplayTMx(0b11000100,off);
+//			setLedTMx8(100);
+//		}
+//	}
+
+//	/* pulse the Raspberry Pi if something has changed */
+//	if (SPISend_header&0b10001100) {
+//		PORTC |= 1;
+//		//_delay_us(1);
+//		PORTC &= ~1;
+//	}
+}
+
+
+
+
+
 int main(void) {
 	/* configure inputs/outputs */
 	DDRB = 0b11010011;       /* PB0, PB1, PB4, PB6 and PB7 are outputs */
@@ -362,9 +354,9 @@ int main(void) {
 
 	/* configure timer1, 16bits mode, Prescaler=1/8
 	interrupt after 15625 ticks (compare for channel A) */
-	TCCR1B = (1U<<CS11) | (1U<<WGM12);     /* prescaler = 1/8 and Clear Timer on Compare match (CTC) T*/
+	TCCR1B = (1U<<CS10) | (1U<<WGM12);     /* prescaler = 1/1 and Clear Timer on Compare match (CTC) T*/
 	TCCR1C = (1U<<FOC1A);    /* channel A */
-	OCR1A = 15625;//31250;              /* 15625 ticks @ 1MHz -> 15.625ms */
+	OCR1A = 62500;              /* 62500 ticks @ 8MHz -> 7.8125ms -> 1/128s */
 	TIMSK1 = (1U<<OCIE1A);      /* set interrupt on Compare channel A */
 
 	/* setup the TMx8 and TMx7 boards */
@@ -391,6 +383,10 @@ int main(void) {
 	if (SPIFlag)
 		/* if so, do something */
 		SPIbyte();
+	/* check if it's time to poll data from ADC and TMx8 (or to blink the leds) */
+	if (timerFlag)
+		/* if so, do something */
+		doTimer();
 	}
 
 }
