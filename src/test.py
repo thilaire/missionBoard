@@ -6,6 +6,8 @@ import logging
 from MissionBoard.EventManager import EventManager
 from MissionBoard.Functionality import Functionality
 from MissionBoard.State import Init
+from MissionBoard.RGB import RED, FAST, SLOW, GREEN, PURPLE
+
 # init logger
 logger = logging.getLogger()
 logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.INFO)
@@ -19,15 +21,17 @@ class Test(Functionality):
 		# displays
 		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
 		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
-		self.runTimer("test",1)
+		#self.runTimer("test",1)
+		self.add('B8_RGB', 'elec', pos=2)
 
+		self.elec = RED, SLOW
 		self.i = 0
 
 	def onEvent(self, e):
 		"""Manage changes"""
 		self.counter = "%08d"%self.i
 		self.i += 1
-		self.runTimer("test", 0.001)
+		self.runTimer("test", 0.05)
 
 
 
