@@ -43,23 +43,29 @@ void initADC()
 	ADCSRA = 0b10000100;    /* prescaler=32, so it runs at 250kHz; a conversion takes 25 cycles, or 0.1ms */
 }
 
-/* get the previously run ADC, and update the SPI */
+/* get the previously run ADC, and return 1 if something has changed */
 uint8_t getADC(uint8_t cycle, uint8_t* data)
 {
-	/* the value is in ADCH */
-	*data = ADCH;
+	if (cycle == 3) {
+		return getADCSwitches(data);
+	} else {
 
-	/* compute the difference */
-	int8_t diff = Pot[cycle] - *data;
-	if (diff>5 || diff<-5)
-	{
-		Pot[cycle] = *data;
-		return 1;
+		/* the value is in ADCH */
+		*data = ADCH;
+
+		/* compute the difference */
+		int8_t diff = Pot[cycle] - *data;
+		if (diff>5 || diff<-5)
+		{
+			Pot[cycle] = *data;
+			return 1;
+		}
+		else
+			return 0;
+		//return  !((diff==0 || diff==1 || diff==2));
 	}
-	else
-		return 0;
-	//return  !((diff==0 || diff==1 || diff==2));
 }
+
 
 /* run the ADC (to be aquire in the next cycle */
 void runADC(uint8_t cycle)
@@ -73,6 +79,7 @@ void runADC(uint8_t cycle)
 	/* run it! */
 	ADCSRA = 0b11000100;
 }
+
 
 /* when the RPi ask for all the data
 we simply change the value stored in Pot and ADCswitches */

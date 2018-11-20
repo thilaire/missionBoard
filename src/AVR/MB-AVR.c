@@ -82,6 +82,12 @@ uint8_t SPIwrite = 0;    /* index of the next byte to be written */
 uint8_t SPIend = 0xFF;    /* index of the end of the message, 0xFF means that it is not yet computed */
 uint8_t SPIFlag = 0;       /* flag set to 1 when a byte is received */
 
+/* circular buffer for the data send through SPI */
+#define SPISEND_BUFFER_LENGTH 8
+#define SPISEND_BUFFER_MASK 7
+uint8_t SPISENDbuffer[SPISEND_BUFFER_LENGTH];
+uint8_t SPISENDread = 0;
+uint8_t SPISENDwrite = 0;
 
 /* timer for the polling */
 uint8_t timerFlag = 0;     /* flag set to 1 when a sampling occurs */
@@ -102,8 +108,13 @@ ISR (SPI_STC_vect) {
 		setDisplayTMx(0b11000100,val);
 		while(1); /* block everything */
 	}
-	/* send the next byte */
-	SPDR -= 2;
+	/* prepare the next byte to send */
+	if (SPISENDread == SPISENDwrite) {
+		SPDR = 0;
+	} else {
+		SPDR = SPISENDbuffer[SPIread];
+		SPIread = (SPIread+1) & SPISEND_BUFFER_MASK;
+	}
 	/* set the flag (to tell that we have receive something) */
 	SPIFlag = 1;
 
@@ -200,40 +211,17 @@ void SPIbyte() {
 }
 
 
-
-
-
-
-
-/* get the data from the TMx8 and update SPIsend data accordingly */
-void updateDataTMx8(uint8_t nTM) {
-	uint8_t data;
-	if (getDataTMx8(nTM, &data)) {
-		/* copy the data in the right place (header is 1 if Pot has changed, 0 otherwise) */
-		//SPISend_data[SPISend_header>>2] = data;
-		/* TMx8 data has changed */
-		//SPISend_header |= 0b00001000;
-	}
-}
-
-
-/* get the data from the ADC and update SPIsend data accordingly */
-void updateADC(uint8_t cycle) {
-	uint8_t data;
-
-	if (cycle==3) {  /* switches on analog input*/
-		if (getADCSwitches(&data)) {
-			/* copy the data in the first byte */
-			//SPISend_data[0] = data;
-			/* ADC data has changed */
-			//SPISend_header |= 0b00001000;
-		}
-	}
-	else if (getADC(cycle, &data)) { /* regular potentiometer */
-		/* copy the data in the first byte */
-		//SPISend_data[0] = data;
-		/* ADC data has changed */
-		//SPISend_header |= 0b00000100;
+void SPIsendData(uint8_t header, uint8_t data) {
+	/* copy the data in the right place */
+	SPISENDbuffer[SPISENDwrite] = header;
+	SPISENDbuffer[SPISENDwrite+1] = data;
+	SPISENDwrite = (SPISENDwrite+2) & SPISEND_BUFFER_MASK;
+	/* check if the buffer overflows */
+	if (SPISENDwrite == SPISENDread) {
+		/* TODO: should never happen. When sure, remove this test */
+		uint8_t val[4] = {0xBB, 0xFF, 0xBB, 0xFF};
+		setDisplayTMx(0b11000100,val);
+		while(1); /* block everything */
 	}
 }
 
@@ -250,13 +238,25 @@ ISR (TIMER1_COMPA_vect  ) {
 
 void doTimer()
 {
+	uint8_t data;
+	uint8_t nTM = cycle&3;
+
 	/* clear the timer flag */
 	timerFlag = 0;
 
 	/* acquire Potentiometer */
-	updateADC(cycle&3);
+	if (getADC(nTM, &data)) {
+		SPIsendData( 0b01000100 | nTM, data);
+	}
+
 	/* acquire data from TMx8 */
-	//updateDataTMx8(cycle&3);
+	if (getDataTMx8(nTM, &data)) {
+		if (nTM==3)
+			SPIsendData( 0b01000111, data);       /* rocket switches sent as if they were from TMx8 */
+		else
+			SPIsendData( 0b01000000 | nTM, data);
+	}
+
 	/* run ADC for the next cycle */
 	runADC((cycle+1)&3);
 

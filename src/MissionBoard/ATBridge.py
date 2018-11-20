@@ -43,7 +43,8 @@ class ATBridge:
 		GPIO.setwarnings(False)
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.add_event_detect(24, GPIO.RISING, callback=lambda _: self.sendSPI([0]))    # send 0 to SPI when IO24 is rising
+		# send 0 to SPI when IO24 is rising (only if the queue is empty)
+		GPIO.add_event_detect(24, GPIO.RISING, callback=lambda _: self._SPIqueu.empty() and self.sendSPI([0]))
 
 
 	def runSPI(self):
@@ -61,37 +62,37 @@ class ATBridge:
 			header, = self._spi.xfer([data.pop(0)])
 			SPIlogger.debug("Receive Header= %s", str(header))
 			# add more byte if the AVR respond and want to send data
-
-			#data.extend([0] * ((header >> 4) - len(data)))
+			if header&64:
+				data.extend([0] * (len(data)%2))    # add an extra 0 so that the number of byte sent is even
 
 			if data:
 				SPIlogger.debug("Send %s", str(data))
 				recv = self._spi.xfer(data)
 				SPIlogger.debug("Receive data %s", str(recv))
 
-				# # treat received data
-				# if header & 128:
-				# 	# change GPIO24 in output
-				# 	GPIO.setup(24, GPIO.OUT)
-				# 	GPIO.output(24, 1)
-				# 	# shutdown ask
-				# 	logger.info("Shutdown asked by the ATtiny")
-				# 	# import os
-				# 	# os.system("sudo shutdown -h now")
-				# else:
-				# 	if header & 4:
-				# 		Potval = recv[0]
-				# 		index = header & 3
-				# 		SPIlogger.debug("Pot %d, value=%d", index, Potval)
-				# 		POT.checkChanges(index, Potval)
-				# 	if header & 8:
-				# 		TMval = recv[(header >> 4) - 1]
-				# 		index = header & 3
-				# 		SPIlogger.debug("TM %d, value=%d", index, TMval)
-				# 		Switch.checkChanges(index, TMval)
+				# treat received data
+				if header & 128:
+					# change GPIO24 in output
+					GPIO.setup(24, GPIO.OUT)
+					GPIO.output(24, 1)
+					# shutdown ask
+					logger.info("Shutdown asked by the ATtiny")
+					# import os
+					# os.system("sudo shutdown -h now")
+				else:
+					value = recv[1]
+					index = header & 3
+					if header & 4:
+						# data for the TMx8
+						SPIlogger.debug("TM %d, value=%d", index, value)
+						Switch.checkChanges(index, value)
+					else:
+						# data for the Potar
+						SPIlogger.debug("Pot %d, value=%d", index, value)
+						POT.checkChanges(index, value)
 
 			# sleep a µs
-			sleep(1e-3)
+			sleep(1e-3)     #TODO: we can decrease it... 1e-3s is the required sleep if we constantly send data to the AT (to avoid buffer overflow)
 
 
 
