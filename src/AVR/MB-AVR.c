@@ -39,26 +39,25 @@ Copyright 2017-2018 T. Hilaire
 
 
 /* debug */
-const uint8_t NUMBER_FONT2[] = {
-  0b00111111, // 0
-  0b00000110, // 1
-  0b01011011, // 2
-  0b01001111, // 3
-  0b01100110, // 4
-  0b01101101, // 5
-  0b01111101, // 6
-  0b00000111, // 7
-  0b01111111, // 8
-  0b01101111, // 9
-  0b01110111, // A
-  0b01111100, // B
-  0b00111001, // C
-  0b01011110, // D
-  0b01111001, // E
-  0b01110001  // F
-};
-
-
+//TODO: to remove at the end
+//const uint8_t NUMBER_FONT2[] = {
+//  0b00111111, // 0
+//  0b00000110, // 1
+//  0b01011011, // 2
+//  0b01001111, // 3
+//  0b01100110, // 4
+//  0b01101101, // 5
+//  0b01111101, // 6
+//  0b00000111, // 7
+//  0b01111111, // 8
+//  0b01101111, // 9
+//  0b01110111, // A
+//  0b01111100, // B
+//  0b00111001, // C
+//  0b01011110, // D
+//  0b01111001, // E
+//  0b01110001  // F
+//};
 
 
 /* constants and functions for powering the Raspberry Pi */
@@ -74,90 +73,99 @@ uint8_t switchPower = 0;        /* current state of the switch (to catch its cha
 
 
 /* circular buffer for the data received from SPI */
-#define SPI_BUFFER_LENGTH 64
-#define SPI_BUFFER_MASK 0b00111111
-uint8_t SPIbuffer[SPI_BUFFER_LENGTH];
-uint8_t SPIread = 0;     /* index of the next byte to read */
-uint8_t SPIwrite = 0;    /* index of the next byte to be written */
-uint8_t SPIend = 0xFF;    /* index of the end of the message, 0xFF means that it is not yet computed */
-uint8_t SPIFlag = 0;       /* flag set to 1 when a byte is received */
+#define SPI_RECV_SIZE 32
+#define SPI_RECV_MASK 0b00011111
+volatile struct {
+	uint8_t buffer[SPI_RECV_SIZE];  /* buffer */
+	uint8_t read;     /* index of the next byte to read */
+	uint8_t write;    /* index of the next byte to be written */
+	uint8_t end;    /* index of the end of the message, 0xFF means that it is not yet computed */
+	uint8_t flag;       /* flag set to 1 when a byte is received */
+} SPIRecv = {.buffer={0}, .read=0, .write=0, .end = 0xFF, .flag=0};
 
 /* circular buffer for the data send through SPI */
-#define SPISEND_BUFFER_LENGTH 8
-#define SPISEND_BUFFER_MASK 7
-uint8_t SPISENDbuffer[SPISEND_BUFFER_LENGTH];
-uint8_t SPISENDread = 0;
-uint8_t SPISENDwrite = 0;
+#define SPI_SEND_SIZE 32
+#define SPI_SEND_MASK 0b00011111
+volatile struct {
+	uint8_t buffer[SPI_SEND_SIZE];
+	uint8_t read;
+	uint8_t write;
+} SPISend = {.buffer={1,2,3,4,5,6,7,8}, .read=0, .write=0};
+
 
 /* timer for the polling */
-uint8_t timerFlag = 0;     /* flag set to 1 when a sampling occurs */
-uint8_t cycle = 0;  /* timer cycle: 4 MSB gives blinking cycle, the other the what-to-do cycle */
+volatile uint8_t timerFlag = 0;     /* flag set to 1 when a sampling occurs */
+volatile uint8_t cycle = 0;  /* timer cycle: 4 MSB gives blinking cycle, the other the what-to-do cycle */
 
 
 
 /* SPI interrupt function */
 ISR (SPI_STC_vect) {
 	/* copy the data  */
-	SPIbuffer[SPIwrite] = SPDR;
+	SPIRecv.buffer[SPIRecv.write] = SPDR;
+
 	/* increase the write index */
-	SPIwrite = (SPIwrite+1) & SPI_BUFFER_MASK;
+	SPIRecv.write = (SPIRecv.write+1) & SPI_RECV_MASK;
+
 	/* check overflow */
-	if (SPIwrite == SPIread) {
+	if (SPIRecv.write == SPIRecv.read) {
 		/* TODO: should never happen. When sure, remove this test */
 		uint8_t val[4] = {0xFF, 0xBB, 0xFF, 0xBB};
 		setDisplayTMx(0b11000100,val);
 		while(1); /* block everything */
 	}
+
 	/* prepare the next byte to send */
-	if (SPISENDread == SPISENDwrite) {
+	if (SPISend.read == SPISend.write) {
 		SPDR = 0;
 	} else {
-		SPDR = SPISENDbuffer[SPIread];
-		SPIread = (SPIread+1) & SPISEND_BUFFER_MASK;
+		SPDR = SPISend.buffer[SPISend.read];
+		SPISend.read = (SPISend.read+1) & SPI_SEND_MASK;
 	}
-	/* set the flag (to tell that we have receive something) */
-	SPIFlag = 1;
 
+
+	/* set the flag (to tell that we have receive something) */
+	SPIRecv.flag = 1;
 }
 
 
-/* called when we have a new byte from SPI */
-void SPIbyte() {
+/* called when we received a new byte from SPI */
+void SPIRecv_TreatByte() {
 
 	uint8_t data[8] = {0};
 	uint8_t command = 0;
 	static uint8_t nbBytes = 0;
 
 	/* clear the SPI flag */
-	SPIFlag = 0;
+	SPIRecv.flag = 0;
 
 	/* compute the index of the end of the message */
-	if ( (SPIend == 0xFF) ) { //&& (SPIwrite == ((SPIread+1)&SPI_BUFFER_MASK)) ) {
-		command = SPIbuffer[SPIread];
+	if ( (SPIRecv.end == 0xFF) ) { //&& (SPIwrite == ((SPIread+1)&SPI_BUFFER_MASK)) ) {
+		command = SPIRecv.buffer[SPIRecv.read];
 		if ((command & 0xF0) == 0b11000000) {
-			SPIend = (SPIwrite + 4) & SPI_BUFFER_MASK;     /* set the 7-segment display, 4-byte mode */
+			SPIRecv.end = (SPIRecv.write + 4) & SPI_RECV_MASK;     /* set the 7-segment display, 4-byte mode */
 			nbBytes = 4;
 		}
 		else if ((command & 0xF0) == 0b11010000) {
-			SPIend = (SPIwrite + 8) & SPI_BUFFER_MASK;     /* set the 7-segment display, 8-byte mode */
+			SPIRecv.end = (SPIRecv.write + 8) & SPI_RECV_MASK;     /* set the 7-segment display, 8-byte mode */
 			nbBytes = 8;
 		}
 		else if ( ((command & 0xE0) == 0) && (command!=0) && (command!=31) ) {
-			SPIend = (SPIwrite + 5) & SPI_BUFFER_MASK;     /* set RGB Led */
+			SPIRecv.end = (SPIRecv.write + 5) & SPI_RECV_MASK;     /* set RGB Led */
 			nbBytes = 5;
 		}
 		else {
-			SPIend = SPIwrite;     /* other commands do not require extra bytes */
+			SPIRecv.end = SPIRecv.write;     /* other commands do not require extra bytes */
 			nbBytes = 0;
 		}
 	}
 	/* treat the message when it is complete */
-	if (SPIwrite == SPIend) {
+	if (SPIRecv.write == SPIRecv.end) {
 	//if (((uint8_t) (SPIwrite-SPIread) & SPI_BUFFER_MASK) >= ((uint8_t) (SPIend-SPIread) & SPI_BUFFER_MASK)) {
 		/* get the command and copy the data */
-		command = SPIbuffer[SPIread];
+		command = SPIRecv.buffer[SPIRecv.read];
 		for(uint8_t i=0; i<nbBytes; i++)
-			data[i] = SPIbuffer[(SPIread+1+i)&SPI_BUFFER_MASK];
+			data[i] = SPIRecv.buffer[(SPIRecv.read+1+i)&SPI_RECV_MASK];
 
 		/* treat it, according to its 1st byte (command)*/
 		switch (command & 0b11000000) {
@@ -204,25 +212,45 @@ void SPIbyte() {
 				}
 		}
 		/* increase the index of the current msg */
-		SPIread = SPIend;
-		SPIend = 0xFF;
+		SPIRecv.read = SPIRecv.end;
+		SPIRecv.end = 0xFF;
 	}
-
 }
 
 
-void SPIsendData(uint8_t header, uint8_t data) {
-	/* copy the data in the right place */
-	SPISENDbuffer[SPISENDwrite] = header;
-	SPISENDbuffer[SPISENDwrite+1] = data;
-	SPISENDwrite = (SPISENDwrite+2) & SPISEND_BUFFER_MASK;
-	/* check if the buffer overflows */
-	if (SPISENDwrite == SPISENDread) {
-		/* TODO: should never happen. When sure, remove this test */
-		uint8_t val[4] = {0xBB, 0xFF, 0xBB, 0xFF};
-		setDisplayTMx(0b11000100,val);
-		while(1); /* block everything */
+/* add a new data in the SPI Send buffer */
+void SPISendData(uint8_t header, uint8_t data) {
+	uint8_t oldSPISENDread = SPISend.read;
+	/* update the SPDR (if required) */
+	if (SPISend.read == SPISend.write) {
+		SPDR = header;
+		SPISend.read = (SPISend.read+1) & SPI_SEND_MASK;
 	}
+	/* copy the data in the right place */
+	SPISend.buffer[SPISend.write] = header;
+	SPISend.buffer[SPISend.write+1] = data;       /* SPI_SEND_SIZE is even, no need to mask the +1 */
+	/* increase SPISENDwrite by 2 and check for overflow
+	But we need to check overflow after each increase because SPISENDread can be odd or even
+	(depending if a first byte has been sent or not) */
+//	SPISend.write = (SPISend.write+1) & SPI_SEND_MASK;
+//	if (SPISend.write == oldSPISENDread) {
+//		/* TODO: should never happen. When sure, remove this test */
+//		uint8_t val[4] = {0xBB, 0xFF, 0xBB, 0xFF};
+//		setDisplayTMx(0b11000100,val);
+//	}
+//	SPISend.write = (SPISend.write+1) & SPI_SEND_MASK;
+//	if (SPISend.write == oldSPISENDread) {
+//		/* TODO: should never happen. When sure, remove this test */
+//		uint8_t val[4] = {0xBB, 0xFF, 0xBB, 0xFF};
+//		setDisplayTMx(0b11000100,val);
+//	}
+	SPISend.write = (SPISend.write+2) & SPI_SEND_MASK;
+
+	/* pulse the Raspberry Pi to tell that something has changed */
+	PORTC |= 1;
+	_delay_us(1);
+	PORTC &= ~1;
+
 }
 
 
@@ -246,16 +274,14 @@ void doTimer()
 
 	/* acquire Potentiometer */
 	if (getADC(nTM, &data)) {
-		SPIsendData( 0b01000100 | nTM, data);
+	    SPISendData( 0b01000000 | nTM, data);
 	}
 
 	/* acquire data from TMx8 */
 	if (getDataTMx8(nTM, &data)) {
-		if (nTM==3)
-			SPIsendData( 0b01000111, data);       /* rocket switches sent as if they were from TMx8 */
-		else
-			SPIsendData( 0b01000000 | nTM, data);
+		SPISendData( 0b01000100 | nTM, data);
 	}
+
 
 	/* run ADC for the next cycle */
 	runADC((cycle+1)&3);
@@ -279,7 +305,7 @@ void doTimer()
 //
 //		}
 
-	}
+}
 
 //	/* check if the RPi has shut down */
 //	if (RPiPower == RPI_SHUTING && (PINC&1)==0) {
@@ -314,11 +340,7 @@ void doTimer()
 //		}
 //	}
 
-//	/* pulse the Raspberry Pi if something has changed */
-//	if (SPISend_header&0b10001100) {
-//		PORTC |= 1;
-//		//_delay_us(1);
-//		PORTC &= ~1;
+
 //	}
 }
 
@@ -375,18 +397,16 @@ int main(void) {
 	/* enable interrupts and wait */
 	sei();
 
-
-
 	while(1) {
-	/* TODO: manage to do the same with software interrupt, so don't have to poll the change of the Flag (it should be an interrupt flag, instead) */
-	/* check if we have received something */
-	if (SPIFlag)
-		/* if so, do something */
-		SPIbyte();
-	/* check if it's time to poll data from ADC and TMx8 (or to blink the leds) */
-	if (timerFlag)
-		/* if so, do something */
-		doTimer();
+		/* TODO: manage to do the same with software interrupt, so don't have to poll the change of the Flag (it should be an interrupt flag, instead) */
+		/* check if we have received something */
+		if (SPIRecv.flag)
+			/* if so, do something */
+			SPIRecv_TreatByte();
+		/* check if it's time to poll data from ADC and TMx8 (or to blink the leds) */
+		if (timerFlag)
+			/* if so, do something */
+			doTimer();
 	}
 
 }

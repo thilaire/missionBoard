@@ -16,6 +16,11 @@ logger = logging.getLogger()
 SPIlogger = logging.getLogger('SPI')
 
 
+# SPI rate and delay
+speed_hz = int(1e4)
+delay_usec = 300
+
+
 class ATBridge:
 	"""
 	Main object (contains interfaces to buttons, displays, etc.)
@@ -31,7 +36,7 @@ class ATBridge:
 		# open SPI connection
 		self._spi = SpiDev()
 		self._spi.open(0, 0)
-		self._spi.max_speed_hz = int(1e6)     # 122000
+		self._spi.max_speed_hz = speed_hz     # int(1e5) or 122000
 
 		# declare the SPI queue
 		self._SPIqueue = Queue()
@@ -44,7 +49,14 @@ class ATBridge:
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 		# send 0 to SPI when IO24 is rising (only if the queue is empty)
-		GPIO.add_event_detect(24, GPIO.RISING, callback=lambda _: self._SPIqueu.empty() and self.sendSPI([0]))
+
+		def toto(_):
+			SPIlogger.debug("IO24 is rising")
+			if self._SPIqueue.empty():
+				self.sendSPI([0])
+
+		#GPIO.add_event_detect(24, GPIO.RISING, callback=lambda _: self._SPIqueue.empty() and self.sendSPI([0]))
+		GPIO.add_event_detect(24, GPIO.RISING, callback=toto)
 
 
 	def runSPI(self):
@@ -57,42 +69,53 @@ class ATBridge:
 		while True:
 			# wait for data
 			data = self._SPIqueue.get()
-			# send the 1st byte
-			SPIlogger.debug("Send %s (unqueue data)", str(data[0]))
-			header, = self._spi.xfer([data.pop(0)])
-			SPIlogger.debug("Receive Header= %s", str(header))
-			# add more byte if the AVR respond and want to send data
-			if header&64:
-				data.extend([0] * (len(data)%2))    # add an extra 0 so that the number of byte sent is even
 
-			if data:
-				SPIlogger.debug("Send %s", str(data))
-				recv = self._spi.xfer(data)
-				SPIlogger.debug("Receive data %s", str(recv))
+			# send the data, get the data back from the AT
+			SPIlogger.debug("Send %s (unqueue data)", str(data))
+			recv = self._spi.xfer(data, speed_hz, delay_usec)         # 30µs, time between each byte (enough to feed the SPI buffer)
+			SPIlogger.debug("Receive data = %s", str(recv))
 
-				# treat received data
-				if header & 128:
-					# change GPIO24 in output
-					GPIO.setup(24, GPIO.OUT)
-					GPIO.output(24, 1)
-					# shutdown ask
-					logger.info("Shutdown asked by the ATtiny")
-					# import os
-					# os.system("sudo shutdown -h now")
+			# find a significative header
+			rec = iter(recv)
+			while True:
+				try:
+					header = next(b for b in rec if b&64)       # find first header
+				except StopIteration:
+					# nothing more to do, no data send by the ATtiny, break the loop
+					break
 				else:
-					value = recv[1]
-					index = header & 3
-					if header & 4:
-						# data for the TMx8
-						SPIlogger.debug("TM %d, value=%d", index, value)
-						Switch.checkChanges(index, value)
+					# a header has been sent, get the next data
+					try:
+						value = next(rec)
+					except StopIteration:
+						# ask for a new byte if needed
+						value, = self._spi.xfer([0], speed_hz, delay_usec)
+						SPIlogger.debug("Send one more byte (0) and receive back = %d", value)
+
+					# treat received data
+					if header & 128:
+						# change GPIO24 in output
+						GPIO.setup(24, GPIO.OUT)
+						GPIO.output(24, 1)
+						# shutdown ask
+						logger.info("Shutdown asked by the ATtiny")
+						# import os
+						# os.system("sudo shutdown -h now")
 					else:
-						# data for the Potar
-						SPIlogger.debug("Pot %d, value=%d", index, value)
-						POT.checkChanges(index, value)
+						index = header & 3
+						if header & 4:
+							# data for the TMx8
+							SPIlogger.debug("TM %d, value=%d", index, value)
+							Switch.checkChanges(index, value)
+						else:
+							# data for the Potar
+							SPIlogger.debug("Pot %d, value=%d", index, value)
+							POT.checkChanges(index, value)
+
+
 
 			# sleep a µs
-			sleep(1e-3)     #TODO: we can decrease it... 1e-3s is the required sleep if we constantly send data to the AT (to avoid buffer overflow)
+			sleep(2e-3)     #TODO: we can decrease it... 1e-3s is the required sleep if we constantly send data to the AT (to avoid buffer overflow)
 
 
 

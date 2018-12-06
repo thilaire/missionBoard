@@ -6,13 +6,15 @@ import logging
 from MissionBoard.EventManager import EventManager
 from MissionBoard.Functionality import Functionality
 from MissionBoard.State import Init
-from MissionBoard.RGB import RED, FAST, SLOW, GREEN, PURPLE
+from MissionBoard.RGB import RED, FAST, SLOW, GREEN
+
+from random import randint, seed
 
 # init logger
 logger = logging.getLogger()
-logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
 
-
+seed()
 
 class Test(Functionality):
 	def __init__(self, EM):
@@ -21,17 +23,20 @@ class Test(Functionality):
 		# displays
 		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
 		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
-		#self.runTimer("test",1)
-		self.add('B8_RGB', 'elec', pos=2)
+		self.runTimer("test",1)
+		self.add('B8_RGB', 'elec', pos=randint(0,11))
+		self.add('B8_RGB', 'oxy', pos=1)
 
 		self.elec = RED, SLOW
+		self.oxy = GREEN, FAST
+
 		self.i = 0
 
 	def onEvent(self, e):
 		"""Manage changes"""
-		self.counter = "%08d"%self.i
+		self.counter = "%04d"%self.i + "%04d"%randint(0,10000)
 		self.i += 1
-		self.runTimer("test", 0.05)
+		self.runTimer("test", 0.01)
 
 
 
@@ -53,9 +58,10 @@ class MissionBoard(EventManager):
 		# 	#self.Test_counter = str(i%10)*8
 		logger.info('Done')
 
+
 def displayInit(self):
 	logger.warning("JHLKHJMLKJMLJKMLKLM")
-	self.EM.Flight_counter = '- Init -'
+	self.EM.Test_counter = '- Init -'
 
 
 Init.init = displayInit
