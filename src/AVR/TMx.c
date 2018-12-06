@@ -64,10 +64,9 @@ uint8_t TMx8Input[NB_TMx8] = {0};       /* data from the line input K3*/
 
 
 /* get input data from the TM1638 boards, and returns 1 if something have changed */
-uint8_t getDataTMx8(uint8_t nTM, uint8_t* data)
-{
-	*data=0; /* corresponds to K3 byte of the TM */
-	uint8_t TMdata;
+uint8_t getDataTMx8(uint8_t nTM, uint8_t* data) {
+	uint8_t d;   /* corresponds to K3 byte of the TM */
+	uint8_t TMdata; /* bytes received from the TMx8 */
 
 	/* set the TMx8 in read mode */
 	clearTM1638_Stb(TM1638_STB_PINMASK[nTM]);
@@ -75,27 +74,25 @@ uint8_t getDataTMx8(uint8_t nTM, uint8_t* data)
 	_delay_us(10);  /* wait at least 10µs ? */
 	/* get the 4 bytes and put the useful bits (those from K3) in data */
 	TMdata = TM1638_getByte();
-	*data = (TMdata & (BIT(1)|BIT(5))) >> 1;
+	d = (TMdata & (BIT(1)|BIT(5))) >> 1;
 	TMdata = TM1638_getByte();
-	*data |= (TMdata & (BIT(1)|BIT(5)));
+	d |= (TMdata & (BIT(1)|BIT(5)));
 	TMdata = TM1638_getByte();
-	*data |= (TMdata & (BIT(1)|BIT(5))) << 1;
+	d |= (TMdata & (BIT(1)|BIT(5))) << 1;
 	TMdata = TM1638_getByte();
-	*data |= (TMdata & (BIT(1)|BIT(5))) << 2;
+	d |= (TMdata & (BIT(1)|BIT(5))) << 2;
 	/* close the connection */
 	setTM1638_Stb();
 
 	/* check if K3 has changed	and update SPItoSend datas */
-	if (*data != TMx8Input[nTM])
-	{
-		TMx8Input[nTM] = *data;
+	if (d != TMx8Input[nTM]) {
+		TMx8Input[nTM] = d;
+		*data = d;
 		return 1;
 	}
-	else
-	{
+	else {
 		return 0;
 	}
-
 }
 
 
