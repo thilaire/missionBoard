@@ -1,6 +1,11 @@
 # coding=utf-8
 
 
+from logging import getLogger
+
+logger = getLogger("Element")
+
+
 class Element:
 	"""
 	Main class for all the elements
@@ -37,4 +42,5 @@ class Element:
 	def notify(self):
 		"""notify the eventmanager that something changes for this object"""
 		if self._eventM:
+			logger.info("%s (%s) has been notified", self._name, self._keyname)
 			self._eventM.notify(self)
