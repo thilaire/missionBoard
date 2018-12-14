@@ -91,7 +91,7 @@ volatile struct {
 	uint8_t buffer[SPI_SEND_SIZE];
 	uint8_t read;
 	uint8_t write;
-} SPISend = {.buffer={1,2,3,4,5,6,7,8}, .read=0, .write=0};
+} SPISend = {.buffer={0}, .read=0, .write=0};
 
 
 /* timer for the polling */
@@ -270,37 +270,21 @@ void doTimer()
 {
 	uint8_t data;
 	uint8_t nTM = cycle&3;
-
 	/* clear the timer flag */
 	timerFlag = 0;
 
-//	/* acquire Potentiometer */
-//	if (getADC(nTM, &data)) {
-//	    SPISendData( 0b01000000 | nTM, data);
-//	}
-//
-//	/* acquire data from TMx8 */
-//	if (getDataTMx8(nTM, &data)) {
-//		SPISendData( 0b01000100 | nTM, data);
-//	}
-
-
-	/* run ADC for the next cycle */
-//	runADC((cycle+1)&3);
-
 	/* run blinking cycle */
 	if ((cycle&15) == 3) {
+		/* tell the RPi we will be busy for few micro-seconds (interruptions are disabled during
+		the call to `ws2812_sendarray_mask`, so we won't be able to send any data back */
+		PORTC |= (1U<<7);
+
 		uint8_t blinkCycle = cycle>>4;
 		/* check if we need to send data to the led (something has changed since previous cycle ?) */
 		if (RGBshouldBeUpdated(blinkCycle)) {
-			/* tell the RPi we will be busy for few micro-seconds (interruptions are disabled during
-			the call to `ws2812_sendarray_mask`, so we won't be able to send any data back */
-			PORTC |= (1U<<7);
 			/* prepare the buffer */
 			fillRGBBuffer(blinkCycle);
 			updateRGB();
-			/* tell the RPi we have finished */
-			PORTC &= ~(1U<<7);
 		}
 //		/* check if the power LED need to blink */
 //		if (RPiPower&1) {
@@ -312,7 +296,24 @@ void doTimer()
 //
 //		}
 
-}
+		/* tell the RPi we have finished */
+		PORTC &= ~(1U<<7);
+	}
+
+	/* acquire Potentiometer */
+	if (getADC(nTM, &data)) {
+	    SPISendData( 0b01000000 | nTM, data);
+	}
+
+	/* acquire data from TMx8 */
+	if (getDataTMx8(nTM, &data)) {
+		SPISendData( 0b01000100 | nTM, data);
+	}
+
+
+	/* run ADC for the next cycle */
+	runADC((cycle+1)&3);
+
 
 //	/* check if the RPi has shut down */
 //	if (RPiPower == RPI_SHUTING && (PINC&1)==0) {

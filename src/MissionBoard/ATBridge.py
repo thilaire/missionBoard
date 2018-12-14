@@ -77,7 +77,7 @@ class ATBridge:
 			for d in data:
 				# wait unti IO16 is low
 				while GPIO.input(16):
-					SPIlogger.debug("Has to wait for IO16")
+					#SPIlogger.debug("Has to wait for IO16")
 					sleep(1e-4)
 				# send one byte
 				recv.extend(self._spi.xfer([d]))

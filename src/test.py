@@ -12,7 +12,7 @@ from random import randint, seed
 
 # init logger
 logger = logging.getLogger()
-logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.CRITICAL)
+logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.INFO)
 
 seed()
 
@@ -36,7 +36,7 @@ class Test(Functionality):
 		"""Manage changes"""
 		self.counter = "%04d"%self.i + "%04d"%randint(0,9999)
 		self.i += 1
-		self.runTimer("test", 0.01)
+		self.runTimer("test", 20)
 
 
 
