@@ -54,6 +54,17 @@ program: $(OUT).hex
 	@ssh -t $(HOST) sudo modprobe spi_bcm2835
 	@ssh -t $(HOST) 'echo 0 > /sys/class/gpio/gpio21/value'
 
+
+# program the fuses
+fuses:
+	@ssh -t $(HOST) 'echo 21 > /sys/class/gpio/export || :'
+	@ssh -t $(HOST) 'echo "out" > /sys/class/gpio/gpio21/direction || :'
+	@ssh -t $(HOST) 'echo 1 > /sys/class/gpio/gpio21/value'
+	ssh -t $(HOST) sudo avrdude -c linuxgpio -p attiny88 -U lfuse:w:0xEE:m 	-U hfuse:w:0xDF:m
+	@ssh -t $(HOST) sudo rmmod spi_bcm2835
+	@ssh -t $(HOST) sudo modprobe spi_bcm2835
+	@ssh -t $(HOST) 'echo 0 > /sys/class/gpio/gpio21/value'
+
 # Clean the mess
 clean:
 	rm -f $(OBJ) $(OUT).elf $(OUT).hex $(SRC:.c=.s)
