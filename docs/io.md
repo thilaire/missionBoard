@@ -46,7 +46,7 @@ The TM1637 boards are numbered `0` to `2` (so `7TM0` to `7TM2`), and the TM1638 
 | 29 (**GPIO05**)            | `RPi_IO5`  | In  | `B7_PB_DOWN` (Joystick) |   |                         |     |            |                      (GND) 30 |
 | 31 (**GPIO06**)            | `RPi_IO6`  | In  | `B7_PB_RIGHT`(Joystick) |   | `B7_PB_LEFT` (Joystick) | In  | `RPi_IO12` |               (**GPIO12**) 32 |
 | 33 (**GPIO13**)            | `RPi_IO13` |     |   x                     |   |                         |     |            |                      (GND) 34 |
-| 35 (**GPIO19**)            | `RPi_IO19` |     |   x                     |   |   x                     |     | `RPi_IO16` |               (**GPIO16**) 36 |
+| 35 (**GPIO19**)            | `RPi_IO19` |     |   x                     |   | `AT_PC7` and `AT_LED`   | Out | `RPi_IO16` |               (**GPIO16**) 36 |
 | 37 (**GPIO26**)            | `RPi_IO26` |     |   x                     |   |   x                     |     | `RPi_IO20` |               (**GPIO20**) 38 |
 | 39 (GND)                   |            |     |   x                     |   |   `REL_SW`              | Out | `RPi_IO21` |               (**GPIO21**) 40 |
                                                                                                      
@@ -73,22 +73,22 @@ x: still available
 ## ATtiny
 
 
-| ATtiny88   Pin number    | Name       | IO  | Connected to   |   | Connected to  | IO  | Name       |  ATtiny88   Pin number    |
-|:-------------------------|:----------:|:---:|:--------------:|:-:|:-------------:|:---:|:----------:|--------------------------:|
-| 01 (**PC6**, RESET)      | `AT_RESET` | In  | `RPi_IO25`     |   | `B4_POT_2`    | Ana | `AT_ADC5`  |   (ADC5, SCL, **PC5**) 28 |
-| 02 (**PD0**)             | `AT_PD0`   | Out |  `7TM0_CLK`    |   | `B4_POT_1`    | Ana | `AT_ADC4`  |   (ADC4, SDA, **PC4**) 27 |
-| 03 (**PD1**)             | `AT_PD1`   | Out |  `7TM1_CLK`    |   | `B4_POT_0`    | Ana | `AT_ADC3`  |   (ADC3, SCL, **PC3**) 26 |
-| 04 (**PD2**, INT0)       | `AT_PD2`   | Out |  `7TM2_CLK`    |   | `B36_SW`      | Ana | `AT_PC2`   |        (ADC2, **PC2**) 25 |
-| 05 (**PD3**, INT1)       | `AT_PD3`   | Out |  `8TM4_STB`    |   | `B1_SW`       | In  | `AT_PC1`   |        (ADC1, **PC1**) 24 |
-| 06 (**PD4**, T0)         | `AT_PD4`   | Out |  `REL_SW`      |   | `RPi_IO24`    | Out | `AT_PC0`   |        (ADC0, **PC0**) 23 |
-| 07 (VCC)                 |            |     |    3.3V        |   |     GND       |     |            |                  (GND) 22 |
-| 08 (GND)                 |            |     |     GND        |   | `AT_LED`      | Out | `AT_PC7`   |              (**PC7**) 21 |
-| 09 (**PB6**, CLKI)       | `AT_PB6`   | I/O | `8TM_DIO`      |   |    +3.3V      |     |            |                 (AVCC) 20 |
-| 10 (**PB7**)             | `AT_PB7`   | Out | `8TM_CLK`      |   |  `Rpi_SCK`    | In  | `AT_SCK`   |         (SCK, **PB5**) 19 |
-| 11 (**PD5**  T1)         | `AT_PD5`   | Out | `8TM5_STB`     |   |  `Rpi_MISO`   | Out | `AT_MISO`  |        (MISO, **PB4**) 18 |
-| 12 (**PD6**, AIN0)       | `AT_PD6`   | Out | `8TM6_STB`     |   |  `Rpi_MOSI`   | In  | `AT_MOSI`  |        (MOSI, **PB3**) 17 |
-| 13 (**PD7**  AIN1)       | `AT_PD7`   | Out | `8TM7_STB`     |   |     GND       | In  | `AT_SS`    |          (SS, **PB2**) 16 |
-| 14 (**PB0**, CLK0,ICP1)  | `AT_PB0`   | Out | `7TM_DATA`     |   |  `B2_RGB`     | Out | `AT_PB1`   |        (OC1A, **PB1**) 15 |
+| ATtiny88   Pin number    | Name       | IO  | Connected to   |   | Connected to         | IO  | Name       |  ATtiny88   Pin number    |
+|:-------------------------|:----------:|:---:|:--------------:|:-:|:--------------------:|:---:|:----------:|--------------------------:|
+| 01 (**PC6**, RESET)      | `AT_RESET` | In  | `RPi_IO25`     |   | `B4_POT_2`           | Ana | `AT_ADC5`  |   (ADC5, SCL, **PC5**) 28 |
+| 02 (**PD0**)             | `AT_PD0`   | Out |  `7TM0_CLK`    |   | `B4_POT_1`           | Ana | `AT_ADC4`  |   (ADC4, SDA, **PC4**) 27 |
+| 03 (**PD1**)             | `AT_PD1`   | Out |  `7TM1_CLK`    |   | `B4_POT_0`           | Ana | `AT_ADC3`  |   (ADC3, SCL, **PC3**) 26 |
+| 04 (**PD2**, INT0)       | `AT_PD2`   | Out |  `7TM2_CLK`    |   | `B36_SW`             | Ana | `AT_PC2`   |        (ADC2, **PC2**) 25 |
+| 05 (**PD3**, INT1)       | `AT_PD3`   | Out |  `8TM4_STB`    |   | `B1_SW`              | In  | `AT_PC1`   |        (ADC1, **PC1**) 24 |
+| 06 (**PD4**, T0)         | `AT_PD4`   | Out |  `REL_SW`      |   | `RPi_IO24`           | Out | `AT_PC0`   |        (ADC0, **PC0**) 23 |
+| 07 (VCC)                 |            |     |    3.3V        |   |     GND              |     |            |                  (GND) 22 |
+| 08 (GND)                 |            |     |     GND        |   | `AT_LED`, `RPi_IO16` | Out | `AT_PC7`   |              (**PC7**) 21 |
+| 09 (**PB6**, CLKI)       | `AT_PB6`   | I/O | `8TM_DIO`      |   |    +3.3V             |     |            |                 (AVCC) 20 |
+| 10 (**PB7**)             | `AT_PB7`   | Out | `8TM_CLK`      |   |  `Rpi_SCK`           | In  | `AT_SCK`   |         (SCK, **PB5**) 19 |
+| 11 (**PD5**  T1)         | `AT_PD5`   | Out | `8TM5_STB`     |   |  `Rpi_MISO`          | Out | `AT_MISO`  |        (MISO, **PB4**) 18 |
+| 12 (**PD6**, AIN0)       | `AT_PD6`   | Out | `8TM6_STB`     |   |  `Rpi_MOSI`          | In  | `AT_MOSI`  |        (MOSI, **PB3**) 17 |
+| 13 (**PD7**  AIN1)       | `AT_PD7`   | Out | `8TM7_STB`     |   |     GND              | In  | `AT_SS`    |          (SS, **PB2**) 16 |
+| 14 (**PB0**, CLK0,ICP1)  | `AT_PB0`   | Out | `7TM_DATA`     |   |  `B2_RGB`            | Out | `AT_PB1`   |        (OC1A, **PB1**) 15 |
 
                                               
 For debug purpose only, a simple LED is connected to `AT_PC7`.

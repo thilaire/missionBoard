@@ -12,7 +12,7 @@ from random import randint, seed
 
 # init logger
 logger = logging.getLogger()
-logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.CRITICAL)
 
 seed()
 
@@ -24,7 +24,7 @@ class Test(Functionality):
 		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
 		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
 		self.runTimer("test",1)
-		self.add('B8_RGB', 'elec', pos=randint(0,11))
+		self.add('B8_RGB', 'elec', pos=2)
 		self.add('B8_RGB', 'oxy', pos=1)
 
 		self.elec = RED, SLOW
@@ -34,7 +34,7 @@ class Test(Functionality):
 
 	def onEvent(self, e):
 		"""Manage changes"""
-		self.counter = "%04d"%self.i + "%04d"%randint(0,10000)
+		self.counter = "%04d"%self.i + "%04d"%randint(0,9999)
 		self.i += 1
 		self.runTimer("test", 0.01)
 

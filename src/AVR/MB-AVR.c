@@ -28,6 +28,7 @@ Copyright 2017-2018 T. Hilaire
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/cpufunc.h>
+#include <util/atomic.h>
 
 #include <string.h>
 
@@ -84,8 +85,8 @@ volatile struct {
 } SPIRecv = {.buffer={0}, .read=0, .write=0, .end = 0xFF, .flag=0};
 
 /* circular buffer for the data send through SPI */
-#define SPI_SEND_SIZE 32
-#define SPI_SEND_MASK 0b00011111
+#define SPI_SEND_SIZE 8
+#define SPI_SEND_MASK 0b00000111
 volatile struct {
 	uint8_t buffer[SPI_SEND_SIZE];
 	uint8_t read;
@@ -220,8 +221,9 @@ void SPIRecv_TreatByte() {
 
 /* add a new data in the SPI Send buffer */
 void SPISendData(uint8_t header, uint8_t data) {
-	uint8_t oldSPISENDread = SPISend.read;
 	/* update the SPDR (if required) */
+ATOMIC_BLOCK(ATOMIC_FORCEON)
+{
 	if (SPISend.read == SPISend.write) {
 		SPDR = header;
 		SPISend.read = (SPISend.read+1) & SPI_SEND_MASK;
@@ -245,7 +247,7 @@ void SPISendData(uint8_t header, uint8_t data) {
 //		setDisplayTMx(0b11000100,val);
 //	}
 	SPISend.write = (SPISend.write+2) & SPI_SEND_MASK;
-
+}
 	/* pulse the Raspberry Pi to tell that something has changed */
 	PORTC |= 1;
 	_delay_us(1);
@@ -272,28 +274,33 @@ void doTimer()
 	/* clear the timer flag */
 	timerFlag = 0;
 
-	/* acquire Potentiometer */
-	if (getADC(nTM, &data)) {
-	    SPISendData( 0b01000000 | nTM, data);
-	}
-
-	/* acquire data from TMx8 */
-	if (getDataTMx8(nTM, &data)) {
-		SPISendData( 0b01000100 | nTM, data);
-	}
+//	/* acquire Potentiometer */
+//	if (getADC(nTM, &data)) {
+//	    SPISendData( 0b01000000 | nTM, data);
+//	}
+//
+//	/* acquire data from TMx8 */
+//	if (getDataTMx8(nTM, &data)) {
+//		SPISendData( 0b01000100 | nTM, data);
+//	}
 
 
 	/* run ADC for the next cycle */
-	runADC((cycle+1)&3);
+//	runADC((cycle+1)&3);
 
 	/* run blinking cycle */
 	if ((cycle&15) == 3) {
 		uint8_t blinkCycle = cycle>>4;
 		/* check if we need to send data to the led (something has changed since previous cycle ?) */
 		if (RGBshouldBeUpdated(blinkCycle)) {
+			/* tell the RPi we will be busy for few micro-seconds (interruptions are disabled during
+			the call to `ws2812_sendarray_mask`, so we won't be able to send any data back */
+			PORTC |= (1U<<7);
 			/* prepare the buffer */
 			fillRGBBuffer(blinkCycle);
 			updateRGB();
+			/* tell the RPi we have finished */
+			PORTC &= ~(1U<<7);
 		}
 //		/* check if the power LED need to blink */
 //		if (RPiPower&1) {
@@ -404,7 +411,7 @@ int main(void) {
 			/* if so, do something */
 			SPIRecv_TreatByte();
 		/* check if it's time to poll data from ADC and TMx8 (or to blink the leds) */
-		if (timerFlag)
+		else if (timerFlag)
 			/* if so, do something */
 			doTimer();
 	}
