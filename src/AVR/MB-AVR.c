@@ -273,6 +273,21 @@ void doTimer()
 	/* clear the timer flag */
 	timerFlag = 0;
 
+	/* acquire Potentiometer */
+	if (getADC(nTM, &data)) {
+	    SPISendData( 0b01000000 | nTM, data);
+	}
+
+	/* acquire data from TMx8 */
+	if (getDataTMx8(nTM, &data)) {
+		SPISendData( 0b01000100 | nTM, data);
+	}
+
+
+	/* run ADC for the next cycle */
+	runADC((cycle+1)&3);
+
+
 	/* run blinking cycle */
 	if ((cycle&15) == 3) {
 		/* tell the RPi we will be busy for few micro-seconds (interruptions are disabled during
@@ -300,19 +315,7 @@ void doTimer()
 		PORTC &= ~(1U<<7);
 	}
 
-	/* acquire Potentiometer */
-	if (getADC(nTM, &data)) {
-	    SPISendData( 0b01000000 | nTM, data);
-	}
 
-	/* acquire data from TMx8 */
-	if (getDataTMx8(nTM, &data)) {
-		SPISendData( 0b01000100 | nTM, data);
-	}
-
-
-	/* run ADC for the next cycle */
-	runADC((cycle+1)&3);
 
 
 //	/* check if the RPi has shut down */
