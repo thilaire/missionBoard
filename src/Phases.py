@@ -9,7 +9,7 @@ from MissionBoard.RGB import BLUE, SLOW
 from MissionBoard import State
 
 from Flight import Phase
-from Misc import Oxygen, WaterPump
+from Misc import Oxygen, FuelPump
 
 from logging import getLogger
 from pygame.mixer import Sound
@@ -37,16 +37,30 @@ class Phase1(State):
 # ----- Fill the tanks --------
 class Tanks(State):
 	"""Define the 'fill the oxygen/fuel tanks' phase"""
-	funcNext = [Oxygen, WaterPump]
+	funcNext = [Oxygen, FuelPump]
 
 	def init(self):
 		"""to do when we start the phase"""
+		Sound(SoundPath + "phase1engaged.wav").play()
 		self.EM.Oxygen.RGB = BLUE, SLOW
 
 
 	def isOver(self, func):
 		"""the phase is over when the tanks are full"""
-		return (self.EM.WaterPump_level == 10) and (self.EM.Oxygen.fuel[1] == 10) and (self.EM.Oxygen.fuel[2] == 10) \
-		        and (not self.EM.Phase.phase2) and (not self.EM.Phase_phase3)
+		logger.debug("Pumps= %d %d %d", self.EM.FuelPump_rocket.value, self.EM.FuelPump_spaceship.value, self.EM.Oxygen_oxygen.value)
+		return (self.EM.FuelPump_rocket.value == 10) and (self.EM.FuelPump_spaceship.value == 10) and (self.EM.Oxygen_oxygen.value == 10) and (self.EM.FuelPump_pump == 'off') and (not self.EM.Phase.phase2) and (not self.EM.Phase_phase3)
 
 
+# ----- Phase 2 --------
+class Phase2(State):
+	"""Define the Phase 1"""
+	funcNext = [Phase, ]
+
+	def init(self):
+		self.EM.Flight_counter = "PHASE 2 "
+		Sound(SoundPath + "phase2.wav").play()
+
+
+	def isOver(self, func):
+		"""the phase is over when the switch 'Phase2' is on"""
+		return self.EM.Phase_phase1 and self.EM.Phase_phase2 and (not self.EM.Phase_phase3)
