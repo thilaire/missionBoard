@@ -77,7 +77,11 @@ class Gates(Functionality):
 
 	def onEvent(self, e):
 		"""Manage changes for the gate switches"""
-		if self.EM.electricity > 0:
+		if e is None:
+			# initialization
+			self.gate1 = (YELLOW if self.state == 'gate1' else BLACK, FAST if self.gateMoving else NOBLINK)
+			self.gate2 = (YELLOW if self.state == 'gate2' else BLACK, FAST if self.gateMoving else NOBLINK)
+		elif self.EM.electricity > 0:
 			# determine the state (moving, error, etc.)
 			if (not self.gateMoving) and (not self.error):
 				if e == 'gate1':
@@ -104,7 +108,7 @@ class Gates(Functionality):
 			else:
 				self.gate1 = (YELLOW if self.state == 'gate1' else BLACK, FAST if self.gateMoving else NOBLINK)
 				self.gate2 = (YELLOW if self.state == 'gate2' else BLACK, FAST if self.gateMoving else NOBLINK)
-		logger.debug("AFTER: %s", self.__dict__)
+
 
 
 
@@ -120,9 +124,9 @@ class FuelPump(Functionality):
 		# sound
 		self.sound = Sound(SoundPath + "fuel.wav")
 		# levels
-		self.fuel = [0, 0, 0]       # [ x, spaceship fuel, rocket fuel ]
-		self.rocket = 0
-		self.spaceship = 0
+		self.fuel = [0, 9, 9]       # [ x, spaceship fuel, rocket fuel ]    #TODO: set to 0 for final version
+		self.rocket = 9     # init level for LVL rocket       #TODO: set to 0 for final version
+		self.spaceship = 9  # init level for LVL spaceship  #TODO: set to 0 for final version
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
@@ -148,7 +152,7 @@ class FuelPump(Functionality):
 					self.sound.fadeout(1000)
 
 		# the fuel button has been changed
-		elif e == self.pump and self.EM.state == 'ground':
+		elif e == self.pump and self.EM.state == 'Tanks':
 			if e.valueName != 'off':
 				# play sound in loop (until stop)
 				self.sound.play(loops=-1, fade_ms=100)
@@ -157,6 +161,9 @@ class FuelPump(Functionality):
 			else:
 				# stop the sound
 				self.sound.fadeout(1000)
+		# initialization
+		elif e is None:
+			pass
 
 
 
@@ -182,7 +189,7 @@ class WaterPump(Functionality):
 			self.toilets.play()
 		elif e == 'bathroom':
 			self.bathroom.play(loops=-1, fade_ms=100)
-		else:
+		elif e == 'off':
 			self.bathroom.fadeout(100)
 
 
@@ -201,8 +208,8 @@ class Oxygen(Functionality):
 		# sounds
 		self.pumpSound = Sound(SoundPath + "oxygen.wav")
 		# levels
-		self.level = 0
-		self.oxygen = 0
+		self.level = 9      #TODO: set to 0 for final version
+		self.oxygen = 9     # init level for LVL oxygen  #TODO: set to 0 for final version
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
@@ -210,18 +217,19 @@ class Oxygen(Functionality):
 
 	def onEvent(self, e):
 		"""Manage the water button"""
-		if e is self.pump:
-			if e.value:
-				self.pumpSound.play(loops=-1)
-				self.runTimer('DOWN', 1)
-		elif e == 'DOWN':
-			if self.pump.value:
-				self.level = min(10, self.level + 0.3)
-				self.oxygen = int(self.level)
-				if self.level == 10:
-					self.pumpSound.fadeout(1000)  # stop sound
-				else:
+		if self.EM.state == 'Tanks':    # only for `Tanks` state
+			if e is self.pump:
+				if e.value:
+					self.pumpSound.play(loops=-1)
 					self.runTimer('DOWN', 1)
-			else:
-				self.pumpSound.fadeout(1000)    # stop sound
-				pass
+			elif e == 'DOWN':
+				if self.pump.value:
+					self.level = min(10, self.level + 0.3)
+					self.oxygen = int(self.level)
+					if self.level == 10:
+						self.pumpSound.fadeout(1000)  # stop sound
+					else:
+						self.runTimer('DOWN', 1)
+				else:
+					self.pumpSound.fadeout(1000)    # stop sound
+					pass

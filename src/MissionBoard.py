@@ -15,7 +15,7 @@ from MissionBoard.State import Init
 from Elec import Electricity, Light
 from Misc import Laser, FuelPump, Gates, WaterPump, Oxygen
 from Flight import Phase, Flight, AllTheRest, Turbo
-from Phases import Phase1, Tanks
+from Phases import Phase1, Tanks, Phase2
 
 # init logger
 logger = logging.getLogger()
@@ -66,6 +66,6 @@ Init.init = displayInit
 # create the main object and start it !
 if __name__ == '__main__':
 	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, Flight, AllTheRest]
-	states = [Init, Phase1, Tanks]
+	states = [Init, Phase1, Tanks, Phase2]
 	MB = MissionBoard(func, states)
 	MB.run()

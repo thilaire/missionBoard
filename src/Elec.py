@@ -27,15 +27,17 @@ class Electricity(Functionality):
 		self.add('B2_RGB', 'RGB', pos=2)
 
 	def onEvent(self, e):
-		"""Manage changes for the electricity switches"""
+		"""Manage changes for the electricity switches
+		e is the button/event that has been changed/run
+		or is None for the initialization"""
 		logger.debug("enter `electricity` function")
 		# adjust the LEDs according to the switches
-		if e is self.solar:
-			self.LED_solar = e.value
-		if e is self.battery:
-			self.LED_battery = e.value
-		if e is self.fuel:
-			self.LED_fuel = e.value
+		if e is self.solar or e is None:
+			self.LED_solar = self.solar.value
+		if e is self.battery or e is None:
+			self.LED_battery = self.battery.value
+		if e is self.fuel or e is None:
+			self.LED_fuel = self.fuel.value
 		# amount of electricity
 		elec = self.solar.value * 1 + self.battery.value * 2 + self.fuel.value * 4  # 1,2 and 4 as weight
 		if elec != self.EM.electricity:
@@ -59,6 +61,7 @@ class Electricity(Functionality):
 				# self.EM.DISP_roll.setBrightness(elec)
 				# self.EM.DISP_yaw.setBrightness(elec)
 				# set the RGB electricity led
+				#TODO: re-set all the RGB
 				pass
 			self.RGB = GREEN if elec > 2 else YELLOW if elec == 2 else ORANGE if elec == 1 else (RED, FAST)
 			self.EM.electricity = elec
@@ -86,6 +89,10 @@ class Light(Functionality):
 				self.LED_cabin = e.value
 			if e is self.outside:
 				self.LED_outside = e.value
+		elif e is None:
+			self.LED_cabin = False
+			self.LED_outside = False
+
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
@@ -96,7 +103,7 @@ class Computer(Functionality):
 	"""Manage the computers (main or safety"""
 	def __init__(self, EM):
 		"""create the button"""
-		super(Light, self).__init__(EM)
+		super(Computer, self).__init__(EM)
 		self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
 
 	def isReadyToStart(self):

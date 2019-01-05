@@ -9,7 +9,7 @@ import logging
 from pygame.mixer import Sound
 import RPi.GPIO as GPIO
 
-from MissionBoard.RGB import RED, YELLOW, FAST, BLACK, BLUE, NOBLINK
+from MissionBoard.RGB import RED, GREEN, SLOW, YELLOW, FAST, BLACK, BLUE, NOBLINK, CORAL, MAGENTA
 from MissionBoard import Functionality
 
 
@@ -24,9 +24,9 @@ class Phase(Functionality):
 		"""Create the buttons, LED, etc."""
 		super(Phase, self).__init__(EM)
 		# elements
-		self.add('B6_SW2_1', 'phase1', TMindex=7, pin=1)
-		self.add('B6_SW2_2', 'phase2', TMindex=7, pin=5)
-		self.add('B6_SW2_3', 'phase3', TMindex=7, pin=6)
+		self.add('B6_SW2_1', 'phase1', TMindex=11, pin=1)
+		self.add('B6_SW2_2', 'phase2', TMindex=11, pin=2)
+		self.add('B6_SW2_3', 'phase3', TMindex=11, pin=3)
 
 
 	def onEvent(self, e):
@@ -56,10 +56,11 @@ class Turbo(Functionality):
 		# adjust the LEDs according to the switches
 		if e is self.gas:
 			self.LED_gas = e.value
-		if e is self.boost:
-			logger.debug(self.LED_boost)
+		elif e is self.boost:
 			self.LED_boost = e.value
-			logger.debug(self.LED_boost)
+		elif e is None:
+			self.LED_gas = self.gas.value
+			self.LED_boost = self.boost.value
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
@@ -80,6 +81,13 @@ class Flight(Functionality):
 		self.add('T4_DISP_3', 'direction', TMindex=7, block=0, size=4)
 		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
 
+		# Panel B2:
+		self.add('B2_RGB', 'RGB_autoPilot', pos=6)
+		self.add('B2_RGB', 'RGB_takeoff', pos=3)
+		self.add('B2_RGB', 'RGB_landing', pos=10)
+		self.add('B2_RGB', 'RGB_orbit', pos=7)
+		self.add('B2_RGB', 'RGB_overSpeed', pos=4)
+
 		# Panel B4: pilot
 		self.add('B4_LED', 'manual', TMindex=4, index=0)
 		self.add('B4_POT_0', 'roll', index=0, reverse=True)
@@ -91,13 +99,20 @@ class Flight(Functionality):
 		self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
 
 
+
 	def onEvent(self, e):
 		"""Manage changes for the filght buttons"""
-		pass
+		if e is self.autoPilot or e is None:
+			self.RGB_autoPilot = GREEN if self.autoPilot else (RED, SLOW)
+		if e is self.mode or e is None:
+			self.RGB_takeoff = MAGENTA if self.mode == 'takeoff' else BLACK
+			self.RGB_landing = CORAL if self.mode == 'landing' else BLACK
+			self.RGB_orbit = GREEN if self.mode == 'orbit' else BLACK
+
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		return (self.roll.value <= 5) and (self.yaw.value <= 5) and (self.speed.value <= 5)\
+		return (self.roll.value <= 10) and (self.yaw.value <= 10) and (self.speed.value <= 10)\
 		        and (self.mode == 'takeoff') and (self.autoPilot == 'auto')
 
 
