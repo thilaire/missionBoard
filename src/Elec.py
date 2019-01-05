@@ -65,7 +65,7 @@ class Electricity(Functionality):
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		return self.solar and self.battery and self.fuel
+		return self.solar.value and self.battery.value and self.fuel.value
 
 
 class Light(Functionality):
@@ -101,7 +101,7 @@ class Computer(Functionality):
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		return self.computer == 'backup'
+		return self.computer == 'main'
 
 	def onEvent(self, e):
 		"Manage changes for the computer switch"

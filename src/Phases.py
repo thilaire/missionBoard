@@ -12,7 +12,10 @@ from Flight import Phase
 from Misc import Oxygen, WaterPump
 
 from logging import getLogger
+from pygame.mixer import Sound
+
 logger = getLogger()
+SoundPath = "../sound/"
 
 
 # ----- Phase 1 --------
@@ -22,6 +25,8 @@ class Phase1(State):
 
 	def init(self):
 		self.EM.Flight_counter = "PHASE 1 "
+		Sound(SoundPath + "phase1.wav").play()
+
 
 	def isOver(self, func):
 		"""the phase is over when the switch 'Phase1' is on"""

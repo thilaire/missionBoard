@@ -3,7 +3,18 @@
 
 1. Initialize the buttons 
 (waiting for all the buttons to be in the right position (off, most of the time))
-
+  - turbo: off (both)
+  - gates: closed
+  - lights: off
+  - electricity: on (all)
+  - computer: main computer
+  - laser: disarmed
+  - pump: off
+  - water: off
+  - phases: all off
+  - flight: potentiometer to 0, mode=takeoff, autopilot
+   
+   
 2. Phase 1
 (waiting for the rocket button "Phase 1" to be on)
 

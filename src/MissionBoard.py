@@ -6,6 +6,8 @@ Define the different event loop (callbacks)
 """
 import pygame
 import logging
+from pygame.mixer import Sound
+from time import sleep
 
 from MissionBoard.RGB import RED, FAST, SLOW, BLUE, RGB
 from MissionBoard import EventManager
@@ -18,6 +20,7 @@ from Phases import Phase1, Tanks
 # init logger
 logger = logging.getLogger()
 logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
+SoundPath = "../sound/"
 
 # init pygame (for the sound)
 pygame.init()
@@ -52,8 +55,10 @@ class MissionBoard(EventManager):
 
 # add an init method to the Init state (that display 'Init')
 def displayInit(self):
-	logger.warning("JHLKHJMLKJMLJKMLKLM")
 	self.EM.Flight_counter = '- Init -'
+	sleep(0.1)
+	Sound(SoundPath + "init.wav").play()
+
 
 Init.init = displayInit
 

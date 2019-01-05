@@ -24,10 +24,9 @@ class Phase(Functionality):
 		"""Create the buttons, LED, etc."""
 		super(Phase, self).__init__(EM)
 		# elements
-		self.add('B6_SW2_1', 'phase1', TMindex=7, pin=7)
+		self.add('B6_SW2_1', 'phase1', TMindex=7, pin=1)
 		self.add('B6_SW2_2', 'phase2', TMindex=7, pin=5)
 		self.add('B6_SW2_3', 'phase3', TMindex=7, pin=6)
-		# sounds
 
 
 	def onEvent(self, e):
@@ -83,7 +82,7 @@ class Flight(Functionality):
 
 		# Panel B4: pilot
 		self.add('B4_LED', 'manual', TMindex=4, index=0)
-		self.add('B4_POT_0', 'roll', index=0)
+		self.add('B4_POT_0', 'roll', index=0, reverse=True)
 		self.add('B4_POT_1', 'yaw', index=1, reverse=True)
 		self.add('B4_POT_2', 'speed', index=2)
 
@@ -98,7 +97,7 @@ class Flight(Functionality):
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
-		return (self.roll.value < 5) and (self.yaw.value < 5) and (self.speed.value < 5)\
+		return (self.roll.value <= 5) and (self.yaw.value <= 5) and (self.speed.value <= 5)\
 		        and (self.mode == 'takeoff') and (self.autoPilot == 'auto')
 
 
