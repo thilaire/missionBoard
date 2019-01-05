@@ -13,4 +13,4 @@ say "Phase  [[slnc 10]] 1 [[slnc 10]] engagé" -o "phase1engaged.wav" --data-for
 
 
 # then the wav files are converted to 16 bits (manually with audicity, for the moment)
-# TODO: make a script that does all the work
+# TODO: make a script that does all the work (using sox
