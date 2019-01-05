@@ -59,6 +59,7 @@ class LVL(Element):
 		super(LVL, self).__init__(keyname, name)
 		self._TMindex = TMindex & 7
 		self._number = number & 3
+		self._value = 0
 
 
 	def __set__(self, instance, value):
@@ -67,12 +68,17 @@ class LVL(Element):
 			value = 10
 		if value < 0:
 			value = 0
-		# build the bytes to send
-		byte = (1 << value) - 1
-		self._values[self._number] = byte >> 2  # all the bytes up to
-		self._values[3] = ((byte & 3) << (2*(2-self._number))) | (self._values[3] & (~(3 << (2*(2-self._number)))))
+		# send commands if the value has changed
+		if value != self._value:
+			self._value = value
+			# build the bytes to send
+			byte = (1 << value) - 1
+			self._values[self._number] = byte >> 2  # all the bytes up to
+			self._values[3] = ((byte & 3) << (2*(2-self._number))) | (self._values[3] & (~(3 << (2*(2-self._number)))))
+				# send the command and the list of values
+			command = 0b11001000 | self._TMindex
+			self.sendSPI([command, ] + self._values)
 
-		# send the command and the list of values
-		command = 0b11001000 | self._TMindex
-		self.sendSPI([command, ] + self._values)
-		# TODO: before sending the command and the values, check if the values has changed before last sent. If not, it is not necessary to send it again
+	@property
+	def value(self):
+		return self._value
