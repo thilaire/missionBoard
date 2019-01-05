@@ -117,9 +117,14 @@ class ATBridge:
 							SPIlogger.debug("TM %d, value=%d", index, value)
 							Switch.checkChanges(index, value)
 						else:
-							# data for the Potar
-							SPIlogger.debug("Pot %d, value=%d", index, value)
-							POT.checkChanges(index, value)
+							if index == 3:
+								# rocket switch
+								SPIlogger.debug("Rocket switch TM %d, value=%d", index+4, value)
+								Switch.checkChanges(index+4, value)
+							else:
+								# data for the Potar
+								SPIlogger.debug("Pot %d, value=%d", index, value)
+								POT.checkChanges(index, value)
 
 
 

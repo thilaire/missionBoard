@@ -48,8 +48,8 @@ const uint8_t NUMBER_FONT2[] = {
 
 /* list of midpoint intervals and the associated index
 used by ADC-to-switches convertion */
-const uint8_t inter[] = {0, 12, 36, 62, 77, 91, 111, 123, 134, 146, 157, 175, 188, 200, 220, 239};
-const uint8_t switches[] = {0, 1, 2, 3, 4, 5, 8, 6, 9, 7, 10, 11, 12, 13, 14, 15};
+const uint8_t inter[] = {0, 4, 16, 27, 38, 49, 59, 69, 81, 93, 102, 110, 117, 125, 132, 139};
+const uint8_t switches[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 uint8_t Pot[3] = {0};       /* data from the ADC inputs */
 uint8_t ADCswitches = 0;    /* data from the ADC swithces */
@@ -120,7 +120,8 @@ uint8_t getADCSwitches(uint8_t* data)
 {
 	/* get the ADC value in ADCH (and 2 LSB bits in ADCL) */
 	/* fucking DOC !! ADCL must be read before ADCH, otherwise the next conversion is lost!! (see page 179 of the datasheet) */
-	uint8_t adc = ADCL>>6 | ADCH<<2;
+	//uint8_t adc = ADCL>>6 | ADCH<<2;
+	uint8_t adc = ADCL>>7 | ADCH<<1;
 	static uint8_t old_adc = 12;
 
 	/* check if the adc differ from less than 2 to the old ADC value */
@@ -131,6 +132,7 @@ uint8_t getADCSwitches(uint8_t* data)
 		*data = ADCswitches;
 		return 0;
 	}
+
 	/* find the value  associated to the ADC with a dicothomic search
 	in the table of midpoints (inter) and values (sw)*/
 	uint8_t ind = 8;
@@ -146,9 +148,23 @@ uint8_t getADCSwitches(uint8_t* data)
 	}
 	/* last iteration */
 	if (adc < inter[ind])
-		*data = switches[ind-1];
+		*data = ind-1;
+		//*data = switches[ind-1];
 	else
-		*data = switches[ind];
+		*data = ind;
+		//*data = switches[ind];
+
+	/* display value, for debug purpose only
+	uint8_t val[4] = {0,0,0,0};
+	val[1] = NUMBER_FONT2[(*data)/100];
+	val[2] = NUMBER_FONT2[((*data)/10)%10];
+	val[3] = NUMBER_FONT2[(*data)%10];
+	setDisplayTMx(0b11000100,val);
+	uint8_t val2[4] = {0,0,0,0};
+	val2[1] = NUMBER_FONT2[(adc)/100];
+	val2[2] = NUMBER_FONT2[((adc)/10)%10];
+	val2[3] = NUMBER_FONT2[(adc)%10];
+	setDisplayTMx(0b11001100,val2); */
 
 	/* check if something has changed */
 	if (ADCswitches != *data)

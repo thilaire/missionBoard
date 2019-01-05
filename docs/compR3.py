@@ -4,7 +4,8 @@ from math import sqrt
 from operator import itemgetter
 
 # data
-data = [0, 24, 49, 75, 79, 103, 127, 150, 120, 142, 164, 186, 190, 210, 230, 249]
+#data = [0, 24, 49, 75, 79, 103, 127, 150, 120, 142, 164, 186, 190, 210, 230, 249]
+data = [0, 9, 23, 32, 45, 54, 65, 73, 90, 97, 107, 113, 122, 128, 136, 142]
 
 # sorted list of tuple (data, value to get)
 i = sorted(zip(data, range(16)), key=itemgetter(0))
