@@ -65,10 +65,10 @@ class EventManager(ATBridge):
 
 	def run(self):
 		"""run the loops, the start method and they the (endless) SPI loop"""
+		# start the object
+		self.start()
 		# run the loops (one per thread)
 		for l in self.functionalities:
 			l.run()
-		# start the object
-		self.start()
 		# and run the SPI loop
 		self.runSPI()

@@ -3,7 +3,7 @@
 from operator import itemgetter
 import logging
 from threading import Thread
-from time import time
+from time import time, sleep
 from queue import Queue, Empty
 from re import compile
 
@@ -60,7 +60,10 @@ class Functionality:
 	def waitEvents(self):
 		"""threaded loop that waits for the event in the queue
 		 (or wait for some time), and then launch the function"""
-		logger.debug("Launch waitEvent '%s'", self.name)
+		#TODO: do something smarter... (run SPI loop in another thread, and start it sooner?)
+		sleep(0.1)      # delay, so the SPI loop can start...
+		logger.debug("Init the functionality %s", self.name)
+		self.onEvent(None)
 		# loop (wait for a button change or a timer)
 		self._lastEventTime = time()
 		while True:
@@ -83,7 +86,7 @@ class Functionality:
 
 	def run(self):
 		"""run the threaded loop """
-		logger.info("Start the functionality %s", self.name)
+		# Start the functionality
 		t = Thread(target=self.waitEvents, daemon=True)
 		t.start()
 
