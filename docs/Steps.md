@@ -12,7 +12,7 @@
   - pump: off
   - water: off
   - phases: all off
-  - flight: potentiometer to 0, mode=takeoff, autopilot
+  - flight: potentiometer to 0, mode=takeoff, manual command
    
    
 2. Phase 1
