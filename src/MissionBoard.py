@@ -15,7 +15,7 @@ from MissionBoard.State import Init
 from Elec import Electricity, Light
 from Misc import Laser, FuelPump, Gates, WaterPump, Oxygen
 from Flight import Phase, Flight, AllTheRest, Turbo
-from Phases import Phase1, Tanks, Phase2
+from Phases import Phase1, Tanks, Phase2, WarmUp, CountDown
 
 # init logger
 logger = logging.getLogger()
@@ -43,12 +43,12 @@ class MissionBoard(EventManager):
 		# self.AllTheRest_direction.clear()
 
 		# self.LED_OnOff = True
-		self.RGB_Go = RED, FAST
+		#self.AllTheRest_Go = RED, FAST
 
 		self.Flight_altitude = '76543210'
 		self.Flight_position = '1-2-3-40'
 		self.Flight_direction = '0123'
-		self.Oxygen_level = 7
+
 
 
 
@@ -66,6 +66,6 @@ Init.init = displayInit
 # create the main object and start it !
 if __name__ == '__main__':
 	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, Flight, AllTheRest]
-	states = [Init, Phase1, Tanks, Phase2]
+	states = [Init, Phase1, Tanks, Phase2, WarmUp, CountDown]
 	MB = MissionBoard(func, states)
 	MB.run()
