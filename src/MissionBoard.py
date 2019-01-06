@@ -14,7 +14,7 @@ from MissionBoard import EventManager
 from MissionBoard.State import Init
 from Elec import Electricity, Light
 from Misc import Laser, FuelPump, Gates, WaterPump, Oxygen
-from Flight import Phase, Flight, AllTheRest, Turbo
+from Flight import Phase, Flight, AllTheRest, Turbo,  CountDown as Counter
 from Phases import Phase1, Tanks, Phase2, WarmUp, CountDown
 
 # init logger
@@ -55,7 +55,7 @@ class MissionBoard(EventManager):
 
 # add an init method to the Init state (that display 'Init')
 def displayInit(self):
-	self.EM.Flight_counter = '- Init -'
+	self.EM.CountDown_counter = '- Init -'
 	sleep(0.1)
 	Sound(SoundPath + "init.wav").play()
 
@@ -65,7 +65,7 @@ Init.init = displayInit
 
 # create the main object and start it !
 if __name__ == '__main__':
-	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, Flight, AllTheRest]
+	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, Flight, AllTheRest, Counter]
 	states = [Init, Phase1, Tanks, Phase2, WarmUp, CountDown]
 	MB = MissionBoard(func, states)
 	MB.run()

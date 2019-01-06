@@ -67,6 +67,28 @@ class Turbo(Functionality):
 		return (not self.gas.value) and (not self.boost.value)
 
 
+
+class CountDown(Functionality):
+	"""Manage the count down"""
+	def __init__(self, EM):
+		"create the buttons, LEDs, etc."
+		super(CountDown, self).__init__(EM)
+		# display
+		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
+		self.add('B8_RGB', 'RGB_Go', pos=21)
+		# button
+		self.add('B8_PB', 'Go', gpio=22)
+
+	def onEvent(self, e):
+		"""Manage changes for the filght buttons"""
+		pass
+
+	def isReadyToStart(self):
+		"""Returns True if all the buttons are ready to start"""
+		return True
+
+
+
 class Flight(Functionality):
 	"""manage the flight buttons"""
 	def __init__(self, EM):
@@ -79,7 +101,7 @@ class Flight(Functionality):
 		# self.add('T2_DISP_1', 'roll', TMindex=2, size=4)
 		# self.add('T2_DISP_2', 'yaw', TMindex=3, size=4)
 		self.add('T4_DISP_3', 'direction', TMindex=7, block=0, size=4)
-		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
+
 
 		# Panel B2:
 		self.add('B2_RGB', 'RGB_autoPilot', pos=6)
@@ -118,6 +140,7 @@ class Flight(Functionality):
 			self.RGB_takeoff = MAGENTA if self.mode == 'takeoff' else BLACK
 			self.RGB_landing = CORAL if self.mode == 'landing' else BLACK
 			self.RGB_orbit = GREEN if self.mode == 'orbit' else BLACK
+		logger.debug("e=%s, state = %s", e, self.EM.state)
 		if (e is self.rocketEngine) and (self.EM.state == 'WarmUp'):
 			self.RGB_rocketEngine = RED
 			self.rocketEngineStart = True
@@ -152,7 +175,7 @@ class AllTheRest(Functionality):
 		self.add('B7_PB_RIGHT', 'Right', gpio=6)
 
 		# Panel B8: commands
-		self.add('B8_RGB', 'Go', pos=21)
+
 
 		# Panel B9: audio
 		self.add('B9_SW3', 'Com', values=['Off', 'COM1', 'COM2'], TMindex=4, pins=[5, 6])

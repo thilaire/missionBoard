@@ -24,7 +24,7 @@ class Phase1(State):
 	funcNext = [Phase, ]
 
 	def init(self):
-		self.EM.Flight_counter = "PHASE 1 "
+		self.EM.CountDown_counter = "PHASE 1 "
 		Sound(SoundPath + "phase1.wav").play()
 
 
@@ -56,7 +56,7 @@ class Phase2(State):
 
 	def init(self):
 		self.EM.Oxygen.RGB_pump = BLACK
-		self.EM.Flight_counter = "PHASE 2 "
+		self.EM.CountDown_counter = "PHASE 2 "
 		Sound(SoundPath + "phase2.wav").play()
 
 
@@ -85,7 +85,7 @@ class Phase3(State):
 	funcNext = [Phase, ]
 
 	def init(self):
-		self.EM.Flight_counter = "PHASE 3 "
+		self.EM.CountDown_counter = "PHASE 3 "
 		Sound(SoundPath + "phase3.wav").play()
 
 

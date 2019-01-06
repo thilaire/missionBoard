@@ -61,7 +61,7 @@ class Functionality:
 		"""threaded loop that waits for the event in the queue
 		 (or wait for some time), and then launch the function"""
 		#TODO: do something smarter... (run SPI loop in another thread, and start it sooner?)
-		sleep(0.1)      # delay, so the SPI loop can start...
+		sleep(0.3)      # delay, so the SPI loop can start...
 		logger.debug("Init the functionality %s", self.name)
 		self.onEvent(None)
 		# loop (wait for a button change or a timer)
