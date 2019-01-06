@@ -98,6 +98,16 @@ class Flight(Functionality):
 		self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
 		self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
 
+		# Panel B8: buttons
+		self.add('B8_PB_0', 'rocketEngine', gpio=4)
+		self.add('B8_RGB', 'RGB_rocketEngine', pos=13)
+		#self.add('P8_PB_1', 'SpaceshipEngine', gpio=18)
+		#self.add('P8_PB_2', 'Parachute', gpio=27)
+		#self.add('P8_PB_3', 'Brake', gpio=17)
+		#self.add('P8_PB_4', 'Unhook', gpio=14)
+		#self.add('P8_PB_7', 'LandingGear', gpio=15)
+
+		self.rocketEngineStart = False
 
 
 	def onEvent(self, e):
@@ -108,12 +118,16 @@ class Flight(Functionality):
 			self.RGB_takeoff = MAGENTA if self.mode == 'takeoff' else BLACK
 			self.RGB_landing = CORAL if self.mode == 'landing' else BLACK
 			self.RGB_orbit = GREEN if self.mode == 'orbit' else BLACK
+		if (e is self.rocketEngine) and (self.EM.state == 'WarmUp'):
+			self.RGB_rocketEngine = RED
+			self.rocketEngineStart = True
+			#TODO: warm up ! (display image/video)
 
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
 		return (self.roll.value <= 10) and (self.yaw.value <= 10) and (self.speed.value <= 10)\
-		        and (self.mode == 'takeoff') and (self.autoPilot == 'auto')
+		        and (self.mode == 'takeoff') and (self.autoPilot == 'manual')
 
 
 
@@ -138,6 +152,7 @@ class AllTheRest(Functionality):
 		self.add('B7_PB_RIGHT', 'Right', gpio=6)
 
 		# Panel B8: commands
+		self.add('B8_RGB', 'Go', pos=21)
 
 		# Panel B9: audio
 		self.add('B9_SW3', 'Com', values=['Off', 'COM1', 'COM2'], TMindex=4, pins=[5, 6])
