@@ -227,6 +227,7 @@ class Oxygen(Functionality):
 					self.oxygen = int(self.level)
 					if self.level == 10:
 						self.pumpSound.fadeout(1000)  # stop sound
+						self.RGB_pump = BLACK
 					else:
 						self.runTimer('DOWN', 1)
 				else:
