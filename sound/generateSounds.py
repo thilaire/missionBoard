@@ -1,15 +1,18 @@
 # coding=utf-8
 
 """Script to generate sound
-It requires the `say` command (with the default dictionary on my Mac, they should exist in GNUstep speech engine)
+It requires
+- the `say` command (with the default dictionary on my Mac, they should exist in GNUstep speech engine)
+- `afconvert` (because `say` cannot produce valid wav file; there is a problem in their header, so we use `convert`
+to produce valid wav file)
 
 To add a new language, add translated sentences in the dictionaries (in sounds list), and run the script
 (the folder `generated/{lang}` should exist)
 Configure the sound path in config.py
 """
 
-from subprocess import Popen, PIPE
-
+from subprocess import call
+from time import sleep
 # languages used for the generation
 languages = ['en', 'fr']
 
@@ -40,5 +43,9 @@ for lang in languages:
 			sentence = sentence[lang]
 		sentence = sentence.replace('$', '[[slnc 10]]')
 		# generate the sound
-		Popen(['say', '-v', voices[lang], '"'+sentence+'"', '--data-format=LEI16@22050', '-o', 'generated/'+lang+'/'+name+'.wav'], stdout=PIPE)
-
+		# we cannot fully rely on `say` because the wav file output cannot be read by pygame (the wav format is `unexpected`)
+		# so we first ccreate a aiff file, and then convert it into a correct wav file
+		#Popen(['say', '-v', voices[lang], '"'+sentence+'"', '--data-format=LEI16@22050', '--channels=2', '-o', 'generated/'+lang+'/'+name+'.wav'], stdout=PIPE)
+		call(['say', '-v', voices[lang], '"' + sentence + '"', '--channels=2', '-o','generated/temp'])
+		call(['afconvert', '-f', 'WAVE', '-d', 'LEI16', 'generated/temp.aiff', 'generated/'+lang+'/'+name+'.wav'])
+		call(['rm', 'generated/temp.aiff'])
