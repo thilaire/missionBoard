@@ -10,7 +10,8 @@ say "Phase  [[slnc 10]] 2" -o "phase2.wav" --data-format=LEF32@22050
 say "Phase  [[slnc 10]] 3" -o "phase3.wav" --data-format=LEF32@22050
 say "Phase  [[slnc 10]] 1 engagé" -o "phase1engaged.wav" --data-format=LEF32@22050
 say "Phase  [[slnc 10]] 1 [[slnc 10]] engagé" -o "phase1engaged.wav" --data-format=LEF32@22050
-
+say "Phase  [[slnc 10]] 2 [[slnc 10]] engagé" -o "phase2engaged.wav" --data-format=LEF32@22050
+say "Phase  [[slnc 10]] 3 [[slnc 10]] engagé [[slnc 40]] Début du compte à rebourd" -o "phase3engaged.wav" --data-format=LEF32@22050
 
 # then the wav files are converted to 16 bits (manually with audicity, for the moment)
 # TODO: make a script that does all the work (using sox
