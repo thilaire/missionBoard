@@ -16,7 +16,7 @@ from MissionBoard.config import SoundPathSpeech
 from Elec import Electricity, Light
 from Misc import Laser, FuelPump, Gates, WaterPump, Oxygen
 from Flight import Phase, Flight, AllTheRest, Turbo,  CountDown as Counter
-from Phases import Phase1, Tanks, Phase2, WarmUp, CountDown
+from Phases import Phase1, Tanks, Phase2, WarmUp, Phase3, CountDown
 
 # init logger
 logger = logging.getLogger()
@@ -58,7 +58,7 @@ class MissionBoard(EventManager):
 def displayInit(self):
 	self.EM.CountDown_counter = '- Init -'
 	sleep(0.1)
-	Sound(SoundPathSpeech + "Initialization6.wav").play()
+	Sound(SoundPathSpeech + "Initialization.wav").play()
 
 
 Init.init = displayInit
@@ -67,6 +67,7 @@ Init.init = displayInit
 # create the main object and start it !
 if __name__ == '__main__':
 	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, Flight, AllTheRest, Counter]
-	states = [Init, Phase1, Tanks, Phase2, WarmUp, CountDown]
+	#states = [Init, Phase1, Tanks, Phase2, WarmUp, Phase3, CountDown]
+	states = [Init, Phase3, CountDown]
 	MB = MissionBoard(func, states)
 	MB.run()
