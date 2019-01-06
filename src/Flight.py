@@ -7,7 +7,7 @@ Flight functionalities
 
 import logging
 
-from MissionBoard.RGB import RED, GREEN, SLOW, BLACK, CORAL, MAGENTA
+from MissionBoard.RGB import RED, GREEN, SLOW, BLACK, CORAL, MAGENTA, FAST
 from MissionBoard import Functionality
 
 logger = logging.getLogger("Flight")
@@ -75,6 +75,8 @@ class CountDown(Functionality):
 		self.add('B8_RGB', 'RGB_Go', pos=21)
 		# button
 		self.add('B8_PB', 'Go', gpio=22)
+
+
 
 	def onEvent(self, e):
 		"""Manage changes for the filght buttons"""

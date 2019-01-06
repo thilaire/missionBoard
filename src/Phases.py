@@ -104,7 +104,7 @@ class CountDown(State):
 
 	def init(self):
 		Sound(SoundPathSpeech + "phase3engaged.wav").play()
-		self.EM.Flight_RGB_Go = RED, BLINK
+		self.EM.CountDown_RGB_Go = RED
 
 
 	def isOver(self, func):
