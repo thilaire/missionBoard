@@ -6,12 +6,9 @@ Flight functionalities
 """
 
 import logging
-from pygame.mixer import Sound
-import RPi.GPIO as GPIO
 
-from MissionBoard.RGB import RED, GREEN, SLOW, YELLOW, FAST, BLACK, BLUE, NOBLINK, CORAL, MAGENTA
+from MissionBoard.RGB import RED, GREEN, SLOW, BLACK, CORAL, MAGENTA
 from MissionBoard import Functionality
-from .config import SoundPath
 
 logger = logging.getLogger("Flight")
 

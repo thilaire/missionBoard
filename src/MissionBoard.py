@@ -12,6 +12,7 @@ from time import sleep
 from MissionBoard.RGB import RED, FAST, SLOW, BLUE, RGB
 from MissionBoard import EventManager
 from MissionBoard.State import Init
+from MissionBoard.config import SoundPathSpeech
 from Elec import Electricity, Light
 from Misc import Laser, FuelPump, Gates, WaterPump, Oxygen
 from Flight import Phase, Flight, AllTheRest, Turbo,  CountDown as Counter
@@ -20,7 +21,7 @@ from Phases import Phase1, Tanks, Phase2, WarmUp, CountDown
 # init logger
 logger = logging.getLogger()
 logging.basicConfig(format='%(name)s : %(levelname)s : %(funcName)s - %(message)s', level=logging.DEBUG)
-SoundPath = "../sound/"
+
 
 # init pygame (for the sound)
 pygame.init()
@@ -57,7 +58,7 @@ class MissionBoard(EventManager):
 def displayInit(self):
 	self.EM.CountDown_counter = '- Init -'
 	sleep(0.1)
-	Sound(SoundPath + "init.wav").play()
+	Sound(SoundPathSpeech + "Initialization6.wav").play()
 
 
 Init.init = displayInit

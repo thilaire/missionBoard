@@ -11,7 +11,7 @@ import RPi.GPIO as GPIO
 
 from MissionBoard.RGB import RED, YELLOW, FAST, BLACK, BLUE, NOBLINK
 from MissionBoard import Functionality
-from .config import SoundPath
+from MissionBoard.config import SoundPath
 
 logger = logging.getLogger("Misc")
 
@@ -123,9 +123,9 @@ class FuelPump(Functionality):
 		# sound
 		self.sound = Sound(SoundPath + "fuel.wav")
 		# levels
-		self.fuel = [0, 9, 9]       # [ x, spaceship fuel, rocket fuel ]    #TODO: set to 0 for final version
-		self.rocket = 9     # init level for LVL rocket       #TODO: set to 0 for final version
-		self.spaceship = 9  # init level for LVL spaceship  #TODO: set to 0 for final version
+		self.fuel = [0, 0, 0]       # [ x, spaceship fuel, rocket fuel ]    #TODO: set to 0 for final version
+		self.rocket = 0     # init level for LVL rocket       #TODO: set to 0 for final version
+		self.spaceship = 0  # init level for LVL spaceship  #TODO: set to 0 for final version
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
@@ -143,9 +143,9 @@ class FuelPump(Functionality):
 					self.spaceship = self.fuel[self.pump.value]
 				else:
 					self.rocket = self.fuel[self.pump.value]
-				# and run a timer (in 5s or 10s depending on the level) if the tank is not full
+				# and run a timer (in 1s or 3s depending on the level) if the tank is not full
 				if self.fuel[self.pump.value] != 10:
-					self.runTimer('FUEL PUMP', 5 if self.fuel[self.pump.value] < 8 else 10)
+					self.runTimer('FUEL PUMP', 1 if self.fuel[self.pump.value] < 8 else 3)
 				else:
 					# stop the sound
 					self.sound.fadeout(1000)
@@ -155,8 +155,8 @@ class FuelPump(Functionality):
 			if e.valueName != 'off':
 				# play sound in loop (until stop)
 				self.sound.play(loops=-1, fade_ms=100)
-				# run the timer to increase the level in 5 (or 10) seconds
-				self.runTimer('FUEL PUMP', 5 if self.fuel[self.pump.value] < 8 else 10)
+				# run the timer to increase the level in 1 (or 3) seconds
+				self.runTimer('FUEL PUMP', 1 if self.fuel[self.pump.value] < 8 else 3)
 			else:
 				# stop the sound
 				self.sound.fadeout(1000)
@@ -207,8 +207,8 @@ class Oxygen(Functionality):
 		# sounds
 		self.pumpSound = Sound(SoundPath + "oxygen.wav")
 		# levels
-		self.level = 9      #TODO: set to 0 for final version
-		self.oxygen = 9     # init level for LVL oxygen  #TODO: set to 0 for final version
+		self.level = 0      #TODO: set to 0 for final version
+		self.oxygen = 0     # init level for LVL oxygen  #TODO: set to 0 for final version
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
@@ -223,7 +223,7 @@ class Oxygen(Functionality):
 					self.runTimer('DOWN', 1)
 			elif e == 'DOWN':
 				if self.pump.value:
-					self.level = min(10, self.level + 0.3)
+					self.level = min(10, self.level + 0.8)  # 0.3
 					self.oxygen = int(self.level)
 					if self.level == 10:
 						self.pumpSound.fadeout(1000)  # stop sound

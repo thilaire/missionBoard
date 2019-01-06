@@ -10,7 +10,7 @@ from MissionBoard import State
 
 from Flight import Phase, Flight
 from Misc import Oxygen, FuelPump
-from .config import SoundPathSpeech
+from MissionBoard.config import SoundPathSpeech
 
 from logging import getLogger
 from pygame.mixer import Sound
