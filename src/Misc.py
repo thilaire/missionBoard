@@ -11,10 +11,9 @@ import RPi.GPIO as GPIO
 
 from MissionBoard.RGB import RED, YELLOW, FAST, BLACK, BLUE, NOBLINK
 from MissionBoard import Functionality
-
+from .config import SoundPath
 
 logger = logging.getLogger("Misc")
-SoundPath = "../sound/"
 
 
 class Laser(Functionality):
@@ -65,7 +64,7 @@ class Gates(Functionality):
 		self.add('B2_RGB', 'gate2', pos=9)
 		self.add('T7_SW3', 'gates', values=['closed', 'gate1', 'gate2'], TMindex=5, pins=[0, 1])
 
-		self.soundOpen = Sound(SoundPath + "../sound/openGate.wav")
+		self.soundOpen = Sound(SoundPath + "openGate.wav")
 		self.soundClose = Sound(SoundPath + "closeGate.wav")
 		self.gateMoving = False  # True if a gate is moving
 		self.state = 'closed'

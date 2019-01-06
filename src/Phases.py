@@ -10,12 +10,13 @@ from MissionBoard import State
 
 from Flight import Phase, Flight
 from Misc import Oxygen, FuelPump
+from .config import SoundPathSpeech
 
 from logging import getLogger
 from pygame.mixer import Sound
 
 logger = getLogger()
-SoundPath = "../sound/"
+
 
 
 # ----- Phase 1 --------
@@ -25,7 +26,7 @@ class Phase1(State):
 
 	def init(self):
 		self.EM.CountDown_counter = "PHASE 1 "
-		Sound(SoundPath + "phase1.wav").play()
+		Sound(SoundPathSpeech + "phase1.wav").play()
 
 
 	def isOver(self, func):
@@ -40,7 +41,7 @@ class Tanks(State):
 
 	def init(self):
 		"""to do when we start the phase"""
-		Sound(SoundPath + "phase1engaged.wav").play()
+		Sound(SoundPathSpeech + "phase1engaged.wav").play()
 		self.EM.Oxygen.RGB_pump = BLUE, SLOW
 
 
@@ -57,7 +58,7 @@ class Phase2(State):
 	def init(self):
 		self.EM.Oxygen.RGB_pump = BLACK
 		self.EM.CountDown_counter = "PHASE 2 "
-		Sound(SoundPath + "phase2.wav").play()
+		Sound(SoundPathSpeech + "phase2.wav").play()
 
 
 	def isOver(self, func):
@@ -72,7 +73,7 @@ class WarmUp(State):
 	funcNext = [Flight, ]
 
 	def init(self):
-		Sound(SoundPath + "phase2engaged.wav").play()
+		Sound(SoundPathSpeech + "phase2engaged.wav").play()
 		self.EM.Flight_RGB_rocketEngine = BLUE, BLINK
 
 	def isOver(self, func):
@@ -86,7 +87,7 @@ class Phase3(State):
 
 	def init(self):
 		self.EM.CountDown_counter = "PHASE 3 "
-		Sound(SoundPath + "phase3.wav").play()
+		Sound(SoundPathSpeech + "phase3.wav").play()
 
 
 	def isOver(self, func):
@@ -102,7 +103,7 @@ class CountDown(State):
 	funcNext = [Flight, ]
 
 	def init(self):
-		Sound(SoundPath + "phase3engaged.wav").play()
+		Sound(SoundPathSpeech + "phase3engaged.wav").play()
 		self.EM.Flight_RGB_Go = RED, BLINK
 
 

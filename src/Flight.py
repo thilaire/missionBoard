@@ -11,10 +11,10 @@ import RPi.GPIO as GPIO
 
 from MissionBoard.RGB import RED, GREEN, SLOW, YELLOW, FAST, BLACK, BLUE, NOBLINK, CORAL, MAGENTA
 from MissionBoard import Functionality
-
+from .config import SoundPath
 
 logger = logging.getLogger("Flight")
-SoundPath = "../sound/"
+
 
 
 
