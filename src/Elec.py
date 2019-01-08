@@ -62,7 +62,7 @@ class Electricity(Functionality):
 				# self.EM.DISP_roll.setBrightness(elec)
 				# self.EM.DISP_yaw.setBrightness(elec)
 				# set the RGB electricity led
-				#TODO: re-set all the RGB
+				# TODO: re-set all the RGB
 				pass
 			self.RGB = GREEN if elec > 2 else YELLOW if elec == 2 else ORANGE if elec == 1 else (RED, FAST)
 			self.EM.electricity = elec
@@ -112,6 +112,6 @@ class Computer(Functionality):
 		return self.computer == 'main'
 
 	def onEvent(self, e):
-		"Manage changes for the computer switch"
+		"""Manage changes for the computer switch"""
 		# TODO:
 		pass

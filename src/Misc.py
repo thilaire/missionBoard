@@ -123,9 +123,9 @@ class FuelPump(Functionality):
 		# sound
 		self.sound = Sound(SoundPath + "fuel.wav")
 		# levels
-		self.fuel = [0, 0, 0]       # [ x, spaceship fuel, rocket fuel ]    #TODO: set to 0 for final version
-		self.rocket = 0     # init level for LVL rocket       #TODO: set to 0 for final version
-		self.spaceship = 0  # init level for LVL spaceship  #TODO: set to 0 for final version
+		self.fuel = [0, 0, 0]       # [ x, spaceship fuel, rocket fuel ]
+		self.rocket = 0     # init level for LVL rocket
+		self.spaceship = 0  # init level for LVL spaceship
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
@@ -207,8 +207,8 @@ class Oxygen(Functionality):
 		# sounds
 		self.pumpSound = Sound(SoundPath + "oxygen.wav")
 		# levels
-		self.level = 0      #TODO: set to 0 for final version
-		self.oxygen = 0     # init level for LVL oxygen  #TODO: set to 0 for final version
+		self.level = 0
+		self.oxygen = 0     # init level for LVL oxygen
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""

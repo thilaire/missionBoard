@@ -18,7 +18,6 @@ from pygame.mixer import Sound
 logger = getLogger()
 
 
-
 # ----- Phase 1 --------
 class Phase1(State):
 	"""Define the Phase 1"""
@@ -47,7 +46,9 @@ class Tanks(State):
 
 	def isOver(self, func):
 		"""the phase is over when the tanks are full"""
-		return (self.EM.FuelPump_rocket.value == 10) and (self.EM.FuelPump_spaceship.value == 10) and (self.EM.Oxygen_oxygen.value == 10) and (self.EM.FuelPump_pump == 'off') and (not self.EM.Phase.phase2) and (not self.EM.Phase_phase3)
+		return (self.EM.FuelPump_rocket.value == 10) and (self.EM.FuelPump_spaceship.value == 10) \
+			and (self.EM.Oxygen_oxygen.value == 10) and (self.EM.FuelPump_pump == 'off') \
+			and (not self.EM.Phase.phase2) and (not self.EM.Phase_phase3)
 
 
 # ----- Phase 2 --------
@@ -77,7 +78,7 @@ class WarmUp(State):
 		self.EM.Flight_RGB_rocketEngine = BLUE, BLINK
 
 	def isOver(self, func):
-		return (self.EM.Flight_autoPilot == 'auto') and (self.EM.Flight.rocketEngineStart == True)
+		return (self.EM.Flight_autoPilot == 'auto') and self.EM.Flight.rocketEngineStart
 
 
 # ----- Phase 3 --------
@@ -93,7 +94,6 @@ class Phase3(State):
 	def isOver(self, func):
 		"""the phase is over when the switch 'Phase3' is on"""
 		return self.EM.Phase_phase1 and self.EM.Phase_phase2 and self.EM.Phase_phase3
-
 
 
 # --------- Countdown ----------

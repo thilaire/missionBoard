@@ -68,7 +68,7 @@ class Turbo(Functionality):
 class CountDown(Functionality):
 	"""Manage the count down"""
 	def __init__(self, EM):
-		"create the buttons, LEDs, etc."
+		"""create the buttons, LEDs, etc."""
 		super(CountDown, self).__init__(EM)
 		# display
 		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
@@ -122,11 +122,11 @@ class Flight(Functionality):
 		# Panel B8: buttons
 		self.add('B8_PB_0', 'rocketEngine', gpio=4)
 		self.add('B8_RGB', 'RGB_rocketEngine', pos=13)
-		#self.add('P8_PB_1', 'SpaceshipEngine', gpio=18)
-		#self.add('P8_PB_2', 'Parachute', gpio=27)
-		#self.add('P8_PB_3', 'Brake', gpio=17)
-		#self.add('P8_PB_4', 'Unhook', gpio=14)
-		#self.add('P8_PB_7', 'LandingGear', gpio=15)
+		# self.add('P8_PB_1', 'SpaceshipEngine', gpio=18)
+		# self.add('P8_PB_2', 'Parachute', gpio=27)
+		# self.add('P8_PB_3', 'Brake', gpio=17)
+		# self.add('P8_PB_4', 'Unhook', gpio=14)
+		# self.add('P8_PB_7', 'LandingGear', gpio=15)
 
 		self.rocketEngineStart = False
 
@@ -143,7 +143,7 @@ class Flight(Functionality):
 		if (e is self.rocketEngine) and (self.EM.state == 'WarmUp'):
 			self.RGB_rocketEngine = RED
 			self.rocketEngineStart = True
-			#TODO: warm up ! (display image/video)
+			# TODO: warm up ! (display image/video)
 
 
 	def isReadyToStart(self):
