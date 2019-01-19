@@ -8,7 +8,7 @@ Flight Phases
 from MissionBoard.RGB import BLUE, SLOW, BLACK, BLINK, RED
 from MissionBoard import State
 
-from Flight import Phase, Flight
+from Flight import Phase, Flight, CountDown
 from Misc import Oxygen, FuelPump
 from MissionBoard.config import SoundPathSpeech
 
@@ -100,12 +100,24 @@ class Phase3(State):
 class CountDown(State):
 	"""Countdown Phase"""
 
-	funcNext = [Flight, ]
+	funcNext = [CountDown, ]
 
 	def init(self):
+		self.EM.CountDown_counter = "  10.0000"
 		Sound(SoundPathSpeech + "phase3engaged.wav").play()
 		self.EM.CountDown_RGB_Go = RED
 
+	def isOver(self, func):
+		return self.CountDown.value == -1
+
+
+class TakeOff(State):
+	"""Takeoff Phase"""
+
+	funcNext = [Flight]
+
+	def init(self):
+		Sound(SoundPathSpeech + "takeoff.wav").play()
 
 	def isOver(self, func):
 		return False

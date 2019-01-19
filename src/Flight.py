@@ -6,9 +6,11 @@ Flight functionalities
 """
 
 import logging
+from pygame.mixer import Sound
 
 from MissionBoard.RGB import RED, GREEN, SLOW, BLACK, CORAL, MAGENTA, FAST
 from MissionBoard import Functionality
+from MissionBoard.config import SoundPathSpeech, SoundPath
 
 logger = logging.getLogger("Flight")
 
@@ -75,12 +77,37 @@ class CountDown(Functionality):
 		self.add('B8_RGB', 'RGB_Go', pos=21)
 		# button
 		self.add('B8_PB', 'Go', gpio=22)
-
+		# state
+		self.isRunning = False
+		self.timeToGo = 1   # time to go for the new second
+		self.value = 9
+		# load the sounds
+		self.sounds = [Sound(SoundPathSpeech + str(x) + ".wav") for x in range(10)]
 
 
 	def onEvent(self, e):
 		"""Manage changes for the filght buttons"""
-		pass
+		if self.EM.state == 'CountDown':
+			if e is self.Go:
+				if self.isRunning:
+					# delete the timer (but keep how many seconds are left)
+					self.timeToGo = self._timers["CD"]
+					del self._timers["CD"]
+					# stop the countdown
+					self.EM.stopCountDown()
+					self.isRunning = False
+				else:
+					# run the countdown
+					self.EM.runCountDown()
+					self.isRunning = True
+					self.runTimer("CD", self.timeToGo)
+					self.timeToGo = 1
+			elif e == "CD":
+				self.sounds[self.value].play()
+				self.value -= 1
+				if self.value >= 0:
+					self.runTimer("CD", 1)
+
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
