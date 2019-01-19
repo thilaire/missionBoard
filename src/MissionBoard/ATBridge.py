@@ -150,4 +150,13 @@ class ATBridge:
 		"""
 		self.sendSPI([0b11110000])
 
+	def runCountDown(self):
+		"""tell the ATtiny to run the count down
+		from 10 to 0"""
+		self.sendSPI([0b00100001])
+
+	def stopCountDown(self):
+		"""tell the ATtiny to run the count down
+		from 10 to 0"""
+		self.sendSPI([0b00100000])
 
