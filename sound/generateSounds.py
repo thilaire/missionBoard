@@ -30,9 +30,10 @@ sounds = [
 	('phase2engaged', {'fr': 'Phase $ 2 $ engagée', 'en': 'Phase $ 2 $ engaged'}),
 	('phase3engaged', {'fr': 'Phase $ 3 $ engagée, $$$$ Début du compte à rebours',
 	'en': 'Phase $ 3 $ engaged, $$$$ the countdown starts'}),
+	('takeoff', {'fr': 'Décollage!', 'en': 'Takeoff!'})
 ]
 # add the numbers
-sounds.extend(list((str(x), str(x)) for x in range(10)))
+sounds.extend(list((str(x), str(x)) for x in range(11)))
 
 # iter all the languages
 for lang in languages:
