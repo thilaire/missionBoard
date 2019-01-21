@@ -96,7 +96,7 @@ uint8_t getDataTMx8(uint8_t nTM, uint8_t* data) {
 }
 
 
-
+/* TODO: is it really useful to store the data, and check if we need to send each byte or not? */
 /* according to the SPI data received, set the display of the TMx (send appropriate command) */
 void setDisplayTMx(uint8_t SPIcommand, uint8_t* SPIbuffer)
 {

@@ -223,8 +223,8 @@ The following table sums up the commands:
 | | | | | | | | | `tt` is the number of the TM163x considered | |
 |-|-|-|-|-|-|-|-|-|-|
 |`1`|`1`|`1`|`1`|`0`|`0`|`0`|`0`| ask the AVR for its data (TMx8 and potentiometer). Data will arrive in the following polling cycles | 0 |
+|`0`|`0`|`1`|`0`|`0`|`0`|`0`|`s`| run/stop the count down (`s`=1 for fun, `s`=0 for stop)| 0 |
 |`1`|`1`|`1`|`1`|`x`|`x`|`x`|`x`| not used yet | 0 |
-|`0`|`0`|`1`|`x`|`x`|`x`|`x`|`x`| not used yet | 0 |
 |`0`|`0`|`0`|`1`|`1`|`x`|`x`|`x`| not used yet | 0 |
 |-|-|-|-|-|-|-|-|-|-|
 

@@ -171,15 +171,23 @@ void SPIRecv_TreatByte() {
 		/* treat it, according to its 1st byte (command)*/
 		switch (command & 0b11000000) {
 			case 0:
-				if (command) {
-					if (command == 0b00011111) {
-						turnOffRGB();
-					}
-					else {
-						/* set RGB color */
-						setRGBLed(command-1, data);
-					}
+				/* count down commands */
+				if (command & 0b0010000) {
+					if (command == 0b00100000)
+						stopCountDown();
+					else if (command == 0b00100001)
+						runCountDown();
+					else if (command == 0b00100010)
+						initCountDown();
 				}
+				else if (command == 0b00011111) {
+					/* turn off the RGB LEDs */
+					turnOffRGB();
+				}
+				else {
+					/* set RGB color */
+					setRGBLed(command-1, data);
+					}
 				/*else NOP: do nothing */
 				break;
 			case 0b01000000:
@@ -283,10 +291,12 @@ void doTimer()
 		SPISendData( 0b01000100 | nTM, data);
 	}
 
-
 	/* run ADC for the next cycle */
 	runADC((cycle+1)&3);
 
+	/* run countdown */
+	if ((cycle&7) == 0)
+		updateCountDown();  /* it will check if the countdown is running or not */
 
 	/* run blinking cycle */
 	if ((cycle&15) == 3) {
