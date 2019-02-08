@@ -15,7 +15,7 @@ class PB(Element):
 
 		# configure the pin for input, with pull-up
 		GPIO.setmode(GPIO.BCM)
-		GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+		GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 		GPIO.add_event_detect(gpio, edge, callback=lambda x: self.notify(), bouncetime=500)
 
 
