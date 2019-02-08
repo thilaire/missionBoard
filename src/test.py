@@ -37,7 +37,7 @@ class Test(Functionality):
 		"""Manage changes"""
 		self.counter = "%04d" % self.i + "%04d" % randint(0, 9999)
 		self.i += 1
-		self.runTimer("test", 20)
+		self.runTimer("test", 2)
 
 
 
