@@ -109,7 +109,7 @@ class CountDown(State):
 		self.EM.CountDown_RGB_Go = RED
 
 	def isOver(self, func):
-		return self.EM.CountDown.value == 0
+		return self.EM.CountDown.value == -1
 
 
 class TakeOff(State):

@@ -105,8 +105,8 @@ class CountDown(Functionality):
 					self.EM.runCountDown()
 			elif e == "CD":
 				self.value -= 1
-				self.sounds[self.value].play()
-				if self.value > 0:
+				if self.value >= 0:
+					self.sounds[self.value].play()
 					self.runTimer("CD", 1)
 
 
