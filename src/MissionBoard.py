@@ -65,6 +65,6 @@ Init.init = displayInit
 if __name__ == '__main__':
 	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, Flight, AllTheRest, Counter]
 	#states = [Init, Phase1, Tanks, Phase2, WarmUp, Phase3, CountDown]
-	states = [Init, Phase3, CountDown]
+	states = [Init, CountDown]
 	MB = MissionBoard(func, states)
 	MB.run()

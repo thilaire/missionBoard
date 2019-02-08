@@ -103,12 +103,13 @@ class CountDown(State):
 	funcNext = [CountDown, ]
 
 	def init(self):
-		self.EM.CountDown_counter = "  10.0000"
+		# self.EM.CountDown_counter = "   9.9999"
 		Sound(SoundPathSpeech + "phase3engaged.wav").play()
+		self.EM.initCountDown()
 		self.EM.CountDown_RGB_Go = RED
 
 	def isOver(self, func):
-		return self.CountDown.value == -1
+		return self.EM.CountDown.value == 0
 
 
 class TakeOff(State):

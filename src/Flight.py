@@ -79,10 +79,10 @@ class CountDown(Functionality):
 		self.add('B8_PB', 'Go', gpio=22)
 		# state
 		self.isRunning = False
-		self.timeToGo = 1   # time to go for the new second
-		self.value = 9
+		self.timeToGo = 0.85   # time to go for the new second
+		self.value = 15
 		# load the sounds
-		self.sounds = [Sound(SoundPathSpeech + str(x) + ".wav") for x in range(10)]
+		self.sounds = [Sound(SoundPathSpeech + str(x) + ".wav") for x in range(17)]
 
 
 	def onEvent(self, e):
@@ -98,14 +98,15 @@ class CountDown(Functionality):
 					self.isRunning = False
 				else:
 					# run the countdown
-					self.EM.runCountDown()
-					self.isRunning = True
+					self.sounds[self.value].play()
 					self.runTimer("CD", self.timeToGo)
-					self.timeToGo = 1
+					self.isRunning = True
+					self.timeToGo = 0.85
+					self.EM.runCountDown()
 			elif e == "CD":
-				self.sounds[self.value].play()
 				self.value -= 1
-				if self.value >= 0:
+				self.sounds[self.value].play()
+				if self.value > 0:
 					self.runTimer("CD", 1)
 
 
