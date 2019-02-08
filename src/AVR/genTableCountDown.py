@@ -34,7 +34,14 @@ for i in range(16):
 	print("%d -> %s%s" % (i, array10[i], array100[i & 7]))
 
 # print the C arrays
-print("const uint8_t digit[10] = {" + ",".join(str(Font[i]+128) for i in range(10)) + "};")
+print("const uint8_t digit[16] = {" + ",".join(str(Font[i%10]+128) for i in range(16)) + "};")
 print("const uint8_t array10[16] = {" + ",".join(str(Font[array10[i]]) for i in range(16)) + "};")
 print("const uint8_t array100[8] = {" + ",".join(str(Font[array100[i]]) for i in range(8)) + "};")
 
+
+# check
+for i in range(256):
+	#if i&15:
+	print( "%s%d.%d%d%d%d" % ("1" if ((i>>4)>9) else " ", (i>>4)%10, array10[i&15], array100[i&7], array100[i&3], array100[(i<<1)&3]))
+	#else:
+	#	print("%d.%d%d%d%d" % (i >> 4, 0, 0, 0, 0))

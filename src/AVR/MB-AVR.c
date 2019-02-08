@@ -37,7 +37,7 @@ Copyright 2017-2018 T. Hilaire
 #include "RGB.h"
 #include "TMx.h"
 #include "ADC.h"
-
+#include "countDown.h"
 
 /* debug */
 //TODO: to remove at the end
@@ -143,15 +143,15 @@ void SPIRecv_TreatByte() {
 	/* compute the index of the end of the message */
 	if ( (SPIRecv.end == 0xFF) ) { //&& (SPIwrite == ((SPIread+1)&SPI_BUFFER_MASK)) ) {
 		command = SPIRecv.buffer[SPIRecv.read];
-		if ((command & 0xF0) == 0b11000000) {
+		if ((command & 0b11110000) == 0b11000000) {
 			SPIRecv.end = (SPIRecv.write + 4) & SPI_RECV_MASK;     /* set the 7-segment display, 4-byte mode */
 			nbBytes = 4;
 		}
-		else if ((command & 0xF0) == 0b11010000) {
+		else if ((command & 0b11110000) == 0b11010000) {
 			SPIRecv.end = (SPIRecv.write + 8) & SPI_RECV_MASK;     /* set the 7-segment display, 8-byte mode */
 			nbBytes = 8;
 		}
-		else if ( ((command & 0xE0) == 0) && (command!=0) && (command!=31) ) {
+		else if ( ((command & 0b11100000) == 0) && (command!=0) && (command!=31) ) {
 			SPIRecv.end = (SPIRecv.write + 5) & SPI_RECV_MASK;     /* set RGB Led */
 			nbBytes = 5;
 		}
@@ -172,22 +172,20 @@ void SPIRecv_TreatByte() {
 		switch (command & 0b11000000) {
 			case 0:
 				/* count down commands */
-				if (command & 0b0010000) {
-					if (command == 0b00100000)
+				if (command == 0b00100000)
 						stopCountDown();
-					else if (command == 0b00100001)
-						runCountDown();
-					else if (command == 0b00100010)
-						initCountDown();
-				}
+				else if (command == 0b00100001)
+					runCountDown();
+				else if (command == 0b00100010)
+					initCountDown();
 				else if (command == 0b00011111) {
 					/* turn off the RGB LEDs */
 					turnOffRGB();
 				}
-				else {
+				else if (command) {
 					/* set RGB color */
 					setRGBLed(command-1, data);
-					}
+				}
 				/*else NOP: do nothing */
 				break;
 			case 0b01000000:

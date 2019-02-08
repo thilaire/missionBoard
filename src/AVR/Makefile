@@ -14,13 +14,13 @@ HOST = pi@raspberrypi.local
 
 # files
 OUT = MB-AVR
-SRC = light_ws2812.c MB-AVR.c TM1638.c TM1637.c TMx.c RGB.c ADC.c
+SRC = light_ws2812.c MB-AVR.c TM1638.c TM1637.c TMx.c RGB.c ADC.c countDown.c
 OBJ = $(SRC:.c=.o)
 
 all: $(OUT).hex
 
 # Compile the C files
-MB-AVR.o: TMx.h ws2812_config.h RGB.h ADC.h
+MB-AVR.o: TMx.h ws2812_config.h RGB.h ADC.h countDown.h
 light_ws2812.o: light_ws2812.h ws2812_config.h
 RGB.o: RGB.h
 ADC.o: ADC.h
