@@ -33,7 +33,7 @@ sounds = [
 	('takeoff', {'fr': 'Décollage!', 'en': 'Takeoff!'})
 ]
 # add the numbers
-sounds.extend(list((str(x), str(x)) for x in range(11)))
+sounds.extend(list((str(x), str(x)) for x in range(17)))
 
 # iter all the languages
 for lang in languages:
