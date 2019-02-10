@@ -146,6 +146,7 @@ class Flight(Functionality):
 		# Panel B5: flight mode
 		self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
 		self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
+		self.flightMode = 'orbit'
 
 		# Panel B8: buttons
 		self.add('B8_PB_0', 'rocketEngine', gpio=4)
@@ -163,7 +164,7 @@ class Flight(Functionality):
 		"""Manage changes for the filght buttons"""
 		if e is self.autoPilot or e is None:
 			self.RGB_autoPilot = GREEN if self.autoPilot else (RED, SLOW)
-		if e is self.mode or e is None:
+		if e is None:
 			self.RGB_takeoff = MAGENTA if self.mode == 'takeoff' else BLACK
 			self.RGB_landing = CORAL if self.mode == 'landing' else BLACK
 			self.RGB_orbit = GREEN if self.mode == 'orbit' else BLACK
@@ -172,7 +173,34 @@ class Flight(Functionality):
 			self.RGB_rocketEngine = RED
 			self.rocketEngineStart = True
 			# TODO: warm up ! (display image/video)
+		if e is self.mode:
+			if self.mode == self.flightMode:    # go back to normal mode
+				self.setFlightModeRGB()
+			else:
+				# can we change the mode ?
+				if (self.mode == 'orbit' and self.okToOrbit()) or (self.mode == 'landing' and self.okToLand()):
+					self.flightMode = self.mode.value
+				self.setFlightModeRGB()
 
+
+	def okToOrbit(self):
+		"""Returns True if we can go to Orbit mode"""
+		return False
+
+	def okToLand(self):
+		"""Returns True if we can go to Landing mode"""
+		return False
+
+	def setFlightModeRGB(self):
+		"""Set the FlightMode LEDs, according to the actual mode and the mode button"""
+		if self.flightMode == self.mode:
+			self.RGB_takeoff = MAGENTA if self.mode == 'takeoff' else BLACK
+			self.RGB_landing = CORAL if self.mode == 'landing' else BLACK
+			self.RGB_orbit = GREEN if self.mode == 'orbit' else BLACK
+		else:
+			self.RGB_takeoff = (RED, FAST) if self.flightMode == 'takeoff' else RED
+			self.RGB_landing = (RED, FAST) if self.flightMode == 'landing' else RED
+			self.RGB_orbit = (RED,FAST) if self.fllightMode == 'orbit' else RED
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""

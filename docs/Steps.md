@@ -33,5 +33,8 @@ red flags if phase 2 is engaged and the tanks are not full
 (waiting for the "phase 3" button to be on)
 
 7. Countdown
--> countdown starts with 10s
--> need to push GO around 0 (otherwise start to 5)
+-> countdown starts with 16s
+(waiting for the "Go" button to run the countdown, then takeoff)
+
+8. Takeoff
+-> vertical flight
