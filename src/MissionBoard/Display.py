@@ -75,7 +75,7 @@ class LVL(Element):
 			byte = (1 << value) - 1
 			self._values[self._number] = byte >> 2  # all the bytes up to
 			self._values[3] = ((byte & 3) << (2*(2-self._number))) | (self._values[3] & (~(3 << (2*(2-self._number)))))
-				# send the command and the list of values
+			# send the command and the list of values
 			command = 0b11001000 | self._TMindex
 			self.sendSPI([command, ] + self._values)
 

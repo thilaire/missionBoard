@@ -29,7 +29,7 @@ sounds = [
 	('phase1engaged', {'fr': 'Phase $ 1 $engagée', 'en': 'Phase $ 1 $ engaged'}),
 	('phase2engaged', {'fr': 'Phase $ 2 $ engagée', 'en': 'Phase $ 2 $ engaged'}),
 	('phase3engaged', {'fr': 'Phase $ 3 $ engagée, $$$$ Début du compte à rebours',
-	'en': 'Phase $ 3 $ engaged, $$$$ the countdown starts'}),
+                       'en': 'Phase $ 3 $ engaged, $$$$ the countdown starts'}),
 	('takeoff', {'fr': 'Décollage!', 'en': 'Takeoff!'})
 ]
 # add the numbers
@@ -46,7 +46,7 @@ for lang in languages:
 		# generate the sound
 		# we cannot fully rely on `say` because the wav file output cannot be read by pygame (the wav format is `unexpected`)
 		# so we first ccreate a aiff file, and then convert it into a correct wav file
-		#Popen(['say', '-v', voices[lang], '"'+sentence+'"', '--data-format=LEI16@22050', '--channels=2', '-o', 'generated/'+lang+'/'+name+'.wav'], stdout=PIPE)
-		call(['say', '-v', voices[lang], '"' + sentence + '"', '--channels=2', '-o','generated/temp'])
+		# Popen(['say', '-v', voices[lang], '"'+sentence+'"', '--data-format=LEI16@22050', '--channels=2', '-o', 'generated/'+lang+'/'+name+'.wav'], stdout=PIPE)
+		call(['say', '-v', voices[lang], '"' + sentence + '"', '--channels=2', '-o', 'generated/temp'])
 		call(['afconvert', '-f', 'WAVE', '-d', 'LEI16', 'generated/temp.aiff', 'generated/'+lang+'/'+name+'.wav'])
 		call(['rm', 'generated/temp.aiff'])

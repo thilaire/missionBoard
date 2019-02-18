@@ -55,7 +55,7 @@ class ATBridge:
 			if self._SPIqueue.empty():
 				self.sendSPI([0])
 		GPIO.add_event_detect(24, GPIO.RISING, callback=IO24Rising)
-		#GPIO.add_event_detect(24, GPIO.RISING, callback=lambda _: self._SPIqueue.empty() and self.sendSPI([0]))
+		# GPIO.add_event_detect(24, GPIO.RISING, callback=lambda _: self._SPIqueue.empty() and self.sendSPI([0]))
 
 
 	def runSPI(self):
@@ -68,27 +68,26 @@ class ATBridge:
 		while True:
 			# wait for data
 			data = self._SPIqueue.get()
-			SPIlogger.debug("GET data=%s"%str(data))
+			SPIlogger.debug("GET data=%s", str(data))
 			# send the data, get the data back from the AT
 			SPIlogger.debug("Send %s (unqueue data)", str(data))
-			#recv = self._spi.xfer(data, speed_hz, delay_usec)
+			# recv = self._spi.xfer(data, speed_hz, delay_usec)
 			# send the data byte per byte (once in a row is too fast, AVR does not have time to store data in its buffer)
-			recv=[]
+			recv = []
 			for d in data:
 				# wait unti IO16 is low
 				while GPIO.input(16):
-					#SPIlogger.debug("Has to wait for IO16")
 					sleep(1e-4)
 				# send one byte
 				recv.extend(self._spi.xfer([d]))
-				#sleep(1e-4)
+				# sleep(1e-4)
 			SPIlogger.debug("Receive data = %s", str(recv))
 
 			# find a significative header
 			rec = iter(recv)
 			while True:
 				try:
-					header = next(b for b in rec if b&64)       # find first header
+					header = next(b for b in rec if b & 64)       # find first header
 				except StopIteration:
 					# nothing more to do, no data send by the ATtiny, break the loop
 					break
@@ -129,7 +128,9 @@ class ATBridge:
 
 
 			# sleep a µs
-			sleep(1e-3)     #TODO: we can decrease it... 1e-3s is the required sleep if we constantly send data to the AT (to avoid buffer overflow)
+			# TODO: we can decrease it... 1e-3s is the required sleep if we constantly send data to the AT
+			# (to avoid buffer overflow)
+			sleep(1e-3)
 
 
 

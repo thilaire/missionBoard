@@ -97,7 +97,7 @@ class Phase3(State):
 
 
 # --------- Countdown ----------
-class CountDown(State):
+class CountDownState(State):
 	"""Countdown Phase"""
 
 	funcNext = [CountDown, ]

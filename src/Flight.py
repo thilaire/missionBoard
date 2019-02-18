@@ -87,7 +87,7 @@ class CountDown(Functionality):
 
 	def onEvent(self, e):
 		"""Manage changes for the filght buttons"""
-		if self.EM.state == 'CountDown':
+		if self.EM.state == 'CountDownState':
 			if e is self.Go:
 				if self.isRunning:
 					# delete the timer (but keep how many seconds are left)
@@ -146,7 +146,7 @@ class Flight(Functionality):
 		# Panel B5: flight mode
 		self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
 		self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
-		self.flightMode = 'orbit'
+		self.flightMode = 'takeoff'
 
 		# Panel B8: buttons
 		self.add('B8_PB_0', 'rocketEngine', gpio=4)
@@ -162,17 +162,11 @@ class Flight(Functionality):
 
 	def onEvent(self, e):
 		"""Manage changes for the filght buttons"""
-		if e is self.autoPilot or e is None:
-			self.RGB_autoPilot = GREEN if self.autoPilot else (RED, SLOW)
+		# takeoff / landing / orbit button / LEDs
 		if e is None:
 			self.RGB_takeoff = MAGENTA if self.mode == 'takeoff' else BLACK
 			self.RGB_landing = CORAL if self.mode == 'landing' else BLACK
 			self.RGB_orbit = GREEN if self.mode == 'orbit' else BLACK
-		logger.debug("e=%s, state = %s", e, self.EM.state)
-		if (e is self.rocketEngine) and (self.EM.state == 'WarmUp'):
-			self.RGB_rocketEngine = RED
-			self.rocketEngineStart = True
-			# TODO: warm up ! (display image/video)
 		if e is self.mode:
 			if self.mode == self.flightMode:    # go back to normal mode
 				self.setFlightModeRGB()
@@ -181,6 +175,14 @@ class Flight(Functionality):
 				if (self.mode == 'orbit' and self.okToOrbit()) or (self.mode == 'landing' and self.okToLand()):
 					self.flightMode = self.mode.value
 				self.setFlightModeRGB()
+		# auto pilot
+		if e is self.autoPilot or e is None:
+			self.RGB_autoPilot = GREEN if self.autoPilot else (RED, SLOW)
+		# rocket Engine during Warm up Phase
+		if (e is self.rocketEngine) and (self.EM.state == 'WarmUp'):
+			self.RGB_rocketEngine = RED
+			self.rocketEngineStart = True
+			# TODO: warm up ! (display image/video)
 
 
 	def okToOrbit(self):
@@ -193,6 +195,7 @@ class Flight(Functionality):
 
 	def setFlightModeRGB(self):
 		"""Set the FlightMode LEDs, according to the actual mode and the mode button"""
+		logger.debug("%s ? %s", self.flightMode, self.mode)
 		if self.flightMode == self.mode:
 			self.RGB_takeoff = MAGENTA if self.mode == 'takeoff' else BLACK
 			self.RGB_landing = CORAL if self.mode == 'landing' else BLACK
@@ -200,12 +203,28 @@ class Flight(Functionality):
 		else:
 			self.RGB_takeoff = (RED, FAST) if self.flightMode == 'takeoff' else RED
 			self.RGB_landing = (RED, FAST) if self.flightMode == 'landing' else RED
-			self.RGB_orbit = (RED,FAST) if self.fllightMode == 'orbit' else RED
+			self.RGB_orbit = (RED, FAST) if self.flightMode == 'orbit' else RED
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""
 		return (self.roll.value <= 10) and (self.yaw.value <= 10) and (self.speed.value <= 10)\
 		        and (self.mode == 'takeoff') and (self.autoPilot == 'manual')
+
+
+
+
+class FlightLoop(Functionality):
+	def __init__(self, EM):
+		super(FlightLoop, self).__init__(EM)
+
+		self.altitude = 0
+		self.speed = 0
+		self.positionX = 0
+		self.positionY = 0
+		self.roll = 0
+		self.pitch = 90
+		self.direction = 0
+
 
 
 

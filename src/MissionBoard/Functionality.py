@@ -50,7 +50,6 @@ class Functionality:
 
 	def notify(self, btn):
 		"""Simply add the object in the Event Queue"""
-		logger.debug("addEvent: btn=%s", str(btn))
 		self._queue.put_nowait(btn)
 
 	@property
@@ -60,7 +59,7 @@ class Functionality:
 	def waitEvents(self):
 		"""threaded loop that waits for the event in the queue
 		 (or wait for some time), and then launch the function"""
-		#TODO: do something smarter... (run SPI loop in another thread, and start it sooner?)
+		# TODO: do something smarter... (run SPI loop in another thread, and start it sooner?)
 		sleep(0.3)      # delay, so the SPI loop can start...
 		logger.debug("Init the functionality %s", self.name)
 		self.onEvent(None)
@@ -139,9 +138,7 @@ class Functionality:
 		# (of the class, we have a singleton here; and it's the way to do with Python)
 		# check the name
 		if hasattr(self, name) or hasattr(self.EM, type(self).__name__+'_'+name):
-			print(name)
-			print(type(self).__name__+'_'+name)
-			raise ValueError("An element with the same name (%s) already exists", name)
+			raise ValueError("An element with the same name (%s) already exists (%s)", name, type(self).__name__+'_'+name)
 		# create the element and add it as an attribute to the class, and to the ATBridge
 		element = dictOfElements[elementType](keyname, name, **args)
 		setattr(self.__class__, name, element)
