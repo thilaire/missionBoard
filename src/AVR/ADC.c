@@ -78,7 +78,7 @@ uint8_t getADC(uint8_t cycle, uint8_t* data)
 
 		/* compute the difference */
 		int8_t diff = Pot[cycle] - *data;
-		if ((diff>5) || (diff<-5))
+		if ((diff>8) || (diff<-8))
 		{
 			Pot[cycle] = *data;
 			return 1;
@@ -119,7 +119,7 @@ void switchDataADC()
 uint8_t getADCSwitches(uint8_t* data)
 {
 	/* get the ADC value in ADCH (and 2 LSB bits in ADCL) */
-	/* fucking DOC !! ADCL must be read before ADCH, otherwise the next conversion is lost!! (see page 179 of the datasheet) */
+	/* fucking pb !! ADCL must be read before ADCH, otherwise the next conversion is lost!! (see page 179 of the datasheet) */
 	//uint8_t adc = ADCL>>6 | ADCH<<2;
 	uint8_t adc = ADCL>>7 | ADCH<<1;
 	static uint8_t old_adc = 12;
