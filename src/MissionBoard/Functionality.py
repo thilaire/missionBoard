@@ -78,7 +78,7 @@ class Functionality:
 			# update the remaining timers (if some still exist)
 			self.updateTimers()
 			# call the fct with the button, or with the type of the delay event
-			logger.info("Run `%s` event (because of %s", self.name, str(btn) if isinstance(btn, Element) else "Timer "+btn)
+			logger.info("Run `%s` event (because of %s", self.name, str(btn) if isinstance(btn, Element) else "Timer "+str(btn))
 			self.onEvent(btn)
 			# check if we move to another state
 			self.EM.manageState(self)
@@ -113,6 +113,9 @@ class Functionality:
 		#   raise ValueError("A timer with the same name ('%s') already exist in %s", name, self.onEvent.__name__)
 		# -> if the timer already exists, its duration is replaced
 		self._timers[name] = duration
+		# add a `fake` event to the queue, to get out of the waiting "get" in the loop
+		if self._queue.empty():
+			self._queue.put_nowait(None)
 
 
 	def add(self, keyname, name, **args):
