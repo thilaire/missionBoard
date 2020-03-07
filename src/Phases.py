@@ -119,6 +119,7 @@ class TakeOff(State):
 
 	def init(self):
 		Sound(SoundPathSpeech + "takeoff.wav").play()
+		self.EM.FlightLoop.runTimer("Loop", 0.2)    # run the main timer (compute the position every 0.2 s)
 
 	def isOver(self, func):
 		return False
