@@ -7,6 +7,7 @@ Flight functionalities
 
 import logging
 from pygame.mixer import Sound
+from math import sin, cos
 
 from MissionBoard.RGB import RED, GREEN, SLOW, BLACK, CORAL, MAGENTA, FAST
 from MissionBoard import Functionality
@@ -15,6 +16,12 @@ from MissionBoard.config import SoundPathSpeech, SoundPath
 logger = logging.getLogger("Flight")
 
 
+
+def dispFormat(x, l):
+	"""format a number with l digits
+	used for the 7-segment display"""
+	form = "%%%d.%df" % (l, l+1)
+	return (form % x)[0:(l+1)]
 
 
 class Phase(Functionality):
@@ -124,7 +131,8 @@ class Flight(Functionality):
 		# displays
 		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
 		# self.add('T2_DISP_2', 'speed', TMindex=1, size=4)
-		self.add('T2_DISP_3', 'position', TMindex=5, block=0, size=8)
+		self.add('T2_DISP_3', 'positionX', TMindex=5, block=0, size=4)
+		self.add('T2_DISP_3', 'positionY', TMindex=5, block=1, size=4)
 		# self.add('T2_DISP_1', 'roll', TMindex=2, size=4)
 		# self.add('T2_DISP_2', 'yaw', TMindex=3, size=4)
 		self.add('T4_DISP_3', 'direction', TMindex=7, block=0, size=4)
@@ -162,11 +170,14 @@ class Flight(Functionality):
 
 	def onEvent(self, e):
 		"""Manage changes for the filght buttons"""
-		# takeoff / landing / orbit button / LEDs
+		# init
 		if e is None:
 			self.RGB_takeoff = MAGENTA if self.mode == 'takeoff' else BLACK
 			self.RGB_landing = CORAL if self.mode == 'landing' else BLACK
 			self.RGB_orbit = GREEN if self.mode == 'orbit' else BLACK
+			self.RGB_autoPilot = GREEN if self.autoPilot else (RED, SLOW)
+
+		# takeoff / landing / orbit button / LEDs
 		if e is self.mode:
 			if self.mode == self.flightMode:    # go back to normal mode
 				self.setFlightModeRGB()
@@ -176,13 +187,15 @@ class Flight(Functionality):
 					self.flightMode = self.mode.value
 				self.setFlightModeRGB()
 		# auto pilot
-		if e is self.autoPilot or e is None:
+		elif e is self.autoPilot:
 			self.RGB_autoPilot = GREEN if self.autoPilot else (RED, SLOW)
 		# rocket Engine during Warm up Phase
-		if (e is self.rocketEngine) and (self.EM.state == 'WarmUp'):
+		elif (e is self.rocketEngine) and (self.EM.state == 'WarmUp'):
 			self.RGB_rocketEngine = RED
 			self.rocketEngineStart = True
 			# TODO: warm up ! (display image/video)
+		elif e is self.speed:
+			self.EM.FlightLoop.speed = self.speed.value
 
 
 	def okToOrbit(self):
@@ -225,7 +238,25 @@ class FlightLoop(Functionality):
 		self.pitch = 90
 		self.direction = 0
 
+		self.deltaT = 1e-3      # Constant !!
 
+	def isReadyToStart(self):
+		return True
+
+	def onEvent(self, e):
+		# event e can only be timer
+		logger.debug("Flight Loop !! %s",e)
+		# update the position
+		self.positionX += self.deltaT * self.speed * cos(self.pitch) * cos(self.direction)
+		self.positionY += self.deltaT * self.speed * cos(self.pitch) * sin(self.direction)
+		self.EM.Flight.positionX = dispFormat(self.positionX, 4)
+		self.EM.Flight.positionY = dispFormat(self.positionY, 4)
+		# update the altitude
+		self.altitude += self.deltaT*self.speed * sin(self.pitch)
+		self.EM.Flight.altitude = dispFormat(self.altitude, 8)
+
+		if e:
+			self.runTimer("Loop", 1)
 
 
 
