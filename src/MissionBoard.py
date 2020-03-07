@@ -15,7 +15,7 @@ from MissionBoard.State import Init
 from MissionBoard.config import SoundPathSpeech
 from Elec import Electricity, Light
 from Misc import Laser, FuelPump, Gates, WaterPump, Oxygen
-from Flight import Phase, Flight, AllTheRest, Turbo,  CountDown as Counter
+from Flight import Phase, Flight, AllTheRest, Turbo,  CountDown as Counter, FlightLoop
 from Phases import Phase1, Tanks, Phase2, WarmUp, Phase3, CountDown, TakeOff
 
 # init logger
@@ -46,9 +46,6 @@ class MissionBoard(EventManager):
 		# self.LED_OnOff = True
 		# self.AllTheRest_Go = RED, FAST
 
-		self.Flight_altitude = '76543210'
-		self.Flight_position = '1-2-3-40'
-		self.Flight_direction = '0123'
 
 
 # add an init method to the Init state (that display 'Init')
@@ -63,7 +60,7 @@ Init.init = displayInit
 
 # create the main object and start it !
 if __name__ == '__main__':
-	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, Flight, AllTheRest, Counter]
+	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, Flight, FlightLoop, AllTheRest, Counter]
 	# states = [Init, Phase1, Tanks, Phase2, WarmUp, Phase3, CountDown]
 	states = [Init, TakeOff]
 	MB = MissionBoard(func, states)
