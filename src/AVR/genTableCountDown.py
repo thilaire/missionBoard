@@ -42,7 +42,7 @@ print("const uint8_t array100[8] = {" + ",".join(str(Font[array100[i]]) for i in
 # check
 for i in range(256):
 	# if i&15:
-	print("%s%d.%d%d%d%d" % ("1" if ((i >> 4)>9) else " ", (i >> 4) % 10, array10[i & 15], array100[i & 7],
-	       array100[i & 3], array100[(i << 1) & 3]))
+	print("%s%d.%d%d%d%d" % ("1" if ((i >> 4) > 9) else " ", (i >> 4) % 10, array10[i & 15], array100[i & 7],
+	      array100[i & 3], array100[(i << 1) & 3]))
 	# else:
-		# print("%d.%d%d%d%d" % (i >> 4, 0, 0, 0, 0))
+	#   print("%d.%d%d%d%d" % (i >> 4, 0, 0, 0, 0))

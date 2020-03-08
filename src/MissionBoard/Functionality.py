@@ -23,7 +23,7 @@ dictOfElements = {'LED': LED, 'DISP': DISP, 'PB': PB, 'RGB': RGB, 'SW2': SW2, 'S
 
 # simple regex for Pxx_YYY_zzz or Pxx_YYY where P is `T` or `B`
 
-regElement = compile("[TB](\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
+regElement = compile(r"[TB](\d+)_([A-Z0-9]+)(_([A-Za-z0-9]+))?")
 
 
 logger = logging.getLogger()

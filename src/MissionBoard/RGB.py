@@ -41,7 +41,7 @@ def bitRotation(b, shift):
 
 
 class RGB(Element):
-
+	"""class for the RGB leds"""
 	def __init__(self, keyname, name, pos, inverted=False):
 		# inverted contain a list of pos, for RGB led those Red and Green are inverted (sometimes happen for my WS2812 clones)
 		super(RGB, self).__init__(keyname, name)
@@ -50,7 +50,11 @@ class RGB(Element):
 
 
 	def __set__(self, instance, value):
-		# value should be a color (a 3-byte number) and a blink scheme (2-byte number)
+		"""Set a value
+		The value should be:
+			- a color (a 3-byte number)
+			- a color and a blink scheme (2-byte number)
+			- a color, a blink scheme and offset (1-byte value)"""
 
 		# define color and blink according to the value (could be a color, a color+blink scheme, or a color+scheme+offset
 		if isinstance(value, int):

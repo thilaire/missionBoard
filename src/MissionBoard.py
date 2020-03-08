@@ -47,7 +47,6 @@ class MissionBoard(EventManager):
 		# self.AllTheRest_Go = RED, FAST
 
 
-
 # add an init method to the Init state (that display 'Init')
 def displayInit(self):
 	self.EM.CountDown_counter = '- Init -'

@@ -245,7 +245,7 @@ class FlightLoop(Functionality):
 
 	def onEvent(self, e):
 		# event e can only be timer
-		logger.debug("Flight Loop !! %s",e)
+		logger.debug("Flight Loop !! %s", e)
 		# update the position
 		self.positionX += self.deltaT * self.speed * cos(self.pitch) * cos(self.direction)
 		self.positionY += self.deltaT * self.speed * cos(self.pitch) * sin(self.direction)

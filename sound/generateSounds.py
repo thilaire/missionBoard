@@ -29,7 +29,7 @@ sounds = [
 	('phase1engaged', {'fr': 'Phase $ 1 $engagée', 'en': 'Phase $ 1 $ engaged'}),
 	('phase2engaged', {'fr': 'Phase $ 2 $ engagée', 'en': 'Phase $ 2 $ engaged'}),
 	('phase3engaged', {'fr': 'Phase $ 3 $ engagée, $$$$ Début du compte à rebours',
-                       'en': 'Phase $ 3 $ engaged, $$$$ the countdown starts'}),
+		'en': 'Phase $ 3 $ engaged, $$$$ the countdown starts'}),
 	('takeoff', {'fr': 'Décollage!', 'en': 'Takeoff!'})
 ]
 # add the numbers
