@@ -1,4 +1,4 @@
-remote_theme: mmistakes/minimal-mistakes
+theme: jekyll-theme-merlot
 
 plugins:
   - jekyll-remote-theme
