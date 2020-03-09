@@ -30,6 +30,12 @@ pygame.init()
 class MissionBoard(EventManager):
 	"""class for the main object"""
 
+	def __init__(self, loops, sts):
+		"""Call the super, and set the attributes"""
+		super(MissionBoard, self).__init__(loops, sts)
+		self.electricity = 0
+
+
 	def start(self):
 		"""start function (initialize the displays)"""
 		# global states
@@ -59,7 +65,8 @@ Init.init = displayInit
 
 # create the main object and start it !
 if __name__ == '__main__':
-	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump, Oxygen, Phase, Flight, FlightLoop, AllTheRest, Counter]
+	func = [Laser, Light, Gates, Turbo, Electricity, FuelPump, WaterPump,
+            Oxygen, Phase, Flight, FlightLoop, AllTheRest, Counter]
 	# states = [Init, Phase1, Tanks, Phase2, WarmUp, Phase3, CountDown]
 	states = [Init, TakeOff]
 	MB = MissionBoard(func, states)
