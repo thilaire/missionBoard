@@ -11,7 +11,7 @@ from math import sin, cos
 
 from MissionBoard.RGB import RED, GREEN, SLOW, BLACK, CORAL, MAGENTA, FAST
 from MissionBoard import Functionality
-from MissionBoard.config import SoundPathSpeech, SoundPath
+from MissionBoard.config import SoundPathSpeech
 
 logger = logging.getLogger("Flight")
 
@@ -30,9 +30,9 @@ class Phase(Functionality):
 		"""Create the buttons, LED, etc."""
 		super(Phase, self).__init__(EM)
 		# elements
-		self.add('B6_SW2_1', 'phase1', TMindex=11, pin=1)
-		self.add('B6_SW2_2', 'phase2', TMindex=11, pin=2)
-		self.add('B6_SW2_3', 'phase3', TMindex=11, pin=3)
+		self.phase1 = self.add('B6_SW2_1', 'phase1', TMindex=11, pin=1)
+		self.phase2 = self.add('B6_SW2_2', 'phase2', TMindex=11, pin=2)
+		self.phase3 = self.add('B6_SW2_3', 'phase3', TMindex=11, pin=3)
 
 
 	def onEvent(self, e):
@@ -52,10 +52,10 @@ class Turbo(Functionality):
 	def __init__(self, EM):
 		"""create the buttons, LED, etc."""
 		super(Turbo, self).__init__(EM)
-		self.add('T7_SW2_1', 'gas', TMindex=6, pin=7)
-		self.add('T7_LED_1', 'LED_gas', TMindex=5, index=0)
-		self.add('T7_SW2_2', 'boost', TMindex=6, pin=6)
-		self.add('T7_LED_2', 'LED_boost', TMindex=5, index=7)
+		self.gas = self.add('T7_SW2_1', 'gas', TMindex=6, pin=7)
+		self.LED_gas = self.add('T7_LED_1', 'LED_gas', TMindex=5, index=0)
+		self.boost = self.add('T7_SW2_2', 'boost', TMindex=6, pin=6)
+		self.LED_boost = self.add('T7_LED_2', 'LED_boost', TMindex=5, index=7)
 
 	def onEvent(self, e):
 		"""Manage changes for the turbo buttons"""
@@ -80,10 +80,10 @@ class CountDown(Functionality):
 		"""create the buttons, LEDs, etc."""
 		super(CountDown, self).__init__(EM)
 		# display
-		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
-		self.add('B8_RGB', 'RGB_Go', pos=21)
+		self.counter = self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
+		self.RGB_Go = self.add('B8_RGB', 'RGB_Go', pos=21)
 		# button
-		self.add('B8_PB', 'Go', gpio=22)
+		self.Go = self.add('B8_PB', 'Go', gpio=22)
 		# state
 		self.isRunning = False
 		self.timeToGo = 0.85   # time to go for the new second
@@ -129,41 +129,41 @@ class Flight(Functionality):
 		"""create the buttons, LED, etc."""
 		super(Flight, self).__init__(EM)
 		# displays
-		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
-		# self.add('T2_DISP_2', 'speed', TMindex=1, size=4)
-		self.add('T2_DISP_3', 'positionX', TMindex=5, block=0, size=4)
-		self.add('T2_DISP_3', 'positionY', TMindex=5, block=1, size=4)
-		# self.add('T2_DISP_1', 'roll', TMindex=2, size=4)
-		# self.add('T2_DISP_2', 'yaw', TMindex=3, size=4)
-		self.add('T4_DISP_3', 'direction', TMindex=7, block=0, size=4)
+		self.altitude = self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
+		# self.speed = self.add('T2_DISP_2', 'speed', TMindex=1, size=4)
+		self.positionX = self.add('T2_DISP_3', 'positionX', TMindex=5, block=0, size=4)
+		self.positionY = self.add('T2_DISP_3', 'positionY', TMindex=5, block=1, size=4)
+		# self.roll = self.add('T2_DISP_1', 'roll', TMindex=2, size=4)
+		# self.yaw = self.add('T2_DISP_2', 'yaw', TMindex=3, size=4)
+		self.direction = self.add('T4_DISP_3', 'direction', TMindex=7, block=0, size=4)
 
 
 		# Panel B2:
-		self.add('B2_RGB', 'RGB_autoPilot', pos=6)
-		self.add('B2_RGB', 'RGB_takeoff', pos=3)
-		self.add('B2_RGB', 'RGB_landing', pos=10)
-		self.add('B2_RGB', 'RGB_orbit', pos=7)
-		self.add('B2_RGB', 'RGB_overSpeed', pos=4)
+		self.RGB_autoPilot = self.add('B2_RGB', 'RGB_autoPilot', pos=6)
+		self.RGB_takeoff = self.add('B2_RGB', 'RGB_takeoff', pos=3)
+		self.RGB_landing = self.add('B2_RGB', 'RGB_landing', pos=10)
+		self.RGB_orbit = self.add('B2_RGB', 'RGB_orbit', pos=7)
+		self.RGB_overSpeed = self.add('B2_RGB', 'RGB_overSpeed', pos=4)
 
 		# Panel B4: pilot
-		self.add('B4_LED', 'manual', TMindex=4, index=0)
-		self.add('B4_POT_0', 'roll', index=0, reverse=True)
-		self.add('B4_POT_1', 'yaw', index=1, reverse=True)
-		self.add('B4_POT_2', 'speed', index=2)
+		self.manual = self.add('B4_LED', 'manual', TMindex=4, index=0)
+		self.roll = self.add('B4_POT_0', 'roll', index=0, reverse=True)
+		self.yaw = self.add('B4_POT_1', 'yaw', index=1, reverse=True)
+		self.speed = self.add('B4_POT_2', 'speed', index=2)
 
 		# Panel B5: flight mode
-		self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
-		self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
+		self.mode = self.add('B5_SW3', 'mode', values=['landing', 'orbit', 'takeoff'], TMindex=4, pins=[2, 3])
+		self.autoPilot = self.add('B5_SW2', 'autoPilot', values=['manual', 'auto'], TMindex=4, pin=4)
 		self.flightMode = 'takeoff'
 
 		# Panel B8: buttons
-		self.add('B8_PB_0', 'rocketEngine', gpio=4)
-		self.add('B8_RGB', 'RGB_rocketEngine', pos=13)
-		# self.add('P8_PB_1', 'SpaceshipEngine', gpio=18)
-		# self.add('P8_PB_2', 'Parachute', gpio=27)
-		# self.add('P8_PB_3', 'Brake', gpio=17)
-		# self.add('P8_PB_4', 'Unhook', gpio=14)
-		# self.add('P8_PB_7', 'LandingGear', gpio=15)
+		self.rocketEngine = self.add('B8_PB_0', 'rocketEngine', gpio=4)
+		self.RGB_rocketEngine = self.add('B8_RGB', 'RGB_rocketEngine', pos=13)
+		# self.SpaceshipEngine = self.add('P8_PB_1', 'SpaceshipEngine', gpio=18)
+		# self.Parachute = self.add('P8_PB_2', 'Parachute', gpio=27)
+		# self.Brake = self.add('P8_PB_3', 'Brake', gpio=17)
+		# self.Unhook = self.add('P8_PB_4', 'Unhook', gpio=14)
+		# self.LandingGear = elf.add('P8_PB_7', 'LandingGear', gpio=15)
 
 		self.rocketEngineStart = False
 
@@ -270,20 +270,20 @@ class AllTheRest(Functionality):
 		# TODO:
 
 		# Panel B1: start/mode
-		self.add('B1_SW3', 'gameMode', values=['computer', 'spaceship', 'games'], TMindex=4, pins=[0, 1])
-		self.add('B1_LED', 'OnOff', TMindex=4, index=1)
+		self.gameMode = self.add('B1_SW3', 'gameMode', values=['computer', 'spaceship', 'games'], TMindex=4, pins=[0, 1])
+		self.OnOff = self.add('B1_LED', 'OnOff', TMindex=4, index=1)
 
 		# Panel B7: Joystick
-		self.add('B7_PB_UP', 'Up', gpio=7)
-		self.add('B7_PB_DOWN', 'Down', gpio=5)
-		self.add('B7_PB_LEFT', 'Left', gpio=12)
-		self.add('B7_PB_RIGHT', 'Right', gpio=6)
+		self.Up = self.add('B7_PB_UP', 'Up', gpio=7)
+		self.Down = self.add('B7_PB_DOWN', 'Down', gpio=5)
+		self.Left = self.add('B7_PB_LEFT', 'Left', gpio=12)
+		self.Right = self.add('B7_PB_RIGHT', 'Right', gpio=6)
 
 		# Panel B8: commands
 
 
 		# Panel B9: audio
-		self.add('B9_SW3', 'Com', values=['Off', 'COM1', 'COM2'], TMindex=4, pins=[5, 6])
+		self.Com = self.add('B9_SW3', 'Com', values=['Off', 'COM1', 'COM2'], TMindex=4, pins=[5, 6])
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""

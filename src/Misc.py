@@ -23,11 +23,11 @@ class Laser(Functionality):
 		"""create the buttons, LEDs, etc."""
 		super(Laser, self).__init__(EM)
 		# buttons
-		self.add('B3_SW2_0', 'armed', values=['disarmed', 'armed'], TMindex=7, pin=4)
-		self.add('B3_SW2_1', 'color', values=['blue', 'red'], TMindex=4, pin=7)
-		self.add('B8_PB_6', 'fire', gpio=2)
+		self.armed = self.add('B3_SW2_0', 'armed', values=['disarmed', 'armed'], TMindex=7, pin=4)
+		self.color = self.add('B3_SW2_1', 'color', values=['blue', 'red'], TMindex=4, pin=7)
+		self.fire = self.add('B8_PB_6', 'fire', gpio=2)
 		# LED
-		self.add('B8_RGB', 'RGB', pos=18, inverted=True)
+		self.RGB = self.add('B8_RGB', 'RGB', pos=18, inverted=True)
 		# sound
 		self.pewpew = [Sound(SoundPath + "laser1.wav"), Sound(SoundPath + "laser2.wav")]
 		# intern variables
@@ -60,9 +60,9 @@ class Gates(Functionality):
 	def __init__(self, EM):
 		"""create the buttons, LEDs, etc."""
 		super(Gates, self).__init__(EM)
-		self.add('B2_RGB', 'gate1', pos=5, inverted=True)
-		self.add('B2_RGB', 'gate2', pos=9)
-		self.add('T7_SW3', 'gates', values=['closed', 'gate1', 'gate2'], TMindex=5, pins=[0, 1])
+		self.gate1 = self.add('B2_RGB', 'gate1', pos=5, inverted=True)
+		self.gate2 = self.add('B2_RGB', 'gate2', pos=9)
+		self.gates = self.add('T7_SW3', 'gates', values=['closed', 'gate1', 'gate2'], TMindex=5, pins=[0, 1])
 
 		self.soundOpen = Sound(SoundPath + "openGate.wav")
 		self.soundClose = Sound(SoundPath + "closeGate.wav")
@@ -117,9 +117,9 @@ class FuelPump(Functionality):
 		"""Create the buttons, LED, etc."""
 		super(FuelPump, self).__init__(EM)
 		# elements
-		self.add('T6_LVL_1', 'rocket', TMindex=7, number=0)
-		self.add('T6_LVL_2', 'spaceship', TMindex=7, number=1)
-		self.add('T6_SW3_2', 'pump', values=['off', 'spaceship', 'rocket'], TMindex=5, pins=[4, 5])
+		self.rocket = self.add('T6_LVL_1', 'rocket', TMindex=7, number=0)
+		self.spaceship = self.add('T6_LVL_2', 'spaceship', TMindex=7, number=1)
+		self.pump = self.add('T6_SW3_2', 'pump', values=['off', 'spaceship', 'rocket'], TMindex=5, pins=[4, 5])
 		# sound
 		self.sound = Sound(SoundPath + "fuel.wav")
 		# levels
@@ -173,7 +173,7 @@ class WaterPump(Functionality):
 		"""Create the buttons, LED, etc."""
 		super(WaterPump, self).__init__(EM)
 		# elements
-		self.add('T6_SW3_1', 'pump', values=['off', 'toilets', 'bathroom'], TMindex=5, pins=[3, 2])
+		self.pump = self.add('T6_SW3_1', 'pump', values=['off', 'toilets', 'bathroom'], TMindex=5, pins=[3, 2])
 		# sounds
 		self.toilets = Sound(SoundPath + "toilets.wav")
 		self.bathroom = Sound(SoundPath + "bathroom.wav")
@@ -199,10 +199,10 @@ class Oxygen(Functionality):
 		"""Create the buttons, LED, etc."""
 		super(Oxygen, self).__init__(EM)
 		# elements
-		self.add('B8_RGB', 'RGB_pump', pos=19, inverted=True)
-		self.add('B8_PB_5', 'pump', gpio=3, edge=GPIO.BOTH)
-		self.add('B2_RGB', 'panel', pos=1)
-		self.add('T6_LVL_3', 'oxygen', TMindex=7, number=2)
+		self.RGB_pump = self.add('B8_RGB', 'RGB_pump', pos=19, inverted=True)
+		self.pump = self.add('B8_PB_5', 'pump', gpio=3, edge=GPIO.BOTH)
+		self.panel = self.add('B2_RGB', 'panel', pos=1)
+		self.oxygen = self.add('T6_LVL_3', 'oxygen', TMindex=7, number=2)
 
 		# sounds
 		self.pumpSound = Sound(SoundPath + "oxygen.wav")

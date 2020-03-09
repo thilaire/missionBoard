@@ -19,13 +19,13 @@ class Electricity(Functionality):
 	def __init__(self, EM):
 		"""create the buttons, LED, etc."""
 		super(Electricity, self).__init__(EM)
-		self.add('T8_SW2_3', 'solar', TMindex=6, pin=2)
-		self.add('T8_LED_3', 'LED_solar', TMindex=5, index=4)
-		self.add('T8_SW2_4', 'battery', TMindex=6, pin=1)
-		self.add('T8_LED_4', 'LED_battery', TMindex=5, index=5)
-		self.add('T8_SW2_5', 'fuel', TMindex=6, pin=0)
-		self.add('T8_LED_5', 'LED_fuel', TMindex=5, index=6)
-		self.add('B2_RGB', 'RGB', pos=2)
+		self.solar = self.add('T8_SW2_3', 'solar', TMindex=6, pin=2)
+		self.LED_solar = self.add('T8_LED_3', 'LED_solar', TMindex=5, index=4)
+		self.battery = self.add('T8_SW2_4', 'battery', TMindex=6, pin=1)
+		self.LED_battery = self.add('T8_LED_4', 'LED_battery', TMindex=5, index=5)
+		self.fuel = self.add('T8_SW2_5', 'fuel', TMindex=6, pin=0)
+		self.LED_fuel = self.add('T8_LED_5', 'LED_fuel', TMindex=5, index=6)
+		self.RGB = self.add('B2_RGB', 'RGB', pos=2)
 
 	def onEvent(self, e):
 		"""Manage changes for the electricity switches
@@ -77,10 +77,10 @@ class Light(Functionality):
 	def __init__(self, EM):
 		"""create the buttons, LEDs, etc."""
 		super(Light, self).__init__(EM)
-		self.add('T8_SW2_1', 'cabin', TMindex=6, pin=5)
-		self.add('T8_LED_1', 'LED_cabin', TMindex=5, index=2)
-		self.add('T8_SW2_2', 'outside', TMindex=6, pin=4)
-		self.add('T8_LED_2', 'LED_outside', TMindex=5, index=3)
+		self.cabin = self.add('T8_SW2_1', 'cabin', TMindex=6, pin=5)
+		self.LED_cabin = self.add('T8_LED_1', 'LED_cabin', TMindex=5, index=2)
+		self.outside = self.add('T8_SW2_2', 'outside', TMindex=6, pin=4)
+		self.LED_outside = self.add('T8_LED_2', 'LED_outside', TMindex=5, index=3)
 
 	def onEvent(self, e):
 		"""Manage changes for the light switches"""
@@ -105,7 +105,7 @@ class Computer(Functionality):
 	def __init__(self, EM):
 		"""create the button"""
 		super(Computer, self).__init__(EM)
-		self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
+		self.computer = self.add('T8_SW2_6', 'computer', values=['backup', 'main'], TMindex=6, pin=3)
 
 	def isReadyToStart(self):
 		"""Returns True if all the buttons are ready to start"""

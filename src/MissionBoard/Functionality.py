@@ -144,7 +144,7 @@ class Functionality:
 			raise ValueError("An element with the same name (%s) already exists (%s)", name, type(self).__name__+'_'+name)
 		# create the element and add it as an attribute to the class, and to the ATBridge
 		element = dictOfElements[elementType](keyname, name, **args)
-		setattr(self.__class__, name, element)
+		# setattr(self.__class__, name, element)
 		setattr(self.EM.__class__, type(self).__name__+'_'+name, element)
 		logger.debug("Element `%s` (%s) is added to %s", keyname, name, type(self).__name__)
 

@@ -22,11 +22,11 @@ class Test(Functionality):
 		"""create the buttons, LED, etc."""
 		super(Test, self).__init__(EM)
 		# displays
-		self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
-		self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
+		self.altitude = self.add('T2_DISP_1', 'altitude', TMindex=6, block=0, size=8)
+		self.counter = self.add('B3_DISP', 'counter', TMindex=4, block=0, size=8)
 		self.runTimer("test", 1)
-		self.add('B8_RGB', 'elec', pos=2)
-		self.add('B8_RGB', 'oxy', pos=1)
+		self.elec = self.add('B8_RGB', 'elec', pos=2)
+		self.oxy = self.add('B8_RGB', 'oxy', pos=1)
 
 		self.elec = RED, SLOW
 		self.oxy = GREEN, FAST
